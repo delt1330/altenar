@@ -17,8 +17,8 @@ type IconName =
   | 'label';
 type Stat = { value: string; label: string; up?: boolean };
 type CaseStudy = { tag: string; company: string; market: string; result: string; text: string };
-type PlatformLayer = { id: string; label: string; title: string; description: string };
-type Product = { icon: IconName; title: string; text: string };
+type PlatformLayer = { id: string; label: string; title: string; description: string; items: string[] };
+type Product = { icon: IconName; scenario: string; title: string; text: string; cta: string; featured?: boolean };
 type Market = {
   code: string;
   title: string;
@@ -35,25 +35,47 @@ type ComplianceItem = { code: string; title: string; text: string; scope: string
 type Award = { year: string; title: string; event: string; category: string };
 
 const stats: Stat[] = [
-  { value: '15', label: 'лет на рынке' },
-  { value: '30+', label: 'регулируемых рынков' },
-  { value: '700+', label: 'специалистов в команде' },
-  { value: '100+', label: 'операторов на платформе' },
-  { value: '24/7', label: 'торговля и поддержка' },
-  { value: 'ISO 27001', label: 'и сертификация GLI-33' },
+  { value: '700+', label: 'сотрудников' },
+  { value: '50+', label: 'стран экспертизы' },
+  { value: '6', label: 'офисов' },
+  { value: '24/7', label: 'support' },
+  { value: 'ISO/IEC', label: '27001:2022' },
 ];
 
 type Client = { name: string; domain: string };
+type ClientGroup = { title: string; clients: Client[] };
 
-const clients: Client[] = [
-  { name: 'NOVOMATIC', domain: 'novomatic.com' },
-  { name: 'Greentube', domain: 'greentube.com' },
-  { name: 'Videoslots', domain: 'videoslots.com' },
-  { name: 'Golden Palace', domain: 'goldenpalace.be' },
-  { name: 'Mr Vegas', domain: 'mrvegas.com' },
-  { name: 'Palms Bet', domain: 'palmsbet.com' },
-  { name: 'Immense Group', domain: 'immensegroup.io' },
-  { name: 'DBET', domain: 'dbet.com' },
+const clientGroups: ClientGroup[] = [
+  {
+    title: 'Запуск на новом рынке',
+    clients: [
+      { name: 'Wplay', domain: 'wplay.co' },
+      { name: 'Multibet', domain: 'multibet.com' },
+      { name: 'YangaGames', domain: 'yangagames.com' },
+    ],
+  },
+  {
+    title: 'Миграция и масштабирование',
+    clients: [
+      { name: 'Palms Bet', domain: 'palmsbet.com' },
+      { name: 'MerkurXtip', domain: 'merkur-xtip.rs' },
+    ],
+  },
+  {
+    title: 'Casino → Sportsbook',
+    clients: [
+      { name: 'Rootz / Wildz', domain: 'wildz.com' },
+      { name: 'Starcasino', domain: 'starcasino.be' },
+      { name: 'Immense Group', domain: 'immensegroup.io' },
+    ],
+  },
+  {
+    title: 'Retail / omnichannel',
+    clients: [
+      { name: 'Golden Palace', domain: 'goldenpalace.be' },
+      { name: 'Greentube', domain: 'greentube.com' },
+    ],
+  },
 ];
 
 type Thesis = { icon: IconName; title: string; text: string };
@@ -114,70 +136,78 @@ const cases: CaseStudy[] = [
 
 const platformLayers: PlatformLayer[] = [
   {
-    id: 'interface',
-    label: 'интерфейс',
-    title: 'Сайт и приложение',
-    description: 'Адаптивный фронтенд на виджетах, мобильный продукт, CMS и купон ставки — под брендом оператора.',
-  },
-  {
     id: 'core',
-    label: 'ядро',
-    title: 'Букмекерское ядро',
-    description: 'Линия, рынки, ставки, лимиты, маржа и бонусный движок. Полный контроль над продуктом из одной панели.',
+    label: 'core betting',
+    title: 'Core betting',
+    description: 'Betting engine, линия и управление рынками для ежедневной работы sportsbook.',
+    items: ['Live odds', 'Bet Builder', 'Fast markets', 'Event coverage', 'Market control'],
   },
   {
-    id: 'odds',
-    label: 'данные',
-    title: 'Коэффициенты и контент',
-    description: 'Коэффициенты в реальном времени, тысячи событий, быстрые ставки и Конструктор ставок.',
+    id: 'operations',
+    label: 'operations',
+    title: 'Operations',
+    description: 'Инструменты контроля, трейдинга и мониторинга, которые защищают маржу оператора.',
+    items: ['Risk management', 'Limits', 'Trading support', 'Reporting', 'Monitoring'],
   },
   {
-    id: 'risk',
-    label: 'трейдинг',
-    title: 'Управление рисками',
-    description: 'Команда трейдеров и автоматика держат маржу и лимиты под контролем 24/7.',
+    id: 'growth',
+    label: 'growth',
+    title: 'Growth',
+    description: 'Маркетинговые и продуктовые механики для роста вовлечения после запуска.',
+    items: ['Bonus engine', 'Bet boosts', 'Promotions', 'Personalisation', 'Tournament lobbies'],
   },
   {
-    id: 'compliance',
-    label: 'compliance',
-    title: 'Лицензии и безопасность',
-    description: 'Соответствие требованиям юрисдикций, защита данных, отчётность и независимые лаборатории.',
-  },
-  {
-    id: 'channels',
-    label: 'каналы',
-    title: 'Online, mobile, розница',
-    description: 'Один продукт во всех каналах: сайт, приложение, кассы и терминалы самообслуживания.',
+    id: 'infrastructure',
+    label: 'infrastructure',
+    title: 'Infrastructure',
+    description: 'Интеграции, локализация, retail и compliance-поддержка для регулируемых рынков.',
+    items: ['PAM integrations', 'Frontend flexibility', 'Retail terminals', 'Compliance support', 'Localisation'],
   },
 ];
 
 const products: Product[] = [
   {
     icon: 'module',
-    title: 'Модуль букмекера',
-    text: 'Спортсбук встраивается в ваш сайт и систему игроков: коэффициенты в реальном времени, рынки, лимиты и бонусы под полным контролем.',
+    scenario: 'Уже есть платформа',
+    title: 'Sportsbook Module',
+    text: 'Подключите sportsbook к существующей инфраструктуре, сохранив контроль над брендом, интерфейсом, лимитами и пользовательским опытом.',
+    cta: 'Подробнее о модуле',
   },
   {
     icon: 'key',
-    title: 'Букмекерская контора под ключ',
-    text: 'Готовая платформа со всеми системами, CMS и поддержкой 24/7. Быстрый запуск без потери качества.',
+    scenario: 'Нужен запуск под ключ',
+    title: 'Turnkey Sportsbook',
+    text: 'Получите готовую betting-платформу с PAM, CMS, фронтендом, поддержкой и операционными инструментами.',
+    cta: 'Смотреть turnkey-решение',
   },
   {
     icon: 'store',
-    title: 'Розничное решение',
-    text: 'Терминалы и кассы с удалённым управлением, синхронизированные с online в единой омниканальной системе.',
+    scenario: 'Есть офлайн-точки',
+    title: 'Retail Solution',
+    text: 'Запускайте ставки через кассы, терминалы и наземные betting-точки с единым удалённым управлением.',
+    cta: 'Смотреть retail-решение',
   },
   {
     icon: 'label',
     title: 'White Label',
-    text: 'Запуск под вашим брендом за недели — платежи, лицензии и требования рынка уже учтены.',
+    scenario: 'Нужен быстрый выход под брендом',
+    text: 'Запустите sportsbook под своим брендом быстрее, с меньшей технической и операционной нагрузкой.',
+    cta: 'Смотреть white label',
+  },
+  {
+    icon: 'migrate',
+    scenario: 'Хотите сменить провайдера',
+    title: 'Migration',
+    text: 'Перенесите sportsbook на более гибкую платформу с контролем рисков, локализацией и поддержкой запуска.',
+    cta: 'Обсудить миграцию',
+    featured: true,
   },
 ];
 
 const markets: Market[] = [
   {
     code: 'LATAM',
-    title: 'Латинская Америка',
+    title: 'Latin America',
     description: 'Быстро растущие регулируемые рынки, футбол как главный драйвер и спрос на локальную поддержку.',
     details: ['Бразилия', 'Перу', 'Колумбия', 'Уругвай'],
     countries: ['Brazil', 'Peru', 'Colombia', 'Uruguay', 'Argentina', 'Chile', 'Mexico'],
@@ -192,7 +222,7 @@ const markets: Market[] = [
   },
   {
     code: 'NA',
-    title: 'Северная Америка',
+    title: 'North America',
     description: 'Новые лицензии в Канаде и непростой переход операторов в регулируемое поле.',
     details: ['Онтарио', 'Альберта', 'США'],
     countries: ['Canada', 'United States of America'],
@@ -206,7 +236,7 @@ const markets: Market[] = [
   },
   {
     code: 'EU',
-    title: 'Европа',
+    title: 'Europe',
     description: 'Зрелые рынки с высокими требованиями к лицензиям, безопасности и отчётности.',
     details: ['Мальта', 'Великобритания', 'Дания', 'Бельгия'],
     countries: ['United Kingdom', 'Denmark', 'Belgium', 'Spain', 'Italy', 'Germany', 'Sweden', 'Netherlands'],
@@ -221,7 +251,7 @@ const markets: Market[] = [
   },
   {
     code: 'AFR',
-    title: 'Африка',
+    title: 'Africa',
     description: 'Мобильные сценарии, розничные форматы и локальная адаптация продукта.',
     details: ['ЮАР', 'Нигерия', 'Кения'],
     countries: ['South Africa', 'Nigeria', 'Kenya'],
@@ -232,6 +262,20 @@ const markets: Market[] = [
     ],
     center: [20, 2],
     zoom: 2.0,
+  },
+  {
+    code: 'ASIA',
+    title: 'Asia',
+    description: 'Разные спортивные привычки, мобильные сценарии и требования к локализации продукта.',
+    details: ['Индия', 'Филиппины', 'Казахстан'],
+    countries: ['India', 'Philippines', 'Kazakhstan'],
+    markers: [
+      { name: 'Индия', coordinates: [77.2, 28.6] },
+      { name: 'Филиппины', coordinates: [121.0, 14.6] },
+      { name: 'Казахстан', coordinates: [71.4, 51.2] },
+    ],
+    center: [88, 30],
+    zoom: 2.1,
   },
 ];
 
@@ -277,61 +321,57 @@ const complianceItems: ComplianceItem[] = [
 const awards: Award[] = [
   {
     year: '2026',
-    title: 'Лучший поставщик спортивных игр года',
-    event: 'SBC Awards Latinoamerica',
+    title: 'SBC Americas Awards 2026',
+    event: 'Sportsbook supplier recognition',
     category: 'sportsbook supplier',
   },
   {
     year: '2026',
-    title: 'Лучшие онлайн-поставщики спортивных игр',
-    event: 'SiGMA Brazil',
-    category: 'online sportsbook',
+    title: 'Alberta approval',
+    event: 'Готовность к североамериканским требованиям',
+    category: 'regulatory approvals',
   },
   {
     year: '2025',
-    title: 'Лучший продукт для ставок в реальном времени',
-    event: 'SiGMA South Asia Awards',
-    category: 'live betting',
+    title: 'Palms Bet migration',
+    event: 'Миграция и рост на регулируемых рынках',
+    category: 'partnerships',
   },
   {
     year: '2025',
-    title: 'Самая инновационная функция букмекерской конторы',
-    event: 'SiGMA Euro-Med Awards',
-    category: 'product innovation',
+    title: 'Greentube partnership',
+    event: 'Партнёрство с digital-подразделением NOVOMATIC',
+    category: 'partnerships',
   },
   {
     year: '2025',
-    title: 'Лучший провайдер онлайн спортбука',
-    event: 'SiGMA Americas',
-    category: 'sportsbook platform',
+    title: 'SiGMA / SBC awards',
+    event: 'Отраслевое признание продукта и команд',
+    category: 'awards',
   },
   {
     year: '2024',
-    title: 'Платформа года',
-    event: 'BEGE Awards',
-    category: 'platform',
-  },
-  {
-    year: '2024',
-    title: 'Юридическая команда года',
-    event: 'Global Regulatory Awards',
-    category: 'regulatory',
-  },
-  {
-    year: '2024',
-    title: 'Команда года по обеспечению соответствия нормативным требованиям',
+    title: 'Compliance team recognition',
     event: 'Global Regulatory Awards',
     category: 'compliance',
   },
 ];
 
+const riskCards: Capability[] = [
+  { title: 'Risk management', text: 'Контроль лимитов, экспозиции, подозрительной активности и потенциальных потерь.' },
+  { title: 'Trading support', text: 'Поддержка live betting, управление рынками, коэффициентами и спортивными событиями.' },
+  { title: 'Operational stability', text: 'Мониторинг, поддержка 24/7 и инфраструктура для стабильной работы.' },
+];
+
 const capabilities: Capability[] = [
-  { title: 'Коэффициенты в реальном времени', text: 'Тысячи событий и рынков с обновлением в моменте.' },
-  { title: 'Быстрые ставки', text: 'Готовые подборки для самых популярных рынков.' },
-  { title: 'Конструктор ставок', text: 'Игрок собирает свой рынок из одного матча.' },
-  { title: 'Бонусный движок', text: 'Фрибеты, акции и программы удержания из коробки.' },
-  { title: 'Управление рисками', text: 'Лимиты, маржа и контроль ставок под надзором трейдеров.' },
-  { title: 'Розничные терминалы', text: 'Кассы и автоматы самообслуживания в единой системе.' },
+  { title: 'Bonus engine', text: 'Фрибеты, бонусные правила и кампании удержания внутри платформы.' },
+  { title: 'Bet boosts', text: 'Усиление ключевых событий и рынков для роста активности игроков.' },
+  { title: 'Enhanced odds', text: 'Промо-коэффициенты для матчей, турниров и live-сценариев.' },
+  { title: 'Bet Mentor', text: 'Подсказки и продуктовые механики, которые помогают игроку быстрее сделать ставку.' },
+  { title: 'Tournament lobbies', text: 'Витрины турниров и событий для продвижения спортивного календаря.' },
+  { title: 'Promotions', text: 'Акции и кампании, которые можно запускать после выхода на рынок.' },
+  { title: 'Personalisation', text: 'Персональные предложения и релевантные сценарии для разных сегментов.' },
+  { title: 'Reporting', text: 'Отчётность по активности, продуктовым механикам и результатам кампаний.' },
 ];
 
 const ecosystem: EcosystemGroup[] = [
@@ -346,7 +386,7 @@ const navLinks = [
   { label: 'Платформа', id: 'platform' },
   { label: 'Кейсы', id: 'cases' },
   { label: 'Рынки', id: 'markets' },
-  { label: 'Лицензии', id: 'compliance' },
+  { label: 'Демо', id: 'demo' },
 ];
 
 const rise: Variants = {
@@ -368,15 +408,13 @@ function App() {
           <StatStrip />
         </section>
         <Clients />
-        <Theses />
         <Proof />
-        <Platform layer={layer} setLayer={setLayer} />
         <Products />
+        <Platform layer={layer} setLayer={setLayer} />
         <Markets />
-        <Compliance />
-        <Awards />
+        <RiskTrading />
         <Capabilities />
-        <Ecosystem />
+        <Awards />
         <FinalCta />
       </main>
       <Footer />
@@ -419,7 +457,7 @@ function Header() {
         </div>
       </header>
       <motion.div className="overlay-menu" initial={false} animate={{ opacity: open ? 1 : 0, pointerEvents: open ? 'auto' : 'none' }}>
-        {navLinks.concat({ label: 'Запросить демо', id: 'demo' }).map((l, i) => (
+        {navLinks.map((l, i) => (
           <motion.a
             key={l.id}
             href={`#${l.id}`}
@@ -470,18 +508,18 @@ function Hero() {
       <div className="hero-grid">
         <motion.div className="hero-copy" initial={{ opacity: 0, y: 26 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}>
           <Eyebrow>Платформа для ставок на спорт · с 2011 года</Eyebrow>
-          <h1>Ведущая платформа<br />для ставок на спорт</h1>
+          <h1>Ведущая B2b платформа<br />для ставок на спорт</h1>
           <p>
-            Altenar помогает быстро запускать и масштабировать букмекерские платформы
-            на новых рынках: с учётом локальных требований, гибкой настройки, API
-            и круглосуточной экспертной поддержки.
+            Altenar помогает лицензированным операторам запускать, настраивать и
+            масштабировать sportsbook на регулируемых рынках: от отдельного модуля
+            до решения под ключ, с локализацией, риск-менеджментом и поддержкой 24/7.
           </p>
           <div className="hero-cta">
             <a className="btn-primary" href="#demo">
               Запросить демо
               <span className="btn-arrow" aria-hidden="true">↗</span>
             </a>
-            <a className="btn-ghost" href="#platform">Возможности платформы</a>
+            <a className="btn-ghost" href="#platform">Посмотреть платформу</a>
           </div>
         </motion.div>
       </div>
@@ -576,13 +614,26 @@ function LogoCell({ client }: { client: Client }) {
 
 function Clients() {
   return (
-    <section className="section section-clients">
-      <Eyebrow>Нам доверяют операторы и партнёры</Eyebrow>
-      <div className="logo-wall">
-        {clients.map((c) => (
-          <LogoCell key={c.name} client={c} />
+    <section className="section section-clients" id="clients">
+      <SectionHead
+        kicker="Клиенты и кейсы"
+        title="Платформа, которой доверяют betting-операторы и iGaming-партнёры"
+        lead="Altenar работает с операторами в разных сценариях: запуск на новом рынке, миграция с текущего провайдера, развитие sportsbook внутри casino-brand и retail/omnichannel betting."
+        align="left"
+      />
+      <div className="client-groups">
+        {clientGroups.map((group) => (
+          <motion.article className="client-group" key={group.title} variants={rise} initial="hidden" whileInView="visible" viewport={{ once: true, margin: '-40px' }}>
+            <span className="client-group-title">{group.title}</span>
+            <div className="client-group-list">
+              {group.clients.map((c) => (
+                <LogoCell key={`${group.title}-${c.name}`} client={c} />
+              ))}
+            </div>
+          </motion.article>
         ))}
       </div>
+      <a className="client-cases-link" href="#cases">Смотреть кейсы <span aria-hidden="true">→</span></a>
     </section>
   );
 }
@@ -713,8 +764,8 @@ function Proof() {
     <section className="section section--light section-cases" id="cases">
       <SectionHead
         kicker="Кейсы"
-        title="Операторы растут вместе с Altenar"
-        lead="Миграции, запуски и партнёрства на регулируемых рынках — с измеримым результатом."
+        title="Кейсы запуска, миграции и омниканального роста"
+        lead="Несколько сценариев, в которых Altenar помогает операторам быстрее выйти на рынок, сменить провайдера или добавить sportsbook к существующему casino-brand."
       />
       <div className="cases">
         {cases.map((c) => (
@@ -738,8 +789,8 @@ function Platform({ layer, setLayer }: { layer: number; setLayer: (i: number) =>
     <section className="section section-platform" id="platform">
       <SectionHead
         kicker="Платформа"
-        title="Одна платформа для online, mobile и розницы"
-        lead="Коэффициенты, ставки, риски и compliance работают как единая система — вы управляете всем из одного места."
+        title="Полный операционный контур sportsbook в одной платформе"
+        lead="Altenar объединяет betting engine, live odds, risk management, trading support, бонусные инструменты, retail, интеграции, локализацию и compliance-поддержку. Оператор получает систему для запуска, ежедневной работы и роста."
       />
       <div className="platform">
         <ul className="layer-list">
@@ -763,6 +814,9 @@ function Platform({ layer, setLayer }: { layer: number; setLayer: (i: number) =>
           <span className="layer-detail-label">{platformLayers[layer].label}</span>
           <h3>{platformLayers[layer].title}</h3>
           <p>{platformLayers[layer].description}</p>
+          <div className="layer-items">
+            {platformLayers[layer].items.map((item) => <span key={item}>{item}</span>)}
+          </div>
           <div className="layer-detail-foot">
             <span>слой {String(layer + 1).padStart(2, '0')} / {String(platformLayers.length).padStart(2, '0')}</span>
             <span>единая платформа Altenar</span>
@@ -771,7 +825,7 @@ function Platform({ layer, setLayer }: { layer: number; setLayer: (i: number) =>
       </div>
       <div className="platform-demo-row">
         <a className="platform-demo-link" href="#demo" aria-label="Запросить демо Altenar">
-          <span>Запросить демо</span>
+          <span>Получить презентацию платформы</span>
           <i aria-hidden="true">→</i>
         </a>
       </div>
@@ -781,25 +835,26 @@ function Platform({ layer, setLayer }: { layer: number; setLayer: (i: number) =>
 
 function Products() {
   return (
-    <section className="section section-products">
+    <section className="section section-products" id="scenarios">
       <SectionHead
-        kicker="Продукты"
-        title="Четыре продукта — один технологический фундамент"
-        lead="От модуля для действующего сайта до запуска под ключ, розницы и White Label."
+        kicker="Сценарии для операторов"
+        title="Выберите формат запуска под вашу бизнес-модель"
+        lead="Вместо длинного каталога возможностей — понятные сценарии подключения sportsbook под текущую инфраструктуру, рынок и операционную модель."
       />
       <div className="product-grid">
         {products.map((p) => (
-          <motion.article className="product" key={p.title} variants={rise} initial="hidden" whileInView="visible" viewport={{ once: true, margin: '-60px' }}>
+          <motion.article className={`product ${p.featured ? 'product--wide' : ''}`} key={p.title} variants={rise} initial="hidden" whileInView="visible" viewport={{ once: true, margin: '-60px' }}>
             <span className="product-icon"><LineIcon name={p.icon} /></span>
+            <span className="product-scenario">{p.scenario}</span>
             <h3>{p.title}</h3>
             <p>{p.text}</p>
             <a className="product-link" href="#demo">
-              Узнать подробнее <span aria-hidden="true">→</span>
+              {p.cta} <span aria-hidden="true">→</span>
             </a>
           </motion.article>
         ))}
         <a className="product-demo" href="#demo" aria-label="Запросить демо Altenar">
-          <span>Запросить Демо</span>
+          <span>Запросить демо</span>
           <i aria-hidden="true">→</i>
         </a>
       </div>
@@ -822,8 +877,8 @@ function Markets() {
     <section className="section section--light section-markets" id="markets">
       <SectionHead
         kicker="Рынки"
-        title="Карта присутствия Altenar"
-        lead="Более 30 регулируемых рынков на четырёх континентах. Выберите регион — карта покажет, где работает платформа."
+        title="Создано для регулируемых рынков и локальных особенностей"
+        lead="Каждый рынок отличается законами, спортивными привычками, форматами коэффициентов, платёжными сценариями, лимитами, устройствами и ожиданиями игроков. Altenar помогает адаптировать sportsbook под конкретную страну, а не просто перевести интерфейс."
       />
       <div className="map-nav" role="tablist">
         <button type="button" role="tab" aria-selected={active === 'all'} className={active === 'all' ? 'is-active' : ''} onClick={() => setActive('all')}>
@@ -853,12 +908,16 @@ function Markets() {
             <>
               <span className="market-detail-code">30+</span>
               <h3>Глобальное покрытие</h3>
-              <p>Altenar работает на регулируемых рынках Латинской Америки, Северной Америки, Европы и Африки — с локальными видами спорта, языками и требованиями юрисдикций.</p>
+              <p>Altenar работает на регулируемых рынках Europe, Latin America, North America, Africa и Asia — с локальными видами спорта, языками, форматами коэффициентов и требованиями юрисдикций.</p>
               <div className="market-pills">
                 {markets.map((m) => <span key={m.code}>{m.title}</span>)}
               </div>
             </>
           )}
+          <div className="market-actions">
+            <a href="#markets">Выбрать регион</a>
+            <a href="#demo">Запросить market report</a>
+          </div>
         </motion.div>
       </div>
     </section>
@@ -890,14 +949,14 @@ function Compliance() {
 
 function Awards() {
   return (
-    <section className="section section--light section-awards">
+    <section className="section section--light section-awards" id="industry-proof">
       <SectionHead
-        kicker="Награды"
-        title="Награды и мировое признание"
-        lead="Награды SBC, SiGMA, BEGE и Global Regulatory Awards показывают, что продукт, compliance и команды Altenar замечают на разных рынках."
+        kicker="Proof"
+        title="Подтверждённая экспертиза в iGaming-индустрии"
+        lead="Awards, regulatory approvals, partnerships и product updates остаются proof-блоком ближе к финальному CTA, не конкурируя с ключевым сценарием страницы."
       />
       <div className="award-track">
-        {awards.slice(0, 6).map((item) => (
+        {awards.slice(0, 4).map((item) => (
           <article key={`${item.event}-${item.title}`} className="award-card">
             <span className="award-year">{item.year}</span>
             <strong>{item.title}</strong>
@@ -905,7 +964,33 @@ function Awards() {
           </article>
         ))}
         <a className="award-all" href="#" aria-label="Все награды Altenar">
-          <span>Все награды</span>
+          <span>Смотреть новости и награды</span>
+          <i aria-hidden="true">→</i>
+        </a>
+      </div>
+    </section>
+  );
+}
+
+function RiskTrading() {
+  return (
+    <section className="section section-risk">
+      <SectionHead
+        align="left"
+        kicker="Risk & Trading"
+        title="Контроль риска и стабильная работа 24/7"
+        lead="Sportsbook работает в реальном времени. Ошибки в коэффициентах, лимитах или расчётах напрямую влияют на деньги оператора. Altenar помогает контролировать риски, поддерживать live betting, управлять рынками и защищать маржу в периоды высокой нагрузки."
+      />
+      <div className="caps-grid risk-grid">
+        {riskCards.map((c, i) => (
+          <motion.article className="cap" key={c.title} variants={rise} initial="hidden" whileInView="visible" viewport={{ once: true, margin: '-60px' }}>
+            <span className="cap-index">{String(i + 1).padStart(2, '0')}</span>
+            <h3>{c.title}</h3>
+            <p>{c.text}</p>
+          </motion.article>
+        ))}
+        <a className="cap-demo" href="#demo" aria-label="Обсудить risk and trading Altenar">
+          <span>Обсудить risk & trading</span>
           <i aria-hidden="true">→</i>
         </a>
       </div>
@@ -915,12 +1000,12 @@ function Awards() {
 
 function Capabilities() {
   return (
-    <section className="section section-caps">
+    <section className="section section-caps" id="growth">
       <SectionHead
         align="left"
-        kicker="Возможности"
-        title="Всё для сильного букмекерского продукта"
-        lead="Инструменты, которые обычно собирают месяцами, доступны на платформе сразу."
+        kicker="Growth after launch"
+        title="Инструменты для роста вовлечения после запуска"
+        lead="После запуска sportsbook нужно развивать: продвигать события, возвращать игроков, усиливать live betting, запускать бонусы и повышать активность. Altenar даёт growth-инструменты внутри платформы."
       />
       <div className="caps-grid">
         {capabilities.map((c, i) => (
@@ -931,7 +1016,7 @@ function Capabilities() {
           </motion.article>
         ))}
         <a className="cap-demo" href="#demo" aria-label="Заказать демо Altenar">
-          <span>Заказать демо</span>
+          <span>Смотреть growth-инструменты</span>
           <i aria-hidden="true">→</i>
         </a>
       </div>
@@ -967,39 +1052,53 @@ function FinalCta() {
       <div className="final-grid">
         <motion.div className="final-copy" variants={rise} initial="hidden" whileInView="visible" viewport={{ once: true, margin: '-80px' }}>
           <Eyebrow>Демо</Eyebrow>
-          <h2>Расскажите о вашем рынке — покажем, как запустить</h2>
+          <h2>Обсудите запуск или развитие вашего sportsbook</h2>
           <p>
-            Демо — это не обычная форма обратной связи. Это первый разговор о вашем
-            рынке, лицензии, текущей платформе и плане запуска.
+            Расскажите, какой рынок вы рассматриваете, есть ли у вас действующая
+            платформа и какой формат решения нужен. Команда Altenar покажет подходящий
+            сценарий запуска, миграции или масштабирования.
           </p>
           <ul className="final-list">
-            <li>Запуск с нуля</li>
-            <li>Миграция с другой платформы</li>
-            <li>Розница и омниканальность</li>
-            <li>Casino + ставки на спорт</li>
+            <li>Module / Turnkey / Retail / White Label / Migration</li>
+            <li>Запуск на новом регулируемом рынке</li>
+            <li>Миграция с текущего провайдера</li>
+            <li>Рост sportsbook после запуска</li>
           </ul>
         </motion.div>
         <motion.form className="form" variants={rise} initial="hidden" whileInView="visible" viewport={{ once: true, margin: '-80px' }} onSubmit={(e) => e.preventDefault()}>
           <label>
-            <span>Рынок</span>
-            <input placeholder="Бразилия, Перу, Онтарио…" />
+            <span>Имя</span>
+            <input placeholder="Ваше имя" />
           </label>
           <label>
-            <span>Текущая ситуация</span>
+            <span>Рабочий email</span>
+            <input type="email" placeholder="name@company.com" />
+          </label>
+          <label>
+            <span>Компания</span>
+            <input placeholder="Название компании" />
+          </label>
+          <label>
+            <span>Регион</span>
+            <input placeholder="Europe, LATAM, North America…" />
+          </label>
+          <label>
+            <span>Что нужно</span>
             <select defaultValue="">
               <option value="" disabled>Выберите вариант</option>
-              <option>Запуск нового продукта</option>
-              <option>Миграция с другой платформы</option>
-              <option>Добавить спорт к casino</option>
-              <option>Розница и online</option>
+              <option>Module</option>
+              <option>Turnkey</option>
+              <option>Retail</option>
+              <option>White Label</option>
+              <option>Migration</option>
             </select>
           </label>
           <label>
-            <span>Лицензии</span>
-            <input placeholder="MGA, UKGC, локальная…" />
+            <span>Сообщение</span>
+            <textarea placeholder="Кратко опишите рынок, текущую платформу и сроки запуска" />
           </label>
           <button type="submit" className="btn-primary form-submit">
-            Отправить заявку
+            Запросить демо
             <span className="btn-arrow" aria-hidden="true">↗</span>
           </button>
         </motion.form>

@@ -720,25 +720,25 @@ h3 {
   position: relative;
   z-index: 3;
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(5, 1fr);
   border-top: 1px solid rgba(243, 244, 245, 0.055);
   border-bottom: 1px solid rgba(243, 244, 245, 0.055);
   background-image:
-    linear-gradient(90deg, transparent calc(25% - 0.5px), var(--line-2) calc(25% - 0.5px), var(--line-2) calc(25% + 0.5px), transparent calc(25% + 0.5px)),
-    linear-gradient(90deg, transparent calc(50% - 0.5px), var(--line-2) calc(50% - 0.5px), var(--line-2) calc(50% + 0.5px), transparent calc(50% + 0.5px)),
-    linear-gradient(90deg, transparent calc(75% - 0.5px), var(--line-2) calc(75% - 0.5px), var(--line-2) calc(75% + 0.5px), transparent calc(75% + 0.5px)),
-    linear-gradient(0deg, transparent calc(50% - 0.5px), rgba(243, 244, 245, 0.055) calc(50% - 0.5px), rgba(243, 244, 245, 0.055) calc(50% + 0.5px), transparent calc(50% + 0.5px));
+    linear-gradient(90deg, transparent calc(20% - 0.5px), var(--line-2) calc(20% - 0.5px), var(--line-2) calc(20% + 0.5px), transparent calc(20% + 0.5px)),
+    linear-gradient(90deg, transparent calc(40% - 0.5px), var(--line-2) calc(40% - 0.5px), var(--line-2) calc(40% + 0.5px), transparent calc(40% + 0.5px)),
+    linear-gradient(90deg, transparent calc(60% - 0.5px), var(--line-2) calc(60% - 0.5px), var(--line-2) calc(60% + 0.5px), transparent calc(60% + 0.5px)),
+    linear-gradient(90deg, transparent calc(80% - 0.5px), var(--line-2) calc(80% - 0.5px), var(--line-2) calc(80% + 0.5px), transparent calc(80% + 0.5px));
 }
 
 .stat {
-  padding: 30px var(--cell-x) 32px;
+  padding: 28px var(--cell-x) 30px;
   border-left: 0;
   background: transparent;
 }
 
 .stat-value {
   display: block;
-  font-size: clamp(36px, 3.6vw, 54px);
+  font-size: clamp(28px, 3vw, 44px);
   font-weight: 300;
   letter-spacing: -0.02em;
   line-height: 0.95;
@@ -983,6 +983,23 @@ h3 {
   line-height: 1.6;
 }
 
+.layer-items {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 24px;
+}
+
+.layer-items span {
+  padding: 8px 10px;
+  border: 1px solid var(--platform-line);
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--soft);
+}
+
 .layer-detail-foot {
   display: flex;
   justify-content: space-between;
@@ -1065,6 +1082,66 @@ h3 {
   border-top: 1px solid var(--line-2);
 }
 
+.client-groups {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  width: 100vw;
+  margin: 36px calc(50% - 50vw) 0;
+  border-top: 1px solid var(--line-2);
+}
+
+.client-group {
+  min-height: 100%;
+  padding: 24px var(--cell-x) 0;
+  background: var(--void);
+  box-shadow: inset -1px 0 0 var(--line-2), inset 0 -1px 0 var(--line-2);
+}
+
+.client-group:nth-child(4n) {
+  box-shadow: inset 0 -1px 0 var(--line-2);
+}
+
+.client-group-title {
+  display: block;
+  margin-bottom: 18px;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--live);
+}
+
+.client-group-list {
+  display: grid;
+  margin: 0 calc(var(--cell-x) * -1);
+}
+
+.client-group-list .logo-cell {
+  justify-content: flex-start;
+  min-height: 74px;
+  background: transparent;
+  box-shadow: inset 0 -1px 0 var(--line-2);
+}
+
+.client-cases-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 24px;
+  margin-left: calc(50% - 50vw + var(--cell-x));
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--soft);
+  transition: color 0.4s var(--ease), gap 0.4s var(--ease);
+}
+
+.client-cases-link:hover {
+  gap: 14px;
+  color: var(--ink);
+}
+
 .logo-cell {
   display: flex;
   align-items: center;
@@ -1131,6 +1208,7 @@ h3 {
 .section-markets,
 .section-compliance,
 .section-awards,
+.section-risk,
 .section-caps,
 .section-eco,
 .section-final {
@@ -1204,6 +1282,20 @@ h3 {
 .product-icon {
   display: inline-flex;
   color: var(--icon-blue);
+}
+
+.product-scenario {
+  margin-top: 18px;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--dim);
+}
+
+.product--wide {
+  grid-column: span 2;
+  min-height: 180px;
 }
 
 .product h3 {
@@ -1362,6 +1454,29 @@ h3 {
   border-bottom: 1px solid var(--line-2);
   border-radius: 0;
   background: var(--section-bg);
+}
+
+.market-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 26px;
+}
+
+.market-actions a {
+  padding: 10px 12px;
+  border: 1px solid var(--line-2);
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--soft);
+  transition: border-color 0.4s var(--ease), color 0.4s var(--ease);
+}
+
+.market-actions a:hover {
+  border-color: rgba(243, 244, 245, 0.22);
+  color: var(--ink);
 }
 
 .market-detail-code {
@@ -1570,6 +1685,16 @@ h3 {
 .section-caps {
   padding-top: clamp(42px, 6vw, 76px);
   padding-bottom: 0;
+}
+
+.section-risk {
+  padding-top: clamp(42px, 6vw, 76px);
+  padding-bottom: 0;
+  background: var(--void);
+}
+
+.risk-grid {
+  grid-template-columns: repeat(4, 1fr);
 }
 
 .caps-grid {
@@ -1802,7 +1927,8 @@ h3 {
 }
 
 .form input,
-.form select {
+.form select,
+.form textarea {
   width: 100%;
   border: 0;
   outline: none;
@@ -1812,7 +1938,13 @@ h3 {
   color: var(--ink);
 }
 
-.form input::placeholder {
+.form textarea {
+  min-height: 72px;
+  resize: vertical;
+}
+
+.form input::placeholder,
+.form textarea::placeholder {
   color: var(--dim);
 }
 
@@ -1877,6 +2009,7 @@ h3 {
 
 @media (max-width: 720px) {
   .stats-row,
+  .client-groups,
   .product-grid,
   .caps-grid,
   .eco-grid,
@@ -1888,6 +2021,14 @@ h3 {
 
   .product {
     grid-column: span 1;
+  }
+
+  .client-group {
+    box-shadow: inset -1px 0 0 var(--line-2), inset 0 -1px 0 var(--line-2);
+  }
+
+  .client-group:nth-child(2n) {
+    box-shadow: inset 0 -1px 0 var(--line-2);
   }
 
   .stat {
@@ -2007,6 +2148,7 @@ h3 {
   }
 
   .product-grid,
+  .client-groups,
   .caps-grid,
   .eco-grid,
   .compliance-grid,
@@ -2018,6 +2160,7 @@ h3 {
   }
 
   .product,
+  .client-group,
   .thesis,
   .logo-cell,
   .compliance-fill,
@@ -2048,6 +2191,10 @@ h3 {
     grid-column: 1;
     min-height: 96px;
     box-shadow: inset 0 -1px 0 var(--line-2);
+  }
+
+  .product--wide {
+    grid-column: 1;
   }
 
   .cap-demo {
