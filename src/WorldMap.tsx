@@ -6,6 +6,8 @@ export type MapMarker = {
   name: string;
   coordinates: [number, number];
   active: boolean;
+  label?: string;
+  year?: string;
 };
 
 type WorldMapProps = {
@@ -13,9 +15,11 @@ type WorldMapProps = {
   zoom: number;
   highlight: string[];
   markers: MapMarker[];
+  onCountryClick?: (country: string) => void;
+  onMarkerClick?: (name: string) => void;
 };
 
-export default function WorldMap({ center, zoom, highlight, markers }: WorldMapProps) {
+export default function WorldMap({ center, zoom, highlight, markers, onCountryClick, onMarkerClick }: WorldMapProps) {
   return (
     <ComposableMap
       projection="geoEqualEarth"
@@ -33,11 +37,13 @@ export default function WorldMap({ center, zoom, highlight, markers }: WorldMapP
                 <Geography
                   key={geo.rsmKey}
                   geography={geo}
+                  onClick={() => onCountryClick?.(geo.properties.name as string)}
                   style={{
                     default: {
                       fill: isActive ? 'var(--map-land-active)' : 'var(--map-land)',
                       stroke: isActive ? 'var(--map-line-active)' : 'var(--map-line)',
                       strokeWidth: 0.5,
+                      cursor: 'pointer',
                       outline: 'none',
                       transition: 'fill 0.5s var(--ease), stroke 0.5s var(--ease)',
                     },
@@ -56,6 +62,27 @@ export default function WorldMap({ center, zoom, highlight, markers }: WorldMapP
         </Geographies>
         {markers.map((m) => (
           <Marker key={m.name} coordinates={m.coordinates}>
+            {m.active && m.label && (
+              <g className="map-badge" transform="translate(0 -28)">
+                <rect x={-48} y={-18} width={96} height={22} rx={0} />
+                <text textAnchor="middle" y={-3}>{m.label} · {m.year}</text>
+              </g>
+            )}
+            <g
+              className="map-marker-hit"
+              role="button"
+              tabIndex={0}
+              aria-label={`Выбрать ${m.name}`}
+              onClick={() => onMarkerClick?.(m.name)}
+              onKeyDown={(event) => {
+                if (event.key === 'Enter' || event.key === ' ') {
+                  event.preventDefault();
+                  onMarkerClick?.(m.name);
+                }
+              }}
+            >
+              <circle r={12} />
+            </g>
             {m.active && <circle className="map-pulse" r={9} />}
             <circle className={m.active ? 'map-dot is-active' : 'map-dot'} r={m.active ? 3.4 : 2.4} />
           </Marker>
