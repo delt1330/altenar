@@ -79,9 +79,18 @@ type IconName =
   | 'store'
   | 'label';
 type Stat = { value: string; label: string; up?: boolean };
-type CaseStudy = { tag: string; company: string; market: string; result: string; text: string };
+type CaseStudy = {
+  tag: string;
+  company: string;
+  market: string;
+  result: string;
+  resultLabel: string;
+  text: string;
+  href: string;
+  logo?: string;
+};
 type PlatformLayer = { id: string; label: string; title: string; description: string; items: string[] };
-type Product = { icon: IconName; scenario: string; title: string; text: string; cta: string; featured?: boolean };
+type Product = { icon: IconName; scenario: string; title: string; text: string; cta: string };
 type MarketDetail = { name: string; country: string; year: string; result: string };
 type Market = {
   code: string;
@@ -94,16 +103,16 @@ type Market = {
   zoom: number;
 };
 type Capability = { title: string; text: string };
+type RiskCard = Capability & { icon: IconName };
 type EcosystemGroup = { role: string; items: string[] };
 type ComplianceItem = { code: string; title: string; text: string; scope: string };
 type Award = { year: string; title: string; event: string; category: string; logo: string };
 
 const stats: Stat[] = [
-  { value: '11', label: 'лет на рынке' },
+  { value: '15', label: 'лет на рынке' },
   { value: '56', label: 'стран' },
   { value: '195', label: 'партнеров по всему миру' },
   { value: '24/7', label: 'поддержка' },
-  { value: 'ISO/IEC', label: '27001:2022 (ISO 27001)' },
 ];
 
 type Client = { name: string; domain: string; logo: string };
@@ -175,32 +184,44 @@ const theses: Thesis[] = [
 
 const cases: CaseStudy[] = [
   {
-    tag: '//миграция',
+    tag: 'миграция',
     company: 'Palms Bet',
     market: 'Болгария · Перу',
     result: '+137%',
-    text: 'Переход на Altenar и выход на новые регулируемые рынки. Оборот ставок вырос на 46% в Болгарии и на 137% в Перу.',
+    resultLabel: 'рост оборота в Перу',
+    text: 'Миграция на Altenar сняла ограничения старой платформы: Palms Bet сохранила стабильность на регулируемых рынках, расширила покрытие событий и получила рост оборота на 46% в Болгарии и 137% в Перу.',
+    href: 'https://altenar.com/ru/blog/seamless-migration-delivers-measurable-growth-for-palms-bet/',
+    logo: 'client-logos/palms-bet.svg',
   },
   {
-    tag: '//омниканальность',
+    tag: 'омниканальность',
     company: 'Golden Palace',
     market: 'Бельгия',
     result: '+50%',
-    text: 'Объединили online, розницу и терминалы в одном решении. Прибыльность ставок на спорт выросла на 50%.',
+    resultLabel: 'рост прибыли',
+    text: 'Altenar связала онлайн, мобильные сценарии, игровые терминалы и розничные точки Golden Palace в единую омниканальную модель для регулируемого рынка Бельгии. После перехода прибыль выросла на 50%.',
+    href: 'https://altenar.com/ru/cases/goldenpalace/',
+    logo: 'client-logos/golden-palace.svg',
   },
   {
-    tag: '//новый продукт',
+    tag: 'новый продукт',
     company: 'Immense Group',
     market: 'Мульти-бренд',
     result: '4 бренда',
-    text: 'Запустили ставки на спорт для брендов Mr Vegas, Videoslots, MegaRiches и DBET, которые начинали с казино.',
+    resultLabel: 'глобальный запуск',
+    text: 'Казино-группа с портфелем Mr Vegas, Videoslots и MegaRiches получила управляемую букмекерскую технологию Altenar, чтобы запустить ставки во всех брендах и вывести DBET как отдельный букмекерский проект.',
+    href: 'https://altenar.com/ru/cases/immense-group/',
+    logo: 'client-logos/immense-group-cropped.svg',
   },
   {
-    tag: '//партнёрство',
-    company: 'Greentube · NOVOMATIC',
+    tag: 'партнёрство',
+    company: 'Greentube',
     market: 'Европа',
-    result: 'enterprise',
-    text: 'Стратегическое партнёрство с digital-подразделением группы NOVOMATIC на регулируемых рынках Европы.',
+    result: '2026',
+    resultLabel: 'стратегическое партнёрство',
+    text: 'Greentube интегрирует технологию Altenar, чтобы расширить предложение спортивных ставок на регулируемых европейских рынках и повысить вовлечённость игроков.',
+    href: 'https://altenar.com/ru/blog/altenar-and-greentube-announce-strategic-sportsbook-partnership/',
+    logo: 'client-logos/greentube.svg',
   },
 ];
 
@@ -240,37 +261,29 @@ const products: Product[] = [
     icon: 'module',
     scenario: 'Уже есть платформа',
     title: 'Букмекерский модуль',
-    text: 'Подключите ставки на спорт к существующей инфраструктуре, сохранив контроль над брендом, интерфейсом, лимитами и пользовательским опытом.',
+    text: 'Добавьте букмекерский продукт к существующей инфраструктуре без смены ядра: оператор сохраняет контроль над брендом, пользовательским опытом, лимитами и коммерческой логикой.',
     cta: 'Подробнее',
   },
   {
     icon: 'key',
     scenario: 'Нужен запуск под ключ',
     title: 'Решение под ключ',
-    text: 'Получите готовую букмекерскую платформу с системой игроков, управлением контентом, интерфейсом, поддержкой и операционными инструментами.',
+    text: 'Запускайте новый бренд на готовой инфраструктуре с системой игроков, управлением контентом, интерфейсом, поддержкой и операционными инструментами для быстрого выхода на рынок.',
     cta: 'Подробнее',
   },
   {
     icon: 'store',
     scenario: 'Есть офлайн-точки',
     title: 'Розничное решение',
-    text: 'Запускайте ставки через кассы, терминалы и наземные точки приёма ставок с единым удалённым управлением.',
+    text: 'Свяжите кассы, терминалы и точки приёма ставок в единый контур, чтобы управлять розничной операцией централизованно и без лишней локальной нагрузки.',
     cta: 'Подробнее',
   },
   {
     icon: 'label',
     title: 'Запуск под вашим брендом',
     scenario: 'Нужен быстрый выход под брендом',
-    text: 'Запустите ставки на спорт под своим брендом быстрее, с меньшей технической и операционной нагрузкой.',
+    text: 'Выведите букмекерский продукт под собственным брендом с готовой технологической базой, поддержкой по требованиям регуляторов и возможностью постепенно масштабировать независимый бизнес.',
     cta: 'Подробнее',
-  },
-  {
-    icon: 'migrate',
-    scenario: 'Хотите сменить провайдера',
-    title: 'Миграция',
-    text: 'Перенесите букмекерский продукт на более гибкую платформу с контролем рисков, локализацией и поддержкой запуска.',
-    cta: 'Подробнее',
-    featured: true,
   },
 ];
 
@@ -415,7 +428,7 @@ const complianceItems: ComplianceItem[] = [
 const awards: Award[] = [
   {
     year: '2026',
-    title: 'Поставщик букмекерской платформы года',
+    title: 'Лучший поставщик спортивных игр года',
     event: 'SBC Americas Awards',
     category: 'Америка',
     logo: 'award-logos/sbc-americas-2026.png',
@@ -429,28 +442,28 @@ const awards: Award[] = [
   },
   {
     year: '2026',
-    title: 'Лучший провайдер онлайн-платформы ставок',
+    title: 'Лучшие онлайн-поставщики спортивных игр',
     event: 'SiGMA Brazil',
     category: 'Южная Америка',
     logo: 'award-logos/sigma-brazil-2026.png',
   },
   {
     year: '2025',
-    title: 'Лучший продукт для ставок в лайве',
+    title: 'Лучший продукт для ставок в реальном времени',
     event: 'SiGMA South Asia Awards',
     category: 'Лайв-ставки',
     logo: 'award-logos/sigma-south-asia-2025.png',
   },
   {
     year: '2025',
-    title: 'Самая инновационная функция платформы ставок',
+    title: 'Самая инновационная функция букмекерской конторы',
     event: 'SiGMA Euro-Med Awards',
     category: 'Продукт',
     logo: 'award-logos/sigma-innovation-2025.png',
   },
   {
     year: '2025',
-    title: 'Лучший провайдер онлайн-платформы ставок',
+    title: 'Лучший провайдер онлайн-спортбука',
     event: 'SiGMA Americas',
     category: 'Платформа',
     logo: 'award-logos/sigma-americas-2025.svg',
@@ -464,21 +477,21 @@ const awards: Award[] = [
   },
 ];
 
-const riskCards: Capability[] = [
-  { title: 'Управление рисками', text: 'Контроль лимитов, экспозиции, подозрительной активности и потенциальных потерь.' },
-  { title: 'Трейдинговая поддержка', text: 'Поддержка ставок в реальном времени, управление рынками, коэффициентами и спортивными событиями.' },
-  { title: 'Операционная стабильность', text: 'Мониторинг, поддержка 24/7 и инфраструктура для стабильной работы.' },
+const riskCards: RiskCard[] = [
+  { icon: 'shield', title: 'Управление рисками', text: 'Контролируйте лимиты, экспозицию и подозрительную активность до того, как они начнут влиять на маржу и операционные решения.' },
+  { icon: 'globe', title: 'Трейдинговая поддержка', text: 'Получайте экспертизу по рынкам, коэффициентам и событиям в реальном времени, чтобы быстрее реагировать на движение спроса.' },
+  { icon: 'channels', title: 'Операционная стабильность', text: 'Поддерживайте платформу в рабочем состоянии 24/7 с мониторингом, процессами реагирования и инфраструктурой для пиковых нагрузок.' },
 ];
 
 const capabilities: Capability[] = [
-  { title: 'Бонусный движок', text: 'Фрибеты, бонусные правила и кампании удержания внутри платформы.' },
-  { title: 'Усиленные коэффициенты', text: 'Продвижение ключевых событий и рынков для роста активности игроков.' },
-  { title: 'Промо-коэффициенты', text: 'Специальные коэффициенты для матчей, турниров и ставок в реальном времени.' },
-  { title: 'Помощник ставки', text: 'Подсказки и продуктовые механики, которые помогают игроку быстрее сделать ставку.' },
-  { title: 'Витрины турниров', text: 'Подборки турниров и событий для продвижения спортивного календаря.' },
-  { title: 'Акции', text: 'Кампании, которые можно запускать после выхода на рынок.' },
-  { title: 'Персонализация', text: 'Персональные предложения и релевантные сценарии для разных сегментов.' },
-  { title: 'Отчётность', text: 'Отчётность по активности, продуктовым механикам и результатам кампаний.' },
+  { title: 'Бонусный движок', text: 'Создавайте фрибеты, правила начислений и кампании удержания прямо внутри платформы, без отдельной ручной операционки.' },
+  { title: 'Усиленные коэффициенты', text: 'Выделяйте ключевые события улучшенными условиями и направляйте внимание игроков туда, где выше потенциал оборота.' },
+  { title: 'Промо-коэффициенты', text: 'Запускайте специальные предложения для матчей, турниров и событий в реальном времени, чтобы поддерживать активность в течение всего календаря.' },
+  { title: 'Подсказки для ставок', text: 'Подсказывайте игроку релевантные выборы и сценарии, сокращая путь от интереса к размещённой ставке.' },
+  { title: 'Витрины турниров', text: 'Собирайте турниры и события в понятные подборки, чтобы продвигать спортивный календарь как продуктовую историю.' },
+  { title: 'Акции', text: 'Планируйте промо после запуска рынка: от разовых кампаний до регулярных механик вовлечения и реактивации.' },
+  { title: 'Персонализация', text: 'Показывайте предложения разным сегментам игроков с учётом их интересов, поведения и предпочтительных спортивных сценариев.' },
+  { title: 'Отчётность', text: 'Оценивайте активность, эффективность механик и результаты кампаний, чтобы быстрее корректировать продуктовые решения.' },
 ];
 
 const ecosystem: EcosystemGroup[] = [
@@ -490,7 +503,7 @@ const ecosystem: EcosystemGroup[] = [
 ];
 
 const navLinks = [
-  { label: 'О компании', href: 'https://altenar.com/ru/about-us/' },
+  { label: 'О компании', href: 'https://altenar.com/ru/about/' },
   { label: 'Продукты', href: 'https://altenar.com/ru/products/' },
   { label: 'Клиенты и партнеры', href: 'https://altenar.com/ru/cases/' },
   { label: 'Контакты', href: 'https://altenar.com/ru/contacts/' },
@@ -544,17 +557,22 @@ function ColumnGuides() {
 function Header() {
   const [open, setOpen] = React.useState(false);
   const [isInverted, setIsInverted] = React.useState(false);
+  const [isHidden, setIsHidden] = React.useState(false);
 
   React.useEffect(() => {
     let frame = 0;
+    let lastScrollY = window.scrollY;
 
     const updateTheme = () => {
       frame = 0;
+      const currentScrollY = window.scrollY;
       const sampleY = 76;
       const sampleX = window.innerWidth / 2;
       const elements = document.elementsFromPoint(sampleX, sampleY);
       const overLightSection = elements.some((element) => element.closest('.section--light'));
       setIsInverted(overLightSection);
+      setIsHidden(currentScrollY > lastScrollY && currentScrollY > 120);
+      lastScrollY = Math.max(currentScrollY, 0);
     };
 
     const requestUpdate = () => {
@@ -575,7 +593,7 @@ function Header() {
 
   return (
     <>
-      <header className={`topbar ${isInverted ? 'is-inverted' : ''}`}>
+      <header className={`topbar ${isInverted ? 'is-inverted' : ''} ${isHidden && !open ? 'is-hidden' : ''}`}>
         <a className="logo" href="#top">
           <img src={assetUrl(isInverted ? 'Altenar_Logo_Dark.svg' : 'Altenar_Logo.svg')} alt="Altenar" />
         </a>
@@ -668,7 +686,7 @@ function Hero() {
               Запросить демо
               <span className="btn-arrow" aria-hidden="true">↗</span>
             </a>
-            <a className="btn-ghost" href="#platform">Посмотреть платформу</a>
+            <a className="btn-ghost" href="#scenarios">Наши продукты</a>
           </div>
         </motion.div>
       </div>
@@ -680,8 +698,8 @@ function LiveBoard() {
   return (
     <div className="board-inner">
       <div className="board-top">
-        <span className="board-tag">operator command board</span>
-        <span className="board-live"><i className="live-dot" />LIVE</span>
+        <span className="board-tag">панель оператора</span>
+        <span className="board-live"><i className="live-dot" />В эфире</span>
       </div>
 
       <div className="board-match">
@@ -917,20 +935,33 @@ function Proof() {
     <section className="section section--light section-cases" id="cases">
       <SectionHead
         kicker="Кейсы"
-        title="Кейсы запуска, миграции и омниканального роста"
+        title="Истории успеха наших клиентов"
         lead="Несколько сценариев, в которых Altenar помогает операторам быстрее выйти на рынок, сменить провайдера или добавить ставки на спорт к существующему казино-бренду."
       />
       <div className="cases">
         {cases.map((c) => (
-          <motion.article className="case" key={c.company} variants={rise} initial="hidden" whileInView="visible" viewport={{ once: true, margin: '-60px' }}>
-            <span className="case-tag">{c.tag}</span>
+          <motion.a className="case" key={c.company} href={c.href} variants={rise} initial="hidden" whileInView="visible" viewport={{ once: true, margin: '-60px' }}>
+            <span className="case-brand">
+              {c.logo ? (
+                <img src={assetUrl(c.logo)} alt={c.company} loading="lazy" />
+              ) : (
+                <span className="case-logo-text">{c.company}</span>
+              )}
+            </span>
+            <span className="case-proof">
+              <span className="case-market">{c.market}</span>
+              <strong className="case-result">{c.result}</strong>
+              <span className="case-result-label">{c.resultLabel}</span>
+            </span>
             <div className="case-body">
-              <h3>{c.company}</h3>
-              <p>{c.text}</p>
+              <span className="case-copy">
+                <h3>{c.company}</h3>
+                <p>{c.text}</p>
+                <span className="case-tag">{c.tag}</span>
+              </span>
+              <span className="case-arrow" aria-hidden="true">↗</span>
             </div>
-            <span className="case-market">{c.market}</span>
-            <span className="case-result">{c.result}</span>
-          </motion.article>
+          </motion.a>
         ))}
       </div>
     </section>
@@ -987,11 +1018,11 @@ function Products() {
       <SectionHead
         kicker="Продукты Altenar"
         title="Наши продукты"
-        lead="Линейка Altenar закрывает разные форматы запуска: букмекерский модуль для существующей платформы, решение под ключ, розничный контур и миграцию с текущего провайдера."
+        lead="Выберите формат запуска под текущую стадию бизнеса: от подключения букмекерского продукта к действующей платформе до полноценной инфраструктуры для нового бренда и омниканального роста."
       />
       <div className="product-grid">
         {products.map((p) => (
-          <motion.article className={`product ${p.featured ? 'product--wide' : ''}`} key={p.title} variants={rise} initial="hidden" whileInView="visible" viewport={{ once: true, margin: '-60px' }}>
+          <motion.article className="product" key={p.title} variants={rise} initial="hidden" whileInView="visible" viewport={{ once: true, margin: '-60px' }}>
             <span className="product-icon"><LineIcon name={p.icon} /></span>
             <span className="product-scenario">{p.scenario}</span>
             <h3>{p.title}</h3>
@@ -1177,9 +1208,9 @@ function RiskTrading() {
         lead="Платформа ставок работает в реальном времени. Ошибки в коэффициентах, лимитах или расчётах напрямую влияют на деньги оператора. Altenar помогает контролировать риски, поддерживать ставки в реальном времени, управлять рынками и защищать маржу в периоды высокой нагрузки."
       />
       <div className="caps-grid risk-grid">
-        {riskCards.map((c, i) => (
+        {riskCards.map((c) => (
           <motion.article className="cap" key={c.title} variants={rise} initial="hidden" whileInView="visible" viewport={{ once: true, margin: '-60px' }}>
-            <span className="cap-index">{String(i + 1).padStart(2, '0')}</span>
+            <span className="risk-icon"><LineIcon name={c.icon} /></span>
             <h3>{c.title}</h3>
             <p>{c.text}</p>
           </motion.article>

@@ -219,7 +219,11 @@ h3 {
   backdrop-filter: blur(22px) saturate(1.25);
   -webkit-backdrop-filter: blur(22px) saturate(1.25);
   box-shadow: 0 1px 0 rgba(243, 244, 245, 0.025), 0 18px 70px rgba(0, 0, 0, 0.22);
-  transition: background 0.45s var(--ease), border-color 0.45s var(--ease), box-shadow 0.45s var(--ease);
+  transition: transform 0.45s var(--ease), background 0.45s var(--ease), border-color 0.45s var(--ease), box-shadow 0.45s var(--ease);
+}
+
+.topbar.is-hidden {
+  transform: translateY(-100%);
 }
 
 .topbar.is-inverted {
@@ -802,14 +806,13 @@ h3 {
   position: relative;
   z-index: 3;
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
+  grid-template-columns: repeat(4, 1fr);
   border-top: 1px solid rgba(243, 244, 245, 0.055);
   border-bottom: 1px solid rgba(243, 244, 245, 0.055);
   background-image:
-    linear-gradient(90deg, transparent calc(20% - 0.5px), var(--line-2) calc(20% - 0.5px), var(--line-2) calc(20% + 0.5px), transparent calc(20% + 0.5px)),
-    linear-gradient(90deg, transparent calc(40% - 0.5px), var(--line-2) calc(40% - 0.5px), var(--line-2) calc(40% + 0.5px), transparent calc(40% + 0.5px)),
-    linear-gradient(90deg, transparent calc(60% - 0.5px), var(--line-2) calc(60% - 0.5px), var(--line-2) calc(60% + 0.5px), transparent calc(60% + 0.5px)),
-    linear-gradient(90deg, transparent calc(80% - 0.5px), var(--line-2) calc(80% - 0.5px), var(--line-2) calc(80% + 0.5px), transparent calc(80% + 0.5px));
+    linear-gradient(90deg, transparent calc(25% - 0.5px), var(--line-2) calc(25% - 0.5px), var(--line-2) calc(25% + 0.5px), transparent calc(25% + 0.5px)),
+    linear-gradient(90deg, transparent calc(50% - 0.5px), var(--line-2) calc(50% - 0.5px), var(--line-2) calc(50% + 0.5px), transparent calc(50% + 0.5px)),
+    linear-gradient(90deg, transparent calc(75% - 0.5px), var(--line-2) calc(75% - 0.5px), var(--line-2) calc(75% + 0.5px), transparent calc(75% + 0.5px));
 }
 
 .stat {
@@ -820,10 +823,10 @@ h3 {
 
 .stat-value {
   display: block;
-  font-size: clamp(28px, 3vw, 44px);
+  font-size: clamp(42px, 5vw, 72px);
   font-weight: 300;
-  letter-spacing: -0.02em;
-  line-height: 0.95;
+  letter-spacing: -0.055em;
+  line-height: 0.92;
 }
 
 .stat-label {
@@ -848,7 +851,7 @@ h3 {
   padding: 30px var(--cell-x) 36px;
   border: 0;
   background: var(--section-bg);
-  box-shadow: inset -1px 0 0 var(--line-2), inset 0 -1px 0 var(--line-2);
+  box-shadow: inset 1px 0 0 var(--line-2), inset 0 -1px 0 var(--line-2);
   transition: background 0.5s var(--ease);
 }
 
@@ -890,55 +893,142 @@ h3 {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 0;
-  align-items: center;
+  align-items: stretch;
   padding: 0;
   border-bottom: 1px solid var(--line-2);
   background: var(--section-bg);
-  transition: background 0.5s var(--ease);
+  color: inherit;
+  transition: background 0.5s var(--ease), color 0.5s var(--ease);
 }
 
 .case:hover {
-  background: rgba(255, 255, 255, 0.015);
+  background: rgba(21, 22, 27, 0.025);
 }
 
-.case-tag {
-  padding: 30px var(--cell-x);
-  font-family: 'IBM Plex Mono', monospace;
-  font-size: 12px;
-  color: var(--dim);
-}
-
+.case-brand,
 .case-body,
-.case-market,
-.case-result {
-  min-height: 100%;
-  padding: 30px var(--cell-x);
+.case-proof {
+  min-height: 156px;
+  padding: 26px var(--cell-x);
+}
+
+.case-proof,
+.case-body {
   border-left: 1px solid var(--line-2);
 }
 
+.case-brand {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 28px;
+}
+
+.case-brand img {
+  display: block;
+  width: min(190px, 88%);
+  max-height: 62px;
+  object-fit: contain;
+  object-position: left center;
+  opacity: 0.88;
+  filter: grayscale(1) brightness(0);
+}
+
+.case-brand img[src*='immense-group'] {
+  width: min(190px, 90%);
+  max-height: 64px;
+}
+
+.case-logo-text {
+  max-width: 190px;
+  color: var(--ink);
+  font-size: clamp(20px, 2.2vw, 28px);
+  font-weight: 300;
+  line-height: 1.04;
+  letter-spacing: -0.03em;
+}
+
+.case-tag {
+  display: block;
+  margin-top: 22px;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  color: var(--dim);
+}
+
+.case-body {
+  display: grid;
+  grid-column: span 2;
+  grid-template-columns: minmax(0, 1fr) 36px;
+  gap: clamp(18px, 2vw, 34px);
+  align-items: center;
+}
+
+.case-copy {
+  display: block;
+  min-width: 0;
+}
+
 .case-body h3 {
-  font-size: 22px;
+  font-size: clamp(24px, 2.7vw, 34px);
+  font-weight: 300;
+  letter-spacing: -0.035em;
 }
 
 .case-body p {
-  margin-top: 8px;
+  max-width: 760px;
+  margin-top: 12px;
   color: var(--mist);
-  font-size: 14px;
-  line-height: 1.5;
+  font-size: clamp(15px, 1.2vw, 17px);
+  line-height: 1.55;
+}
+
+.case-proof {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
 }
 
 .case-market {
   font-family: 'IBM Plex Mono', monospace;
   font-size: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
   color: var(--mist);
 }
 
 .case-result {
-  font-size: 30px;
+  margin-top: 12px;
+  font-size: clamp(34px, 3.7vw, 56px);
   font-weight: 300;
-  letter-spacing: -0.02em;
+  line-height: 0.96;
+  letter-spacing: -0.045em;
   color: var(--live);
-  text-align: right;
+  white-space: nowrap;
+}
+
+.case-result-label {
+  margin-top: 12px;
+  max-width: 170px;
+  color: var(--mist);
+  font-size: 13px;
+  line-height: 1.35;
+}
+
+.case-arrow {
+  justify-self: end;
+  align-self: center;
+  color: var(--live);
+  font-size: 22px;
+  line-height: 1;
+  transition: transform 0.45s var(--ease), color 0.45s var(--ease);
+}
+
+.case:hover .case-arrow {
+  transform: translate(2px, -2px);
+  color: #23c2ee;
 }
 
 /* ---------- Platform ---------- */
@@ -1138,6 +1228,23 @@ h3 {
   padding-bottom: 0;
 }
 
+.section-clients::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background-image:
+    linear-gradient(90deg, transparent calc(25% - 0.5px), var(--line-2) calc(25% - 0.5px), var(--line-2) calc(25% + 0.5px), transparent calc(25% + 0.5px)),
+    linear-gradient(90deg, transparent calc(50% - 0.5px), var(--line-2) calc(50% - 0.5px), var(--line-2) calc(50% + 0.5px), transparent calc(50% + 0.5px)),
+    linear-gradient(90deg, transparent calc(75% - 0.5px), var(--line-2) calc(75% - 0.5px), var(--line-2) calc(75% + 0.5px), transparent calc(75% + 0.5px));
+  pointer-events: none;
+}
+
+.section-clients > * {
+  position: relative;
+  z-index: 1;
+}
+
 .section-clients > .eyebrow {
   margin-left: calc(50% - 50vw + 25vw + var(--cell-x));
 }
@@ -1213,6 +1320,7 @@ h3 {
   font-size: 12px;
   letter-spacing: 0.08em;
   text-transform: uppercase;
+  background: var(--void);
   color: var(--soft);
   transition: color 0.4s var(--ease), gap 0.4s var(--ease);
 }
@@ -1370,7 +1478,7 @@ h3 {
 }
 
 .product-demo {
-  grid-column: span 2;
+  grid-column: 2 / span 2;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -1378,7 +1486,7 @@ h3 {
   padding: 26px var(--cell-x);
   border: 0;
   background: var(--section-bg);
-  box-shadow: inset -1px 0 0 var(--line-2), inset 0 -1px 0 var(--line-2);
+  box-shadow: inset 1px 0 0 var(--line-2), inset -1px 0 0 var(--line-2), inset 0 -1px 0 var(--line-2);
   color: var(--live);
   transition: background 0.4s var(--ease), color 0.4s var(--ease);
 }
@@ -1420,11 +1528,6 @@ h3 {
   letter-spacing: 0.12em;
   text-transform: uppercase;
   color: var(--dim);
-}
-
-.product--wide {
-  grid-column: span 2;
-  min-height: 180px;
 }
 
 .product h3 {
@@ -1931,6 +2034,16 @@ h3 {
   grid-template-columns: repeat(4, 1fr);
 }
 
+.risk-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 46px;
+  height: 46px;
+  margin-top: 28px;
+  color: var(--live);
+}
+
 .caps-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -2422,23 +2535,29 @@ h3 {
 
   .case {
     grid-template-columns: 1fr;
-    gap: 12px;
+    gap: 0;
   }
 
+  .case-brand,
   .case-body,
-  .case-market,
-  .case-result {
+  .case-proof {
+    min-height: 0;
     border-left: 0;
-    padding: 0 0 20px;
+    padding: 24px var(--cell-x);
   }
 
-  .case-tag {
-    padding: 24px 0 0;
+  .case-brand {
+    gap: 18px;
+    border-bottom: 1px solid var(--line-2);
   }
 
-  .case-result {
-    justify-self: start;
-    text-align: left;
+  .case-proof {
+    border-top: 1px solid var(--line-2);
+  }
+
+  .case-body {
+    grid-template-columns: minmax(0, 1fr) 28px;
+    border-top: 1px solid var(--line-2);
   }
 
   .platform,
@@ -2536,10 +2655,6 @@ h3 {
     grid-column: 1;
     min-height: 96px;
     box-shadow: inset 0 -1px 0 var(--line-2);
-  }
-
-  .product--wide {
-    grid-column: 1;
   }
 
   .cap-demo {
