@@ -112,9 +112,11 @@ type Award = { year: string; title: string; event: string; category: string; log
 
 const stats: Stat[] = [
   { value: '15', label: 'лет на рынке' },
-  { value: '56', label: 'стран' },
+  { value: '56', label: 'стран присутствия' },
   { value: '195', label: 'партнеров по всему миру' },
   { value: '24/7', label: 'поддержка' },
+  { value: '6', label: 'офисов' },
+  { value: '700+', label: 'сотрудников' },
 ];
 
 type Client = { name: string; domain: string; logo: string };
@@ -535,9 +537,9 @@ function App() {
         </section>
         <Clients />
         <Products />
+        <Proof />
         <Platform layer={layer} setLayer={setLayer} />
         <Markets />
-        <Proof />
         <RiskTrading />
         <Capabilities />
         <Awards />
