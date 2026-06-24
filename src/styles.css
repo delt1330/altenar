@@ -1031,6 +1031,33 @@ h3 {
   color: #23c2ee;
 }
 
+.case-all {
+  display: flex;
+  width: 100%;
+  min-height: 92px;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  padding: 0 var(--cell-x);
+  border-bottom: 1px solid var(--line-2);
+  color: var(--live);
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 13px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  transition: background 0.45s var(--ease), color 0.45s var(--ease);
+}
+
+.case-all span:last-child {
+  position: absolute;
+  right: var(--cell-x);
+}
+
+.case-all:hover {
+  background: rgba(21, 22, 27, 0.025);
+  color: #23c2ee;
+}
+
 /* ---------- Platform ---------- */
 .section-platform {
   padding-bottom: 0;
@@ -1443,6 +1470,7 @@ h3 {
 }
 
 .section-markets,
+.section-cases,
 .section-compliance,
 .section-awards,
 .section-risk,
