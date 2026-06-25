@@ -1107,9 +1107,9 @@ function Platform({ layer, setLayer }: { layer: number; setLayer: (i: number) =>
           <span className="layer-detail-label">единая платформа Altenar</span>
           <h3>{platformLayers[layer].title}</h3>
           <p>{platformLayers[layer].description}</p>
-          <div className="layer-items">
-            {platformLayers[layer].items.map((item) => <span key={item}>{item}</span>)}
-          </div>
+          <ul className="layer-items">
+            {platformLayers[layer].items.map((item) => <li key={item}>{item}</li>)}
+          </ul>
         </motion.div>
       </div>
       <div className="platform-demo-row">
