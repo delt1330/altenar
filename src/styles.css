@@ -396,6 +396,7 @@ h3 {
 .section {
   --section-x: max(var(--pad), calc((100% - var(--maxw)) / 2));
   --section-bg: var(--void);
+  --section-hover-bg: #0d0e11;
   position: relative;
   width: 100%;
   padding: clamp(80px, 11vw, 150px) var(--section-x);
@@ -406,6 +407,7 @@ h3 {
 /* Light / dark alternation (Armory-style banding) */
 .section--light {
   --section-bg: #ededed;
+  --section-hover-bg: #e3e3e3;
   --ink: #15161b;
   --soft: #3b3e45;
   --mist: #5c5f67;
@@ -871,7 +873,7 @@ h3 {
 }
 
 .thesis:hover {
-  background: rgba(21, 22, 27, 0.025);
+  background: var(--section-hover-bg);
 }
 
 .thesis-icon {
@@ -913,7 +915,7 @@ h3 {
 }
 
 .case:hover {
-  background: rgba(21, 22, 27, 0.025);
+  background: var(--section-hover-bg);
 }
 
 .case-brand,
@@ -1051,6 +1053,7 @@ h3 {
   position: relative;
   padding: 0 var(--cell-x);
   border-bottom: 1px solid var(--line-2);
+  background: var(--section-bg);
   color: var(--live);
   font-family: 'IBM Plex Mono', monospace;
   font-size: 13px;
@@ -1062,11 +1065,16 @@ h3 {
 .case-all span:last-child {
   position: absolute;
   right: var(--cell-x);
+  transition: transform 0.45s var(--ease);
 }
 
 .case-all:hover {
-  background: rgba(21, 22, 27, 0.025);
+  background: var(--section-hover-bg);
   color: #23c2ee;
+}
+
+.case-all:hover span:last-child {
+  transform: translateX(4px);
 }
 
 /* ---------- Platform ---------- */
@@ -1158,7 +1166,7 @@ h3 {
 .layer:hover,
 .layer.is-active {
   padding-left: calc(var(--cell-x) + 12px);
-  background: rgba(255, 255, 255, 0.008);
+  background: var(--section-hover-bg);
 }
 
 .layer.is-active .layer-index { color: var(--live); }
@@ -1244,7 +1252,7 @@ h3 {
 }
 
 .platform-demo-link:hover {
-  background: rgba(255, 255, 255, 0.015);
+  background: var(--section-hover-bg);
   color: #23c2ee;
 }
 
@@ -1345,7 +1353,7 @@ h3 {
 }
 
 .client-group-list .logo-cell {
-  min-height: clamp(112px, 12vw, 150px);
+  min-height: clamp(148px, 16vw, 210px);
   background: transparent;
   box-shadow: inset 0 -1px 0 var(--line-2);
 }
@@ -1392,21 +1400,21 @@ h3 {
 }
 
 .logo-cell:hover {
-  background: rgba(255, 255, 255, 0.014);
+  background: #0d0e11;
 }
 
 .client-logo-mark {
   display: flex;
   align-items: center;
   justify-content: center;
-  min-height: 52px;
+  min-height: 108px;
   width: 100%;
 }
 
 .client-logo-img {
   display: block;
-  max-width: min(190px, 78%);
-  max-height: 54px;
+  max-width: min(380px, 92%);
+  max-height: 108px;
   object-fit: contain;
   object-position: center;
   opacity: 0.74;
@@ -1541,7 +1549,7 @@ h3 {
 }
 
 .product-demo:hover {
-  background: rgba(255, 255, 255, 0.018);
+  background: var(--section-hover-bg);
   color: #23c2ee;
 }
 
@@ -1562,7 +1570,7 @@ h3 {
 }
 
 .product:hover {
-  background: rgba(255, 255, 255, 0.015);
+  background: var(--section-hover-bg);
 }
 
 .product-icon {
@@ -1661,7 +1669,7 @@ h3 {
 
 .map-nav button:hover {
   color: var(--ink);
-  background: rgba(21, 22, 27, 0.025);
+  background: var(--section-hover-bg);
 }
 
 .map-nav button.is-active {
@@ -1894,7 +1902,7 @@ h3 {
 }
 
 .compliance-card:hover {
-  background: rgba(21, 22, 27, 0.025);
+  background: var(--section-hover-bg);
 }
 
 .compliance-code {
@@ -1977,7 +1985,7 @@ h3 {
 
 .award-card:hover,
 .award-all:hover {
-  background: rgba(21, 22, 27, 0.03);
+  background: var(--section-hover-bg);
   color: #23c2ee;
 }
 
@@ -2069,7 +2077,7 @@ h3 {
 }
 
 .news-card:hover {
-  background: rgba(21, 22, 27, 0.03);
+  background: var(--section-hover-bg);
   color: #23c2ee;
 }
 
@@ -2156,7 +2164,7 @@ h3 {
 }
 
 .news-card--cta:hover {
-  background: rgba(21, 22, 27, 0.03);
+  background: var(--section-hover-bg);
   color: #23c2ee;
 }
 
@@ -2287,7 +2295,7 @@ h3 {
 }
 
 .cap-demo:hover {
-  background: rgba(255, 255, 255, 0.015);
+  background: var(--section-hover-bg);
   color: #23c2ee;
 }
 
@@ -2308,7 +2316,7 @@ h3 {
 }
 
 .cap:hover {
-  background: rgba(255, 255, 255, 0.015);
+  background: var(--section-hover-bg);
 }
 
 .cap-index {
