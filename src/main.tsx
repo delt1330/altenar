@@ -160,7 +160,7 @@ const clientGroups: ClientGroup[] = [
     ],
   },
   {
-    title: 'Онлайн + розница',
+    title: 'Офлайн и онлайн',
     clients: [
       { name: 'Golden Palace', domain: 'goldenpalace.be', logo: 'client-logos/golden-palace.svg' },
       { name: 'IsibetPRO Srl', domain: 'isibetpro.it', logo: 'client-logos/isibetpro.png' },
