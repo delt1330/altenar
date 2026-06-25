@@ -160,7 +160,7 @@ const clientGroups: ClientGroup[] = [
     ],
   },
   {
-    title: 'Розница / все каналы',
+    title: 'Онлайн + розница',
     clients: [
       { name: 'Golden Palace', domain: 'goldenpalace.be', logo: 'client-logos/golden-palace.svg' },
       { name: 'IsibetPRO Srl', domain: 'isibetpro.it', logo: 'client-logos/isibetpro.png' },
@@ -747,7 +747,7 @@ function Hero() {
     <div className="hero">
       <div className="hero-grid">
         <motion.div className="hero-copy" initial={{ opacity: 0, y: 26 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}>
-          <Eyebrow>Платформа для ставок на спорт · с 2011 года</Eyebrow>
+          <Eyebrow>Партнёрство по всему миру</Eyebrow>
           <h1>Ведущая B2b платформа<br />для ставок на спорт</h1>
           <p>
             Altenar помогает лицензированным операторам запускать, настраивать и
@@ -854,7 +854,7 @@ function Clients() {
     <section className="section section-clients" id="clients">
       <SectionHead
         kicker="Клиенты"
-        title="Платформа, которой доверяют букмекеры и партнёры игровой индустрии"
+        title="Платформа, которой доверяют букмекеры и партнёры игровой индустрии по всему миру"
         lead="Altenar работает с операторами в разных сценариях: запуск на новом рынке, миграция с текущего провайдера, развитие ставок на спорт внутри казино-бренда и розничная омниканальная модель."
       />
       <div className="client-groups">
