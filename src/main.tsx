@@ -109,6 +109,15 @@ type RiskCard = Capability & { icon: IconName };
 type EcosystemGroup = { role: string; items: string[] };
 type ComplianceItem = { code: string; title: string; text: string; scope: string };
 type Award = { year: string; title: string; event: string; category: string; logo: string };
+type NewsItem = {
+  date: string;
+  read: string;
+  tag: string;
+  title: string;
+  excerpt?: string;
+  image: string;
+  href: string;
+};
 
 const stats: Stat[] = [
   { value: '15', label: 'лет на рынке' },
@@ -287,6 +296,13 @@ const products: Product[] = [
     title: 'Запуск под вашим брендом',
     scenario: 'Нужен быстрый выход под брендом',
     text: 'Запускайте букмекерский продукт под собственным брендом за считанные недели: готовая платформа, поддержка по лицензированию, платежам и требованиям регуляторов с возможностью масштабирования без смены поставщика.',
+    cta: 'Подробнее',
+  },
+  {
+    icon: 'migrate',
+    scenario: 'Хотите сменить провайдера',
+    title: 'Миграция с текущего провайдера',
+    text: 'Переходите на платформу Altenar без простоя и потери данных: выделенная команда миграции переносит игроков, историю и интеграции, а поэтапный запуск и тестовые среды исключают сбои в работе с игроками.',
     cta: 'Подробнее',
   },
 ];
@@ -481,6 +497,58 @@ const awards: Award[] = [
   },
 ];
 
+const news: NewsItem[] = [
+  {
+    date: '23.06.2026',
+    read: '5 мин',
+    tag: 'Партнёрство',
+    title: 'Logrand и Altenar запускают улучшенный мультиканальный спортивный опыт',
+    excerpt: 'Оператор объединяет онлайн и розницу на единой платформе ставок Altenar, чтобы дать игрокам бесшовный опыт во всех каналах.',
+    image: 'news/logrand.webp',
+    href: 'https://altenar.com/ru/news/',
+  },
+  {
+    date: '18.06.2026',
+    read: '4 мин',
+    tag: 'Партнёрство',
+    title: 'Altenar и Greentube объявили о стратегическом партнёрстве в спортивных играх',
+    image: 'news/greentube.webp',
+    href: 'https://altenar.com/ru/news/',
+  },
+  {
+    date: '11.06.2026',
+    read: '3 мин',
+    tag: 'Награда',
+    title: 'Altenar назван поставщиком спортивных игр года на SBC Americas Awards 2026',
+    image: 'news/sbc-americas.webp',
+    href: 'https://altenar.com/ru/news/',
+  },
+  {
+    date: '10.06.2026',
+    read: '3 мин',
+    tag: 'Регулирование',
+    title: 'Altenar получил одобрение для выхода на рынок iGaming Альберты',
+    image: 'news/alberta.webp',
+    href: 'https://altenar.com/ru/news/',
+  },
+  {
+    date: '03.06.2026',
+    read: '4 мин',
+    tag: 'Кейс',
+    title: 'Безупречная миграция обеспечила измеримый рост для Palms Bet',
+    image: 'news/palms-bet.webp',
+    href: 'https://altenar.com/ru/news/',
+  },
+  {
+    date: '28.05.2026',
+    read: '4 мин',
+    tag: 'Награда',
+    title: 'Altenar получил награду лучшего рабочего места на SiGMA Europe Awards',
+    image: 'news/sigma-europe.webp',
+    href: 'https://altenar.com/ru/news/',
+  },
+];
+
 const riskCards: RiskCard[] = [
   { icon: 'risk', title: 'Управление рисками', text: 'Контролируйте лимиты, экспозицию и подозрительную активность до того, как они начнут влиять на маржу и операционные решения.' },
   { icon: 'chart', title: 'Трейдинговая поддержка', text: 'Получайте экспертизу по рынкам, коэффициентам и событиям в реальном времени, чтобы быстрее реагировать на движение спроса.' },
@@ -543,6 +611,7 @@ function App() {
         <RiskTrading />
         <Capabilities />
         <Awards />
+        <News />
         <FinalCta />
       </main>
       <Footer />
@@ -1058,7 +1127,7 @@ function Products() {
     <section className="section section-products" id="scenarios">
       <SectionHead
         kicker="Продукты Altenar"
-        title="Наши продукты"
+        title="Наши продукты и решения"
         lead="Выберите формат запуска под текущую стадию бизнеса: от подключения букмекерского продукта к действующей платформе до полноценной инфраструктуры для нового бренда и омниканального роста."
       />
       <div className="product-grid">
@@ -1233,6 +1302,47 @@ function Awards() {
         ))}
         <a className="award-all" href="#" aria-label="Все награды Altenar">
           <span>Все награды</span>
+          <i aria-hidden="true">→</i>
+        </a>
+      </div>
+    </section>
+  );
+}
+
+function News() {
+  const [featured, ...rest] = news;
+
+  return (
+    <section className="section section--light section-news" id="news">
+      <SectionHead
+        align="left"
+        kicker="Пресс-центр"
+        title="Новости компании"
+        lead="Партнёрства, награды, выход на новые регулируемые рынки и продуктовые обновления — что происходит в Altenar прямо сейчас."
+      />
+      <div className="news-track">
+        <a className="news-card news-card--wide" href={featured.href}>
+          <span className="news-visual">
+            <img src={assetUrl(featured.image)} alt="" loading="lazy" />
+          </span>
+          <span className="news-card-body">
+            <span className="news-meta">{featured.date} · {featured.read}</span>
+            <h3>{featured.title}</h3>
+          </span>
+        </a>
+        {rest.map((item) => (
+          <a className="news-card" key={item.title} href={item.href}>
+            <span className="news-visual">
+              <img src={assetUrl(item.image)} alt="" loading="lazy" />
+            </span>
+            <span className="news-card-body">
+              <span className="news-meta">{item.date} · {item.read}</span>
+              <h3>{item.title}</h3>
+            </span>
+          </a>
+        ))}
+        <a className="news-card news-card--cta" href="https://altenar.com/ru/news/" aria-label="Все новости компании Altenar">
+          <span>Все новости</span>
           <i aria-hidden="true">→</i>
         </a>
       </div>

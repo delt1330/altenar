@@ -1151,6 +1151,10 @@ h3 {
   transition: opacity 0.5s var(--ease);
 }
 
+.layer:last-child {
+  border-bottom: 0;
+}
+
 .layer:hover,
 .layer.is-active {
   padding-left: calc(var(--cell-x) + 12px);
@@ -1487,6 +1491,7 @@ h3 {
 .section-risk,
 .section-caps,
 .section-eco,
+.section-news,
 .section-final {
   border-top: 0;
 }
@@ -1516,8 +1521,12 @@ h3 {
   box-shadow: inset 0 -1px 0 var(--line-2);
 }
 
+.product:nth-child(5) {
+  grid-column: span 2;
+}
+
 .product-demo {
-  grid-column: 2 / span 2;
+  grid-column: 3 / span 2;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -1525,7 +1534,7 @@ h3 {
   padding: 26px var(--cell-x);
   border: 0;
   background: var(--section-bg);
-  box-shadow: inset 1px 0 0 var(--line-2), inset -1px 0 0 var(--line-2), inset 0 -1px 0 var(--line-2);
+  box-shadow: inset 0 -1px 0 var(--line-2);
   color: var(--live);
   transition: background 0.4s var(--ease), color 0.4s var(--ease);
 }
@@ -2032,6 +2041,164 @@ h3 {
   line-height: 1.35;
 }
 
+/* ---------- News (block-style grid) ---------- */
+.section-news {
+  padding-top: clamp(42px, 6vw, 76px);
+  padding-bottom: 0;
+}
+
+.news-track {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1px;
+  width: 100vw;
+  margin-left: calc(50% - 50vw);
+  margin-right: calc(50% - 50vw);
+  background: var(--line-2);
+  border-top: 1px solid var(--line-2);
+  border-bottom: 1px solid var(--line-2);
+}
+
+.news-card {
+  display: flex;
+  flex-direction: column;
+  padding: 26px var(--cell-x) 30px;
+  background: var(--section-bg);
+  transition: background 0.4s var(--ease);
+}
+
+.news-card:hover {
+  background: rgba(21, 22, 27, 0.03);
+  color: #23c2ee;
+}
+
+.news-card:hover .news-visual img {
+  filter: grayscale(1) contrast(1.18) brightness(0.96);
+}
+
+.news-card--wide {
+  grid-column: span 2;
+}
+
+.news-visual {
+  position: relative;
+  height: clamp(150px, 15vw, 200px);
+  overflow: hidden;
+  background: var(--void-2);
+}
+
+.news-visual img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: grayscale(1) contrast(1.18);
+  opacity: 0.88;
+  transition: filter 0.4s var(--ease);
+}
+
+.news-visual::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(180deg, rgba(8, 9, 11, 0.05) 0%, rgba(8, 9, 11, 0.55) 100%);
+}
+
+.news-card-body {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  flex: 1;
+  padding: 20px 0 0;
+}
+
+.news-meta {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--dim);
+}
+
+.news-tag {
+  color: var(--live);
+}
+
+.news-card-body h3 {
+  font-size: 17px;
+  font-weight: 400;
+  line-height: 1.32;
+  letter-spacing: -0.01em;
+  color: var(--soft);
+}
+
+.news-card--wide .news-card-body h3 {
+  max-width: 30ch;
+  font-size: clamp(20px, 1.9vw, 26px);
+  line-height: 1.22;
+  color: var(--ink);
+}
+
+.news-card--cta {
+  flex-direction: row;
+  align-items: flex-end;
+  justify-content: space-between;
+  padding: 26px var(--cell-x);
+  color: var(--live);
+  transition: background 0.4s var(--ease), color 0.4s var(--ease);
+}
+
+.news-card--cta:hover {
+  background: rgba(21, 22, 27, 0.03);
+  color: #23c2ee;
+}
+
+.news-card--cta span {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 11px;
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.news-card--cta i {
+  font-style: normal;
+  line-height: 1;
+  color: currentColor;
+  transition: transform 0.4s var(--ease);
+}
+
+.news-card--cta:hover i {
+  transform: translateX(4px);
+}
+
+@media (max-width: 900px) {
+  .news-track {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .news-card--wide {
+    grid-column: span 2;
+  }
+}
+
+@media (max-width: 600px) {
+  .news-track {
+    grid-template-columns: 1fr;
+  }
+
+  .news-card--wide {
+    grid-column: span 1;
+  }
+}
+
 /* ---------- Capabilities ---------- */
 .section-caps {
   padding-top: 0;
@@ -2213,7 +2380,7 @@ h3 {
 
 /* ---------- Final CTA ---------- */
 .section-final {
-  padding-top: clamp(42px, 6vw, 76px);
+  padding-top: 0;
   padding-bottom: 0;
 }
 
