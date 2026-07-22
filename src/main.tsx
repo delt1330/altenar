@@ -1,15 +1,22 @@
-import React, { useRef } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { createRoot } from 'react-dom/client';
 import { motion, type Variants } from 'framer-motion';
 import WorldMap, { type MapMarker } from './WorldMap';
 import ParticleImage from './components/originkit/SvgParticles';
 import GearFlowBridge from './components/GearFlowBridge';
+import FooterBrandParticles from './components/FooterBrandParticles';
+import MapParticles from './components/MapParticles';
+import { CtaLink } from './components/CtaLink';
+import { useTextScramble } from './components/textScramble';
 import './styles.css';
 
 // SvgParticles is JS (@ts-nocheck) with forwardRef — loosen props for TS.
 const HeroParticles = ParticleImage as React.ComponentType<any>;
 
 const assetUrl = (path: string) => `${import.meta.env.BASE_URL}${path}`;
+
+/** Temporary: turn off hero particle / bridge motion. Flip to true to restore. */
+const HERO_MOTION_ENABLED = true;
 
 type IconName = 'key' | 'store' | 'label';
 type CaseStudy = {
@@ -22,7 +29,16 @@ type CaseStudy = {
   href: string;
   logo?: string;
 };
-type Product = { icon: IconName; scenario: string; title: string; text: string; cta: string };
+type Product = {
+  icon: IconName;
+  scenario: string;
+  title: string;
+  text: string;
+  cta: string;
+  nav: string;
+  /** Module labels shown as chips (from product/service pages). */
+  chips: string[];
+};
 type MarketDetail = { name: string; country: string; year: string; result: string };
 type Market = {
   code: string;
@@ -136,6 +152,8 @@ const products: Product[] = [
     title: 'Turnkey Sportsbook Solution',
     text: 'Turnkey sportsbook solution provides the software and management tools needed to stand out and scale across desktop, mobile, and retail channels. With integrated core systems, a front end CMS, and 24/7 support, you can focus entirely on market entry and growth strategy. Bring your sportsbook to market fast and with everything in sync.',
     cta: 'Launch turnkey',
+    nav: 'Turnkey',
+    chips: ['Fully-integrated PAM', 'Casino partners', 'Mobile app'],
   },
   {
     icon: 'store',
@@ -143,13 +161,17 @@ const products: Product[] = [
     title: 'Retail / Landbase solution',
     text: 'Retail solution seamlessly extends your brand into cashiers, kiosks, or venues without the need for on-site tech. Manage bets, payments, and accounts across every location through a single interface featuring intuitive touchscreen SSBTs and full remote monitoring. Fully integrated with your existing sportsbook and PAM stack, it ensures a unified omnichannel experience with the same credibility behind every screen and betting slip.',
     cta: 'Realworld launch',
+    nav: 'Retail',
+    chips: ['Cashier', 'Terminal'],
   },
   {
     icon: 'label',
     scenario: 'Launch under your brand',
     title: 'White label solution',
-    text: 'Designed for entrepreneurs and challenger brands, our white-label solution ensures a fast, impactful launch with licensing, payment, and regulatory setups ready. You get full control over your front end and marketing, with smooth upgrade paths as you scale without changing providers. Move from plan to product in weeks with a proven sportsbook.',
+    text: 'Altenar’s white-label offering provides operators with a faster, lower-risk route to market, combining proven technology with operational support. Access a fully-managed platform with payment gateways, player management, and features designed to support regulatory requirements. Flexible configuration reflects your brand identity while Altenar manages the sportsbook platform, infrastructure, and system performance.',
     cta: 'Launch Fast',
+    nav: 'White label',
+    chips: ['Licensing and compliance support', 'Regional expertise'],
   },
 ];
 
@@ -369,10 +391,16 @@ const seoParagraphs = [
 ];
 
 const navLinks = [
-  { label: 'About', href: 'https://altenar.com/about/' },
-  { label: 'Products', href: 'https://altenar.com/products/' },
-  { label: 'Clients & partners', href: 'https://altenar.com/cases/' },
-  { label: 'Contacts', href: 'https://altenar.com/contacts/' },
+  { label: 'Solutions & Products', href: assetUrl('solutions-products/') },
+  { label: 'Clients', href: assetUrl('clients/') },
+  { label: 'Events', href: assetUrl('events/') },
+  { label: 'Blog', href: assetUrl('blog/') },
+  { label: 'Company', href: assetUrl('company/') },
+];
+
+const navGroups = [
+  navLinks.slice(0, 2),
+  navLinks.slice(2),
 ];
 
 const rise: Variants = {
@@ -385,7 +413,8 @@ function clientLogoId(name: string) {
 }
 
 const allClientLogos = clientGroups.flatMap((g) => g.clients);
-const clientLogoTargets = allClientLogos.map((c) => ({
+const clientLogoWall = allClientLogos.slice(0, 12);
+const clientLogoTargets = clientLogoWall.map((c) => ({
   id: clientLogoId(c.name),
   imageUrl: assetUrl(c.logo),
 }));
@@ -393,54 +422,76 @@ const clientLogoTargets = allClientLogos.map((c) => ({
 function App() {
   const heroParticlesRef = useRef<any>(null);
 
+  useEffect(() => {
+    if (import.meta.env.DEV) {
+      // Debug helper: run `window.__hero.forceShape('logo')` in the
+      // console to jump to the large Altenar wordmark without waiting
+      // on hover/timer triggers. Dev-only.
+      (window as any).__hero = heroParticlesRef.current;
+    }
+  });
+
   return (
     <>
       <ColumnGuides />
       <Header />
-      <GearFlowBridge
-        heroRef={heroParticlesRef}
-        particleSize={10}
-        color="#f3f4f5"
-        logoTargets={clientLogoTargets}
-      />
+      {HERO_MOTION_ENABLED ? (
+        <GearFlowBridge
+          particleSize={10}
+          particleGap={4}
+          color="#ffffff"
+          logoTargets={clientLogoTargets}
+        />
+      ) : null}
+      {HERO_MOTION_ENABLED ? (
+        <FooterBrandParticles particleSize={10} particleGap={4} color="#ffffff" />
+      ) : null}
       <main className="page">
-        <section className="hero-stack" id="top">
-          <div className="hero-bg-particles" aria-hidden="true">
-            <HeroParticles
-              ref={heroParticlesRef}
-              particleCount={40}
-              particleGap={5}
-              particleSize={10}
-              particleShape="square"
-              particleColor="single"
-              singleColor="#f3f4f5"
-              assembleAfterMoves={4}
-              shapeStory
-              shapeAfterMoves={4}
-              hoverEnabled
-              hoverConfig={{
-                hoverType: 'hide',
-                hideType: 'scatter',
-                transition: { duration: 2.8, ease: 'smootherstep' },
-                roamWidth: 0,
-                roamHeight: 0,
-                roamOpacity: 0.35,
-                roamShape: 'rectangle',
-              }}
-              repulsionEnabled
-              repulsionConfig={{
-                repulsionForce: 14,
-                repulsionRadius: 110,
-                repulsionMode: 'outside',
-              }}
-              imageConfig={{
-                image: assetUrl('altenar-mark-solid.png'),
-                mode: 'fit',
-                scale: 6,
-              }}
-              style={{ width: '100%', height: '100%' }}
-            />
-          </div>
+        <section
+          className={`hero-stack${HERO_MOTION_ENABLED ? '' : ' hero-stack--static'}`}
+          id="top"
+        >
+          {HERO_MOTION_ENABLED ? (
+            <div className="hero-bg-particles" aria-hidden="true">
+              <HeroParticles
+                ref={heroParticlesRef}
+                initialPatternShot
+                particleCount={40}
+                particleGap={4}
+                particleSize={10}
+                particleShape="square"
+                particleColor="original"
+                assembleAfterMoves={0}
+                assembleAfterHoverMs={0}
+                shapeStory={false}
+                shapeAfterMoves={0}
+                hoverEnabled
+                hoverConfig={{
+                  hoverType: 'hide',
+                  hideType: 'scatter',
+                  transition: { duration: 1.55, ease: 'easeOut' },
+                  roamWidth: 0,
+                  roamHeight: 0,
+                  roamOpacity: 0.35,
+                  roamShape: 'rectangle',
+                }}
+                repulsionEnabled
+                repulsionConfig={{
+                  repulsionForce: 14,
+                  repulsionRadius: 110,
+                  repulsionMode: 'outside',
+                }}
+                imageConfig={{
+                  // Slogan story ignores pattern plate; non-empty URL avoids empty-image overlay.
+                  image: assetUrl('altenar-mark.png'),
+                  logoImage: assetUrl('Altenar_Logo.svg'),
+                  mode: 'fill',
+                  scale: 10,
+                }}
+                style={{ width: '100%', height: '100%' }}
+              />
+            </div>
+          ) : null}
           <Hero />
         </section>
         <Clients />
@@ -508,20 +559,21 @@ function Header() {
         <a className="logo" href="#top">
           <img src={assetUrl(isInverted ? 'Altenar_Logo_Dark.svg' : 'Altenar_Logo.svg')} alt="Altenar" />
         </a>
-        <nav className="topnav">
-          {navLinks.map((l) => (
-            <a key={l.label} href={l.href}>{l.label}</a>
+        <nav className="topnav" aria-label="Main">
+          {navGroups.map((group, gi) => (
+            <div className="topnav-group" key={gi}>
+              <span className="topnav-marker" aria-hidden="true" />
+              {group.map((l) => (
+                <a key={l.label} href={l.href}>{l.label}</a>
+              ))}
+            </div>
           ))}
         </nav>
         <div className="topbar-right">
-          <a className="topbar-tool lang-switch" href="https://altenar.com/en-us/" aria-label="Выбрать язык">
-            RU
-          </a>
-          <a className="topbar-tool search-link" href="https://altenar.com/ru/search/" aria-label="Поиск по сайту">
-            <svg viewBox="0 0 20 20" aria-hidden="true">
-              <circle cx="8.5" cy="8.5" r="5.2" />
-              <path d="M12.4 12.4L17 17" />
-            </svg>
+          <a className="topbar-action" href="https://altenar.com/en-us/" aria-label="Выбрать язык">
+            <span className="topbar-action__bracket" aria-hidden="true">[</span>
+            <span className="topbar-action__label">RU</span>
+            <span className="topbar-action__bracket" aria-hidden="true">]</span>
           </a>
           <button
             type="button"
@@ -552,8 +604,22 @@ function Header() {
   );
 }
 
-function Eyebrow({ children }: { children: React.ReactNode }) {
-  return <span className="eyebrow">{children}</span>;
+function Eyebrow({ children }: { children: string }) {
+  const rootRef = React.useRef<HTMLSpanElement | null>(null);
+  const labelRef = React.useRef<HTMLSpanElement | null>(null);
+  useTextScramble(rootRef, labelRef, children, {
+    hover: true,
+    onView: true,
+    viewMargin: '-90px',
+  });
+
+  return (
+    <span className="eyebrow" ref={rootRef}>
+      <span className="eyebrow__label" ref={labelRef}>
+        {children}
+      </span>
+    </span>
+  );
 }
 
 function SectionHead({
@@ -579,22 +645,48 @@ function SectionHead({
 function Hero() {
   return (
     <div className="hero">
-      <div className="hero-grid">
-        <motion.div className="hero-copy" initial={{ opacity: 0, y: 26 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}>
-          <h1 className="hero-slogan">
-            <span className="hero-slogan-line">Stability</span>
-            <span className="hero-slogan-line">meets</span>
-            <span className="hero-slogan-line">flexibility</span>
-          </h1>
+      <div className="hero-layout">
+        <h1 className="visually-hidden">Stability meets flexibility</h1>
+
+        {/* Invisible anchors: particle sampler reads size/position from DOM */}
+        <div className="hero-slogan-tl" aria-hidden="true">
+          <span
+            className="hero-slogan-word hero-slogan-word--stability"
+            data-particle-shot="both"
+            data-particle-color="ink"
+          >
+            Stability
+          </span>
+        </div>
+        <span
+          className="hero-slogan-word hero-slogan-word--meets-center"
+          data-particle-shot="1"
+          data-particle-color="live"
+          aria-hidden="true"
+        >
+          meets
+        </span>
+        <span
+          className="hero-slogan-word hero-slogan-word--flexibility"
+          data-particle-shot="both"
+          data-particle-color="ink"
+          aria-hidden="true"
+        >
+          flexibility
+        </span>
+
+        <motion.div
+          className="hero-side"
+          initial={{ opacity: 0, y: 18 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1], delay: 0.15 }}
+        >
           <p className="hero-lead">
             As your strategic partner, Altenar guides licensed operators to maximize profits and enter new markets confidently. We deliver highly flexible software—from API to fully managed operations—letting your team focus entirely on performance. Our cooperation ensures lightning-fast deployment, localized tools, and 24/7 trading support built to scale your business for shared growth.
           </p>
           <div className="hero-cta">
-            <a className="btn-primary" href="#demo">
-              Contact Us
-              <span className="btn-arrow" aria-hidden="true">↗</span>
-            </a>
-            <a className="btn-ghost" href="#scenarios">See solutions</a>
+            <CtaLink href="#scenarios" color="live">See solutions</CtaLink>
+            <CtaLink href="#demo" color="ink">Contact Us</CtaLink>
           </div>
         </motion.div>
       </div>
@@ -632,6 +724,9 @@ function LogoCell({ client }: { client: Client }) {
 }
 
 function Clients() {
+  // Flat 4×3 logo wall (three rows).
+  const logos = clientLogoWall;
+
   return (
     <section className="section section-clients" id="clients">
       <SectionHead
@@ -639,71 +734,42 @@ function Clients() {
         title="Trusted by operators worldwide"
         lead="A selection of partners who launch, migrate, and scale with Altenar."
       />
-      <div className="client-groups">
-        {clientGroups.map((group) => (
-          <motion.article className="client-group" key={group.title} variants={rise} initial="hidden" whileInView="visible" viewport={{ once: true, margin: '-40px' }}>
-            <span className="client-group-title">{group.title}</span>
-            <div className="client-group-list">
-              {group.clients.map((c) => (
-                <LogoCell key={`${group.title}-${c.name}`} client={c} />
-              ))}
-            </div>
-          </motion.article>
+      <div className="client-logo-grid">
+        {logos.map((c) => (
+          <LogoCell key={c.name} client={c} />
         ))}
       </div>
-      <a className="client-cases-link" href="#cases">View all cases <span aria-hidden="true">→</span></a>
+      <CtaLink className="client-cases-link" href="#cases" color="soft">View all cases</CtaLink>
     </section>
   );
 }
 
-function LineIcon({ name }: { name: IconName }) {
-  const common = {
-    width: 28,
-    height: 28,
-    viewBox: '0 0 24 24',
-    fill: 'none',
-    stroke: 'currentColor',
-    strokeWidth: 1.2,
-    strokeLinecap: 'round' as const,
-    strokeLinejoin: 'round' as const,
+function ProductIcon({ name }: { name: IconName }) {
+  const srcByName: Record<IconName, string> = {
+    key: assetUrl('product-icons/turnkey.png'),
+    store: assetUrl('product-icons/retail.png'),
+    label: assetUrl('product-icons/label.png'),
   };
-  switch (name) {
-    case 'key':
-      return (
-        <svg {...common} aria-hidden="true">
-          <rect x="3.5" y="5" width="12" height="8.5" rx="1.4" />
-          <path d="M9.5 13.5v2.7" />
-          <path d="M6.8 17.5h5.4" />
-          <path d="M6.8 8.5h5.4" />
-          <path d="M6.8 11h3.2" />
-          <rect x="16.5" y="8" width="4" height="9.5" rx="1" />
-          <path d="M18.5 15.5h.01" />
-        </svg>
-      );
-    case 'store':
-      return (
-        <svg {...common} aria-hidden="true">
-          <rect x="4" y="7" width="16" height="10" rx="1.4" />
-          <circle cx="12" cy="12" r="2.2" />
-          <path d="M7 10.2v-.8h1.3" />
-          <path d="M17 10.2v-.8h-1.3" />
-          <path d="M7 13.8v.8h1.3" />
-          <path d="M17 13.8v.8h-1.3" />
-          <path d="M6.5 12h1.2" />
-          <path d="M16.3 12h1.2" />
-        </svg>
-      );
-    case 'label':
-      return (
-        <svg {...common} aria-hidden="true">
-          <path d="M8.5 4 6 5 3.5 8.5 6.5 11 8 9.7V20h8V9.7L17.5 11l3-2.5L18 5l-2.5-1a3.5 3.5 0 0 1-7 0Z" />
-          <path d="M11.6 13.5h1.2v4" />
-        </svg>
-      );
-  }
+  return (
+    <span
+      className="product-icon"
+      style={{ WebkitMaskImage: `url(${srcByName[name]})`, maskImage: `url(${srcByName[name]})` }}
+      aria-hidden="true"
+    />
+  );
+}
+
+function splitSentences(text: string): string[] {
+  const parts = text.match(/[^.!?]+[.!?]+(?:\s|$)|[^.!?]+$/g);
+  if (!parts) return [text];
+  return parts.map((s) => s.trim()).filter(Boolean);
 }
 
 function Products() {
+  const [activeIndex, setActiveIndex] = React.useState(0);
+  const active = products[activeIndex];
+  const navItems = ['', ...products.map((p) => p.nav)];
+
   return (
     <section className="section section-products" id="scenarios">
       <SectionHead
@@ -711,18 +777,136 @@ function Products() {
         title="Our solutions"
         lead="Three ways to launch and scale a sportsbook with Altenar."
       />
-      <div className="product-grid">
-        {products.map((p) => (
-          <motion.article className="product" key={p.title} variants={rise} initial="hidden" whileInView="visible" viewport={{ once: true, margin: '-60px' }}>
-            <span className="product-icon"><LineIcon name={p.icon} /></span>
-            <span className="product-scenario">{p.scenario}</span>
-            <h3>{p.title}</h3>
-            <p>{p.text}</p>
-            <a className="product-link" href="#demo">
-              {p.cta} <span aria-hidden="true">→</span>
-            </a>
-          </motion.article>
-        ))}
+      <div className="solutions-stage">
+        <nav className="solutions-nav grid-nav" aria-label="Solutions">
+          <span
+            className="grid-nav__ink"
+            aria-hidden="true"
+            style={{ transform: `translateX(${(activeIndex + 1) * 100}%)` }}
+          />
+          {navItems.map((label, i) => {
+            const productIndex = i - 1;
+            const isEmpty = !label;
+            const isActive = !isEmpty && productIndex === activeIndex;
+            return (
+              <button
+                key={`nav-${i}`}
+                type="button"
+                className={[
+                  'solutions-nav__item',
+                  'grid-nav__item',
+                  isEmpty ? 'is-empty' : '',
+                  isActive ? 'is-active' : '',
+                ]
+                  .filter(Boolean)
+                  .join(' ')}
+                disabled={isEmpty}
+                tabIndex={isEmpty ? -1 : 0}
+                aria-current={isActive ? 'true' : undefined}
+                aria-hidden={isEmpty || undefined}
+                onClick={() => {
+                  if (!isEmpty) setActiveIndex(productIndex);
+                }}
+              >
+                {label ? (
+                  <>
+                    <span className="solutions-nav__num" aria-hidden="true">
+                      {String(i).padStart(2, '0')}
+                    </span>
+                    <span className="solutions-nav__label grid-nav__label">{label}</span>
+                  </>
+                ) : (
+                  '\u00A0'
+                )}
+              </button>
+            );
+          })}
+        </nav>
+
+        <motion.article
+          className="solutions-panel"
+          variants={rise}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: '-60px' }}
+        >
+          <div className="solutions-visual" aria-hidden="true">
+            <div className="solutions-visual__stage">
+              <HeroParticles
+                key={active.nav}
+                className="solutions-visual__particles"
+                particleCount={12}
+                particleGap={64}
+                particleSize={32}
+                particleShape="square"
+                particleColor="single"
+                singleColor="#009ee3"
+                shapePreset="circle"
+                autoAssemble={false}
+                assembleWhenVisible
+                assembleAfterMoves={0}
+                assembleAfterHoverMs={0}
+                disassembleAfterSweeps={3}
+                reassembleOnMove
+                gridScatter
+                shapeStory={false}
+                shapeAfterMoves={0}
+                hoverEnabled
+                hoverConfig={{
+                  hoverType: 'hide',
+                  hideType: 'scatter',
+                  transition: { duration: 1.55, ease: 'easeOut' },
+                  roamWidth: 0,
+                  roamHeight: 0,
+                  roamOpacity: 0.35,
+                  roamShape: 'rectangle',
+                }}
+                repulsionEnabled
+                repulsionConfig={{
+                  repulsionForce: 14,
+                  repulsionRadius: 110,
+                  repulsionMode: 'outside',
+                }}
+                style={{ width: '100%', height: '100%' }}
+              />
+            </div>
+          </div>
+          <div className="solutions-copy">
+            {products.map((product, productIndex) => {
+              const isActive = productIndex === activeIndex;
+              const sentences = splitSentences(product.text);
+              return (
+                <div
+                  key={product.nav}
+                  className={`solutions-copy__panel${isActive ? ' is-active' : ''}`}
+                  aria-hidden={isActive ? undefined : true}
+                >
+                  <span className="product-scenario">{product.scenario}</span>
+                  <h3>{product.title}</h3>
+                  <div className="solutions-copy-body">
+                    <div className="solutions-copy-text">
+                      {sentences.map((sentence) => (
+                        <p key={sentence}>{sentence}</p>
+                      ))}
+                    </div>
+                    {product.chips.length > 0 ? (
+                      <ul className="solutions-chips">
+                        {product.chips.map((item) => (
+                          <li key={item} className="solutions-chip">
+                            <span>{item}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    ) : null}
+                  </div>
+                  <CtaLink className="product-link" href="#demo" color="live" tabIndex={isActive ? undefined : -1}>
+                    {product.cta}
+                  </CtaLink>
+                </div>
+              );
+            })}
+          </div>
+        </motion.article>
       </div>
     </section>
   );
@@ -733,6 +917,14 @@ function Markets() {
   const [selectedMarketDetail, setSelectedMarketDetail] = React.useState<string | null>(null);
   const region = markets.find((m) => m.code === active) ?? null;
   const selectedDetail = region?.details.find((d) => d.name === selectedMarketDetail) ?? null;
+  const territoryTabs = [
+    { code: 'all', title: 'All territories' },
+    ...markets.map((m) => ({ code: m.code, title: m.title })),
+  ];
+  const activeTabIndex = Math.max(
+    0,
+    territoryTabs.findIndex((tab) => tab.code === active),
+  );
   const selectMarketDetail = (market: Market, detail: MarketDetail) => {
     setActive(market.code);
     setSelectedMarketDetail(detail.name);
@@ -758,6 +950,8 @@ function Markets() {
   );
   const center: [number, number] = region ? region.center : [10, 12];
   const zoom = region ? region.zoom : 1;
+  const inkCol = activeTabIndex % 4;
+  const inkRow = Math.floor(activeTabIndex / 4);
 
   return (
     <section className="section section--light section-markets" id="markets">
@@ -766,15 +960,30 @@ function Markets() {
         title="Licences and regions of operation"
         lead="Altenar works with licensed operators across multiple jurisdictions, supporting launches, expansions, and long-term operations in environments where regulatory expectations are clearly defined and actively enforced."
       />
-      <div className="map-nav" role="tablist">
-        <button type="button" role="tab" aria-selected={active === 'all'} className={active === 'all' ? 'is-active' : ''} onClick={() => { setActive('all'); setSelectedMarketDetail(null); }}>
-          All territories
-        </button>
-        {markets.map((m) => (
-          <button key={m.code} type="button" role="tab" aria-selected={active === m.code} className={active === m.code ? 'is-active' : ''} onClick={() => { setActive(m.code); setSelectedMarketDetail(null); }}>
-            {m.title}
-          </button>
-        ))}
+      <div className="map-nav grid-nav" role="tablist" aria-label="Territories">
+        <span
+          className="grid-nav__ink"
+          aria-hidden="true"
+          style={{ transform: `translate(${inkCol * 100}%, ${inkRow * 100}%)` }}
+        />
+        {territoryTabs.map((tab) => {
+          const isActive = active === tab.code;
+          return (
+            <button
+              key={tab.code}
+              type="button"
+              role="tab"
+              aria-selected={isActive}
+              className={['grid-nav__item', isActive ? 'is-active' : ''].filter(Boolean).join(' ')}
+              onClick={() => {
+                setActive(tab.code);
+                setSelectedMarketDetail(null);
+              }}
+            >
+              <span className="grid-nav__label">{tab.title}</span>
+            </button>
+          );
+        })}
       </div>
       <div className="map-layout">
         <div className="map-stage">
@@ -786,6 +995,7 @@ function Markets() {
             onCountryClick={selectDetailByCountry}
             onMarkerClick={selectDetailByMarker}
           />
+          {HERO_MOTION_ENABLED ? <MapParticles particleGap={4} particleSize={10} /> : null}
         </div>
         <motion.div className="map-info" key={region ? region.code : 'all'} initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}>
           {region ? (
@@ -818,7 +1028,14 @@ function Markets() {
               <h3>Global coverage</h3>
               <p>
                 Licences and compliance support across regulated jurisdictions.{' '}
-                <a href="https://altenar.com/services/licensing-and-compliance-support/" target="_blank" rel="noreferrer">View licensing details</a>
+                <CtaLink
+                  href="https://altenar.com/services/licensing-and-compliance-support/"
+                  target="_blank"
+                  rel="noreferrer"
+                  color="live"
+                >
+                  View licensing details
+                </CtaLink>
               </p>
               <div className="market-metrics" aria-label="Altenar territory metrics">
                 <div>
@@ -875,9 +1092,8 @@ function Proof() {
             </div>
           </motion.a>
         ))}
-        <a className="case-all" href="#demo" aria-label="Contact us">
-          <span>Contact us</span>
-          <span aria-hidden="true">→</span>
+        <a className="case-all group" href="#demo" aria-label="Contact us">
+          <CtaLink as="span" triggerOnParentHover>Contact us</CtaLink>
         </a>
       </div>
     </section>
@@ -899,12 +1115,52 @@ function Awards() {
             <em>{item.event}</em>
           </article>
         ))}
-        <a className="award-all" href="https://altenar.com/about/" aria-label="All Altenar awards">
-          <span>All awards</span>
-          <i aria-hidden="true">→</i>
+        <a className="award-all group" href="https://altenar.com/about/" aria-label="All Altenar awards">
+          <CtaLink as="span" triggerOnParentHover>All awards</CtaLink>
         </a>
       </div>
     </section>
+  );
+}
+
+function NewsCard({ item, wide = false }: { item: NewsItem; wide?: boolean }) {
+  const rootRef = React.useRef<HTMLAnchorElement | null>(null);
+  const readLabelRef = React.useRef<HTMLSpanElement | null>(null);
+  useTextScramble(rootRef, readLabelRef, 'READ', { hover: true });
+
+  return (
+    <a
+      ref={rootRef}
+      className={['news-card', 'news-card--article', wide ? 'news-card--wide' : ''].filter(Boolean).join(' ')}
+      href={item.href}
+    >
+      <span className="news-card__top">
+        <time className="news-card__date">{item.date}</time>
+        <span className="news-card__read">{item.read}</span>
+      </span>
+      <h3 className="news-card__title">{item.title}</h3>
+      <span className="news-card__foot">
+        <span className="news-card__thumb">
+          <img src={assetUrl(item.image)} alt="" loading="lazy" />
+        </span>
+        <span className="news-card__cta">
+          <span className="news-card__cta-label" ref={readLabelRef}>
+            READ
+          </span>
+          <svg
+            className="news-card__cta-arrow"
+            xmlns="http://www.w3.org/2000/svg"
+            width="10"
+            height="10"
+            viewBox="0 0 10 10"
+            fill="none"
+            aria-hidden="true"
+          >
+            <path d="M2 8L8 2M8 2H3.5M8 2V6.5" stroke="currentColor" strokeWidth="1" />
+          </svg>
+        </span>
+      </span>
+    </a>
   );
 }
 
@@ -919,29 +1175,12 @@ function News() {
         title="Company news"
       />
       <div className="news-track">
-        <a className="news-card news-card--wide" href={featured.href}>
-          <span className="news-visual">
-            <img src={assetUrl(featured.image)} alt="" loading="lazy" />
-          </span>
-          <span className="news-card-body">
-            <span className="news-meta">{featured.date} · {featured.read}</span>
-            <h3>{featured.title}</h3>
-          </span>
-        </a>
+        <NewsCard item={featured} wide />
         {rest.map((item) => (
-          <a className="news-card" key={item.title} href={item.href}>
-            <span className="news-visual">
-              <img src={assetUrl(item.image)} alt="" loading="lazy" />
-            </span>
-            <span className="news-card-body">
-              <span className="news-meta">{item.date} · {item.read}</span>
-              <h3>{item.title}</h3>
-            </span>
-          </a>
+          <NewsCard key={item.title} item={item} />
         ))}
-        <a className="news-card news-card--cta" href="https://altenar.com/news/" aria-label="All company news">
-          <span>All news</span>
-          <i aria-hidden="true">→</i>
+        <a className="news-card news-card--cta group" href="https://altenar.com/news/" aria-label="All company news">
+          <CtaLink as="span" triggerOnParentHover>All news</CtaLink>
         </a>
       </div>
     </section>
@@ -995,10 +1234,9 @@ function FinalCta() {
             <span>Message</span>
             <textarea placeholder="Briefly describe your market, current stack, and timeline" />
           </label>
-          <button type="submit" className="btn-primary form-submit">
+          <CtaLink as="button" type="submit" className="form-submit" color="live">
             Contact Us
-            <span className="btn-arrow" aria-hidden="true">↗</span>
-          </button>
+          </CtaLink>
         </motion.form>
       </div>
     </section>
@@ -1050,13 +1288,17 @@ function Footer() {
         </div>
         <div className="footer-cell footer-legal-copy">
           <p>The Altenar logo and visual assets are intellectual property and protected from unauthorised use.</p>
-          <a className="footer-more-link" href="https://altenar.com/" target="_blank" rel="noreferrer">Learn more</a>
+          <CtaLink className="footer-more-link" href="https://altenar.com/" target="_blank" rel="noreferrer" color="dim">
+            Learn more
+          </CtaLink>
         </div>
         <div className="footer-cell footer-company-copy">
           <p>Altenar’s activity is licensed and regulated by the Malta Gaming Authority.</p>
-          <a className="footer-more-link" href="https://altenar.com/" target="_blank" rel="noreferrer">Learn more</a>
+          <CtaLink className="footer-more-link" href="https://altenar.com/" target="_blank" rel="noreferrer" color="dim">
+            Learn more
+          </CtaLink>
         </div>
-        <div className="footer-brand">
+        <div className="footer-brand" id="footer-brand">
           <img src={assetUrl('footer-brand/Altenar_Brand.svg')} alt="Altenar" />
         </div>
       </div>
@@ -1064,4 +1306,8 @@ function Footer() {
   );
 }
 
-createRoot(document.getElementById('root')!).render(<App />);
+const rootEl = document.getElementById('root')!;
+const existing = (rootEl as any)._reactRoot;
+const root = existing || createRoot(rootEl);
+(rootEl as any)._reactRoot = root;
+root.render(<App />);

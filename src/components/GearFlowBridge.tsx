@@ -44,22 +44,6 @@ const sampleClientLogoPoints = sampleClientLogoPointsRaw as (
   stage: { x: number; y: number; w: number; h: number }
 }
 
-type SnapshotParticle = {
-  clientX: number
-  clientY: number
-  r: number
-  g: number
-  b: number
-  a: number
-  colorIdx?: number
-}
-
-type HeroHandle = {
-  beginFlowHandoff: (opts?: { keepRatio?: number }) => SnapshotParticle[]
-  restoreFlowHandoff?: () => void
-  isFlowLocked?: () => boolean
-}
-
 type LogoTargetConfig = {
   id: string
   imageUrl: string
@@ -76,7 +60,9 @@ type FlowParticle = {
   logoIndex: number
   pageX: number
   pageY: number
-  /** Fixed hero start (page coords). */
+  /** Scatter anchor relative to logo cell center. */
+  scatterAngle: number
+  scatterDist: number
   heroPageX: number
   heroPageY: number
   /** Assembled logo home (updated on resize). */
@@ -84,13 +70,11 @@ type FlowParticle = {
   logoPageY: number
   logoLocalX: number
   logoLocalY: number
-  /** Gear target (local + page home). */
   localX: number
   localY: number
   localZ: number
   gearPageX: number
   gearPageY: number
-  /** Start used when leaving logos → gear. */
   departPageX: number
   departPageY: number
   r: number
@@ -106,21 +90,21 @@ type FlowParticle = {
   gearArcLift: number
   gearArcBias: number
   flightPhase: number
-  /** 0..1 soft crossfade from particles to the solid logo. */
   hoverT: number
 }
 
 type Props = {
-  heroRef: React.RefObject<HeroHandle | null> | React.MutableRefObject<any>
   scenariosId?: string
   particleSize?: number
+  /** Lattice pitch — match hero `particleGap` (default 4). */
+  particleGap?: number
   color?: string
   logoTargets?: LogoTargetConfig[]
 }
 
 function parseHex(c: string) {
   const h = c.replace('#', '')
-  if (h.length < 6) return { r: 243, g: 244, b: 245 }
+  if (h.length < 6) return { r: 0, g: 158, b: 227 }
   return {
     r: parseInt(h.slice(0, 2), 16),
     g: parseInt(h.slice(2, 4), 16),
@@ -221,22 +205,21 @@ function measureGearStagePage(section: HTMLElement) {
 }
 
 /**
- * Sequential swarm: hero → all client logos → Solutions gear.
- * Soft hover tints logo particles with brand live blue.
+ * Independent client-logo particle swarm (hero-style lattice).
+ * Scroll assemble ↔ reverse-scroll scatter. Not tied to hero handoff.
  */
 export default function GearFlowBridge({
-  heroRef,
   scenariosId = 'scenarios',
   particleSize = 10,
-  color = '#f3f4f5',
+  particleGap = 4,
+  color = '#ffffff',
   logoTargets = [],
 }: Props) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const particlesRef = useRef<FlowParticle[]>([])
   const logosRef = useRef<LogoRuntime[]>([])
-    const startedRef = useRef(false)
-    const restoreCooldownUntilRef = useRef(0)
-    const gearStageRef = useRef({ x: 0, y: 0, w: 1, h: 1 })
+  const startedRef = useRef(false)
+  const gearStageRef = useRef({ x: 0, y: 0, w: 1, h: 1 })
   const rangesRef = useRef({
     logoStart: 0,
     logoEnd: 1,
@@ -248,12 +231,18 @@ export default function GearFlowBridge({
   const departedToGearRef = useRef(false)
   const smoothLogoProgressRef = useRef(0)
   const smoothGearProgressRef = useRef(0)
+  const latchedLogoProgressRef = useRef(0)
+  const particleUiReadyRef = useRef(false)
   const colorRef = useRef(parseHex(color))
   colorRef.current = parseHex(color)
 
   useEffect(() => {
     const canvas = canvasRef.current
     if (!canvas) return
+
+    const gap = Math.max(2, Math.round(particleGap))
+    // Same rhythm as hero canvas: particleSize/4 CSS px squares on `gap` lattice.
+    const ps = Math.max(2, Math.round(particleSize / 4))
 
     const resize = () => {
       const dpr = window.devicePixelRatio || 1
@@ -267,44 +256,51 @@ export default function GearFlowBridge({
       for (const logo of logosRef.current) {
         const cell = document.getElementById(logo.id)
         const mark =
-          (cell?.querySelector('.client-logo-mark') as HTMLElement | null) || cell
+          (cell?.querySelector('.client-logo-img') as HTMLElement | null) ||
+          (cell?.querySelector('.client-logo-mark') as HTMLElement | null) ||
+          cell
         const box = measurePageBox(mark)
         if (box) logo.stage = box
       }
     }
 
-    const updateRanges = (section: HTMLElement) => {
+    const updateRanges = () => {
       const scrollY = window.scrollY || window.pageYOffset
-      const hero = document.getElementById('top')
       const clients = document.getElementById('clients')
-      const heroRect = hero?.getBoundingClientRect()
       const clientsRect = clients?.getBoundingClientRect()
-      const gearStage = measureGearStagePage(section)
-      gearStageRef.current = gearStage
+      const section = document.getElementById(scenariosId)
+      if (section) gearStageRef.current = measureGearStagePage(section)
       refreshLogoStages()
 
-      // Long scroll window: particles visibly leave hero and settle before logos are read.
-      const logoStart =
-        heroRect != null
-          ? scrollY + heroRect.top + heroRect.height * 0.18
-          : scrollY
-      const logoEnd =
-        clientsRect != null
-          ? scrollY + clientsRect.top + Math.min(140, clientsRect.height * 0.12)
-          : logoStart + 620
-
-      // Gear departure starts after logos have been fully visible for a beat.
-      const gearStart =
-        clientsRect != null
-          ? scrollY + clientsRect.bottom - window.innerHeight * 0.35
-          : logoEnd + 200
-      const gearEnd = gearStage.y + gearStage.h * 0.35 - window.innerHeight * 0.28
+      // Progress is driven by where #clients sits in the viewport:
+      // top ≈ 70% vh → scattered; top ≈ 12% vh → fully assembled.
+      // Reverse scroll (section moves down) lowers progress and disperses.
+      const vh = window.innerHeight
+      const clientsDocTop =
+        clientsRect != null ? scrollY + clientsRect.top : scrollY
+      const logoStart = clientsDocTop - vh * 0.7
+      const logoEnd = clientsDocTop - vh * 0.12
 
       rangesRef.current = {
         logoStart,
-        logoEnd: Math.max(logoStart + 180, logoEnd),
-        gearStart: Math.max(logoEnd + 80, gearStart),
-        gearEnd: Math.max(gearStart + 220, gearEnd),
+        logoEnd: Math.max(logoStart + 120, logoEnd),
+        gearStart: Number.POSITIVE_INFINITY,
+        gearEnd: Number.POSITIVE_INFINITY,
+      }
+    }
+
+    const resetFlow = () => {
+      particlesRef.current = []
+      startedRef.current = false
+      spinRef.current = 0
+      departedToGearRef.current = false
+      smoothLogoProgressRef.current = 0
+      smoothGearProgressRef.current = 0
+      latchedLogoProgressRef.current = 0
+      particleUiReadyRef.current = false
+      hoveredLogoIndexRef.current = -1
+      for (const logo of logosRef.current) {
+        document.getElementById(logo.id)?.classList.remove('is-particle-ready')
       }
     }
 
@@ -321,9 +317,17 @@ export default function GearFlowBridge({
         if (!logo?.img || !group.length) continue
         const localW = Math.max(2, Math.round(logo.stage.w))
         const localH = Math.max(2, Math.round(logo.stage.h))
-        const sampled = sampleClientLogoPoints(logo.img, localW, localH, 3, group.length, 0.1)
+        const sampled = sampleClientLogoPoints(
+          logo.img,
+          localW,
+          localH,
+          gap,
+          group.length,
+          0.06
+        )
         group.forEach((p, i) => {
           const home = sampled.points[i] || sampled.points[sampled.points.length - 1]
+          if (!home) return
           p.logoLocalX = home.homeX
           p.logoLocalY = home.homeY
           p.logoPageX = logo.stage.x + home.homeX
@@ -350,7 +354,13 @@ export default function GearFlowBridge({
         p.localX = home.localX ?? 0
         p.localY = home.localY ?? 0
         p.localZ = home.localZ ?? 0.14
-        const projected = projectGearLocal(p.localX, p.localY, p.localZ, spinRef.current, localStage)
+        const projected = projectGearLocal(
+          p.localX,
+          p.localY,
+          p.localZ,
+          spinRef.current,
+          localStage
+        )
         p.gearPageX = stage.x + projected.homeX
         p.gearPageY = stage.y + projected.homeY
       })
@@ -381,18 +391,23 @@ export default function GearFlowBridge({
       if (!particles.length) return
 
       const base = colorRef.current
-      const ps = Math.max(1, particleSize / 4)
       const scrollX = window.scrollX || window.pageXOffset
       const scrollY = window.scrollY || window.pageYOffset
       const { logoStart, logoEnd, gearStart, gearEnd } = rangesRef.current
 
-      const targetLogoProgress = clamp01(
+      // One-way latch: assemble progresses forward only. Once the logos
+      // are built from particles they stay built on reverse scroll.
+      const rawLogoProgress = clamp01(
         (scrollY - logoStart) / Math.max(1, logoEnd - logoStart)
       )
+      latchedLogoProgressRef.current = Math.max(
+        latchedLogoProgressRef.current,
+        rawLogoProgress
+      )
+      const targetLogoProgress = latchedLogoProgressRef.current
       const targetGearProgress = clamp01(
         (scrollY - gearStart) / Math.max(1, gearEnd - gearStart)
       )
-      // Frame-rate-independent follow: scroll changes lead, swarm catches up softly.
       const follow = 1 - Math.exp(-dt / 190)
       smoothLogoProgressRef.current +=
         (targetLogoProgress - smoothLogoProgressRef.current) * follow
@@ -403,34 +418,25 @@ export default function GearFlowBridge({
 
       refreshLogoStages()
 
-      // Snap logo page homes to current cell rects while parked on logos.
+      // Keep scatter anchors tied to current logo cells (wide cloud, reversible).
       for (const p of particles) {
         const logo = logosRef.current[p.logoIndex]
         if (!logo) continue
         p.logoPageX = logo.stage.x + p.logoLocalX
         p.logoPageY = logo.stage.y + p.logoLocalY
+        const cx = logo.stage.x + logo.stage.w * 0.5
+        const cy = logo.stage.y + logo.stage.h * 0.5
+        p.heroPageX = cx + Math.cos(p.scatterAngle) * p.scatterDist
+        p.heroPageY = cy + Math.sin(p.scatterAngle) * p.scatterDist
       }
 
-      // Reverse fully past logo start → restore hero.
-      if (
-        startedRef.current &&
-        targetLogoProgress <= 0.015 &&
-        targetGearProgress <= 0.01 &&
-        logoProgress <= 0.02 &&
-        gearProgress <= 0.02
-      ) {
-        heroRef.current?.restoreFlowHandoff?.()
-        particlesRef.current = []
-        startedRef.current = false
-        spinRef.current = 0
-        departedToGearRef.current = false
-        smoothLogoProgressRef.current = 0
-        smoothGearProgressRef.current = 0
-        hoveredLogoIndexRef.current = -1
-        // Prevent instant re-handoff while still near the trigger zone.
-        restoreCooldownUntilRef.current = performance.now() + 900
+      // Solid logos while fully scattered; particle silhouettes while assembling.
+      if (logoProgress <= 0.06 && particleUiReadyRef.current) {
+        particleUiReadyRef.current = false
         markParticleReady(false)
-        return
+      } else if (logoProgress >= 0.12 && !particleUiReadyRef.current) {
+        particleUiReadyRef.current = true
+        markParticleReady(true)
       }
 
       const stage = gearStageRef.current
@@ -440,7 +446,6 @@ export default function GearFlowBridge({
 
       if (gearAssembled) spinRef.current += 0.0045
 
-      // Capture depart positions once when leaving logo phase.
       if (assemblingGear && !departedToGearRef.current) {
         for (const p of particles) {
           p.departPageX = p.logoPageX
@@ -450,7 +455,6 @@ export default function GearFlowBridge({
         applyGearHomes()
       }
       if (!assemblingGear && departedToGearRef.current) {
-        // Coming back from gear → park on logos again.
         departedToGearRef.current = false
       }
 
@@ -490,10 +494,9 @@ export default function GearFlowBridge({
           )
           pageX = point.x
           pageY = point.y
-          // Restore particle visibility while leaving logos for the gear.
           p.hoverT += (0 - p.hoverT) * 0.12
         } else {
-          // Hero → logos (and hold while logos are on screen).
+          // Scatter ↔ assemble driven by scroll (reversible).
           const local = clamp01((logoProgress - p.stagger * 0.4) / (1 - p.stagger * 0.4))
           const t = easeInOut(local)
           const point = curvedSwarmPoint(
@@ -524,7 +527,7 @@ export default function GearFlowBridge({
         const ht = p.hoverT
         const alpha = assemblingGear
           ? 0.55 + 0.4 * clamp01((gearProgress - p.stagger * 0.25) / 0.7)
-          : 0.62 + 0.35 * clamp01((logoProgress - p.stagger * 0.2) / 0.75)
+          : 0.2 + 0.8 * clamp01((logoProgress - p.stagger * 0.15) / 0.85)
         const hoverFade = 1 - easeInOut(ht)
 
         ctx.fillStyle = `rgba(${base.r},${base.g},${base.b},${(p.a / 255) * alpha * hoverFade})`
@@ -533,27 +536,9 @@ export default function GearFlowBridge({
     }
     draw()
 
-    const section = document.getElementById(scenariosId)
-    if (!section) {
-      return () => {
-        cancelAnimationFrame(raf)
-        window.removeEventListener('resize', resize)
-      }
-    }
-
     let starting = false
     const startFlow = async () => {
       if (startedRef.current || starting) return
-      if (performance.now() < restoreCooldownUntilRef.current) return
-      const hero = heroRef.current
-      if (!hero?.beginFlowHandoff) return
-      // Begin while hero is still partly visible so the handoff is observable.
-      const scrollY = window.scrollY || window.pageYOffset
-      const heroEl = document.getElementById('top')
-      if (heroEl) {
-        const hr = heroEl.getBoundingClientRect()
-        if (scrollY < hr.height * 0.2) return
-      }
       starting = true
 
       try {
@@ -578,21 +563,16 @@ export default function GearFlowBridge({
             }
             const cell = document.getElementById(cfg.id)
             const mark =
-              (cell?.querySelector('.client-logo-mark') as HTMLElement | null) || cell
+              (cell?.querySelector('.client-logo-img') as HTMLElement | null) ||
+              (cell?.querySelector('.client-logo-mark') as HTMLElement | null) ||
+              cell
             const stage = measurePageBox(mark) || { x: 0, y: 0, w: 160, h: 80 }
             logos.push({ id: cfg.id, imageUrl: cfg.imageUrl, img, stage })
           })
         )
         logosRef.current = logos.filter((l) => l.img)
-
-        // Real handoff: drain every visible hero particle, leaving no duplicate sand.
-        const migrating = hero.beginFlowHandoff({ keepRatio: 0 })
-        if (!migrating.length || !logosRef.current.length) {
+        if (!logosRef.current.length) {
           starting = false
-          if (migrating.length) {
-            // No logos — still allow restore path by not locking orphan state awkwardly.
-            hero.restoreFlowHandoff?.()
-          }
           return
         }
 
@@ -601,95 +581,99 @@ export default function GearFlowBridge({
         spinRef.current = 0
         smoothLogoProgressRef.current = 0
         smoothGearProgressRef.current = 0
-        updateRanges(section)
+        latchedLogoProgressRef.current = 0
+        updateRanges()
 
-        const scrollX = window.scrollX || window.pageXOffset
-        const scrollY = window.scrollY || window.pageYOffset
-        const logoN = logosRef.current.length
-        const total = migrating.length
+        const brand = colorRef.current
+        const next: FlowParticle[] = []
 
-        particlesRef.current = Array.from({ length: total }, (_, i) => {
-          const src = migrating[i]
-          const clientX = src.clientX
-          const clientY = src.clientY
-          const logoIndex = i % logoN
-          return {
-            logoIndex,
-            pageX: clientX + scrollX,
-            pageY: clientY + scrollY,
-            heroPageX: clientX + scrollX,
-            heroPageY: clientY + scrollY,
-            logoPageX: clientX + scrollX,
-            logoPageY: clientY + scrollY,
-            logoLocalX: 0,
-            logoLocalY: 0,
-            localX: 0,
-            localY: 0,
-            localZ: 0.14,
-            gearPageX: clientX + scrollX,
-            gearPageY: clientY + scrollY,
-            departPageX: clientX + scrollX,
-            departPageY: clientY + scrollY,
-            r: src.r,
-            g: src.g,
-            b: src.b,
-            a: src.a,
-            colorIdx: src.colorIdx ?? i % 10,
-            stagger: ((i % 19) / 19) * 0.38 + Math.random() * 0.06,
-            logoArcNormal:
-              (Math.random() < 0.5 ? -1 : 1) * (0.42 + Math.random() * 0.78),
-            logoArcLift: 55 + Math.random() * 190,
-            logoArcBias: 0.25 + Math.random() * 0.5,
-            gearArcNormal:
-              (Math.random() < 0.5 ? -1 : 1) * (0.35 + Math.random() * 0.7),
-            gearArcLift: 45 + Math.random() * 150,
-            gearArcBias: 0.28 + Math.random() * 0.44,
-            flightPhase: Math.random() * Math.PI * 2,
-            hoverT: 0,
-          }
+        logosRef.current.forEach((logo, logoIndex) => {
+          if (!logo.img) return
+          const localW = Math.max(2, Math.round(logo.stage.w))
+          const localH = Math.max(2, Math.round(logo.stage.h))
+          // Full lattice — no thinning (hero-style density).
+          const sampled = sampleClientLogoPoints(logo.img, localW, localH, gap, 0, 0.06)
+
+          sampled.points.forEach((home, i) => {
+            const logoPageX = logo.stage.x + home.homeX
+            const logoPageY = logo.stage.y + home.homeY
+            const scatterAngle = Math.random() * Math.PI * 2
+            // Far cloud so reverse scroll clearly disperses the silhouette.
+            const scatterDist = 140 + Math.random() * 320
+            const cx = logo.stage.x + logo.stage.w * 0.5
+            const cy = logo.stage.y + logo.stage.h * 0.5
+            const startX = cx + Math.cos(scatterAngle) * scatterDist
+            const startY = cy + Math.sin(scatterAngle) * scatterDist
+
+            next.push({
+              logoIndex,
+              pageX: startX,
+              pageY: startY,
+              scatterAngle,
+              scatterDist,
+              heroPageX: startX,
+              heroPageY: startY,
+              logoPageX,
+              logoPageY,
+              logoLocalX: home.homeX,
+              logoLocalY: home.homeY,
+              localX: 0,
+              localY: 0,
+              localZ: 0.14,
+              gearPageX: startX,
+              gearPageY: startY,
+              departPageX: startX,
+              departPageY: startY,
+              r: brand.r,
+              g: brand.g,
+              b: brand.b,
+              a: home.a ?? 255,
+              colorIdx: i % 10,
+              stagger: ((i % 19) / 19) * 0.38 + Math.random() * 0.06,
+              logoArcNormal:
+                (Math.random() < 0.5 ? -1 : 1) * (0.35 + Math.random() * 0.65),
+              logoArcLift: 28 + Math.random() * 70,
+              logoArcBias: 0.25 + Math.random() * 0.5,
+              gearArcNormal:
+                (Math.random() < 0.5 ? -1 : 1) * (0.35 + Math.random() * 0.7),
+              gearArcLift: 45 + Math.random() * 150,
+              gearArcBias: 0.28 + Math.random() * 0.44,
+              flightPhase: Math.random() * Math.PI * 2,
+              hoverT: 0,
+            })
+          })
         })
 
-        applyLogoHomes()
-        applyGearHomes()
+        particlesRef.current = next
+        particleUiReadyRef.current = true
         markParticleReady(true)
       } finally {
         starting = false
       }
     }
 
-    // Pre-trigger before Clients enters so the same hero sand can travel slowly.
     const clients = document.getElementById('clients')
     const io = new IntersectionObserver(
       (entries) => {
         for (const entry of entries) {
-          if (entry.isIntersecting && entry.intersectionRatio >= 0.06) {
+          if (entry.isIntersecting && entry.intersectionRatio >= 0.04) {
             void startFlow()
           }
         }
       },
-      { threshold: [0.01, 0.05, 0.1], rootMargin: '0px 0px 35% 0px' }
+      { threshold: [0.01, 0.05, 0.1], rootMargin: '0px 0px 20% 0px' }
     )
     if (clients) io.observe(clients)
-    else io.observe(section)
 
     const onScroll = () => {
-      if (!startedRef.current) {
-        const scrollY = window.scrollY || window.pageYOffset
-        const hero = document.getElementById('top')
-        const heroBottom =
-          hero != null
-            ? (window.scrollY || 0) + hero.getBoundingClientRect().bottom
-            : 0
-        if (scrollY > heroBottom - window.innerHeight * 0.82) void startFlow()
-      }
-      if (startedRef.current) updateRanges(section)
+      if (startedRef.current) updateRanges()
     }
     window.addEventListener('scroll', onScroll, { passive: true })
 
     const onResize = () => {
       resize()
       if (!startedRef.current || !particlesRef.current.length) return
-      updateRanges(section)
+      updateRanges()
       applyLogoHomes()
       applyGearHomes()
     }
@@ -728,13 +712,9 @@ export default function GearFlowBridge({
       document.removeEventListener('pointerover', onPointerOver)
       document.removeEventListener('pointerout', onPointerOut)
       io.disconnect()
+      resetFlow()
     }
-  }, [
-    heroRef,
-    scenariosId,
-    particleSize,
-    logoTargets,
-  ])
+  }, [scenariosId, particleSize, particleGap, logoTargets])
 
   return (
     <div className="gear-flow-bridge" aria-hidden="true">

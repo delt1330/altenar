@@ -31,7 +31,9 @@ export default function WorldMap({ center, zoom, highlight, markers, onCountryCl
       <ZoomableGroup center={center} zoom={zoom} minZoom={1} maxZoom={5} filterZoomEvent={() => false}>
         <Geographies geography={geoUrl}>
           {({ geographies }) =>
-            geographies.map((geo) => {
+            geographies
+              .filter((geo) => geo.properties.name !== 'Antarctica')
+              .map((geo) => {
               const isActive = highlight.includes(geo.properties.name as string);
               return (
                 <Geography
