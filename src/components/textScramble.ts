@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react';
 
 const UPPER = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+const DIGITS = '0123456789';
 
 /** Matches spur.us HoverTextScramble defaults (GSAP ScrambleTextPlugin). */
 export const SCRAMBLE = {
@@ -18,6 +19,11 @@ type UseTextScrambleOptions = {
   onView?: boolean;
   /** IntersectionObserver rootMargin for onView. */
   viewMargin?: string;
+  /**
+   * `alpha` — random A–Z (CTA default).
+   * `digit` — random 0–9 on digit slots; +, %, letters stay fixed until locked.
+   */
+  charset?: 'alpha' | 'digit';
 };
 
 export function useTextScramble(
@@ -29,6 +35,7 @@ export function useTextScramble(
     triggerOnParentHover = false,
     onView = false,
     viewMargin = '-40px',
+    charset = 'alpha',
   }: UseTextScrambleOptions = {},
 ) {
   const busyRef = useRef(false);
@@ -48,6 +55,17 @@ export function useTextScramble(
       rafRef.current = 0;
       label.textContent = originalRef.current;
       busyRef.current = false;
+    };
+
+    const scrambleChar = (ch: string) => {
+      if (charset === 'digit') {
+        if (ch >= '0' && ch <= '9') {
+          return DIGITS[(Math.random() * DIGITS.length) | 0];
+        }
+        // Keep +, %, letters, etc. stable while neighboring digits scramble.
+        return ch;
+      }
+      return UPPER[(Math.random() * UPPER.length) | 0];
     };
 
     const run = () => {
@@ -84,7 +102,7 @@ export function useTextScramble(
             } else if (i < locked) {
               out += ch;
             } else {
-              out += UPPER[(Math.random() * UPPER.length) | 0];
+              out += scrambleChar(ch);
             }
           }
           label.textContent = out;
@@ -130,5 +148,5 @@ export function useTextScramble(
       });
       observer?.disconnect();
     };
-  }, [rootRef, labelRef, hover, triggerOnParentHover, onView, viewMargin]);
+  }, [rootRef, labelRef, hover, triggerOnParentHover, onView, viewMargin, charset]);
 }

@@ -4,9 +4,13 @@ import { motion, type Variants } from 'framer-motion';
 import WorldMap, { type MapMarker } from './WorldMap';
 import ParticleImage from './components/originkit/SvgParticles';
 import GearFlowBridge from './components/GearFlowBridge';
+import CaseBrandParticles from './components/CaseBrandParticles';
 import FooterBrandParticles from './components/FooterBrandParticles';
 import MapParticles from './components/MapParticles';
+import HeroMarkLoop from './components/HeroMarkLoop';
+import ScrollProgressBar from './components/ScrollProgressBar';
 import { CtaLink } from './components/CtaLink';
+import WipeReveal from './components/WipeReveal';
 import { useTextScramble } from './components/textScramble';
 import './styles.css';
 
@@ -17,6 +21,10 @@ const assetUrl = (path: string) => `${import.meta.env.BASE_URL}${path}`;
 
 /** Temporary: turn off hero particle / bridge motion. Flip to true to restore. */
 const HERO_MOTION_ENABLED = true;
+/** New hero: mark ↔ ALTENAR particle loop (default on). */
+const HERO_MARK_LOOP = true;
+/** Legacy: slogan words assembled from particles. Keep for rollback. */
+const HERO_SLOGAN_FROM_PARTICLES = false;
 
 type IconName = 'key' | 'store' | 'label';
 type CaseStudy = {
@@ -153,7 +161,17 @@ const products: Product[] = [
     text: 'Turnkey sportsbook solution provides the software and management tools needed to stand out and scale across desktop, mobile, and retail channels. With integrated core systems, a front end CMS, and 24/7 support, you can focus entirely on market entry and growth strategy. Bring your sportsbook to market fast and with everything in sync.',
     cta: 'Launch turnkey',
     nav: 'Turnkey',
-    chips: ['Fully-integrated PAM', 'Casino partners', 'Mobile app'],
+    chips: [
+      'Premium Data Feeds',
+      'Trading & Risk Management',
+      'Multi-channel Frontend',
+      'Custom content management',
+      '24/7 Business Support',
+      'Bonus Engine',
+      'Bet Builder',
+      'Cash Out',
+      'Boosted Odds',
+    ],
   },
   {
     icon: 'store',
@@ -162,7 +180,17 @@ const products: Product[] = [
     text: 'Retail solution seamlessly extends your brand into cashiers, kiosks, or venues without the need for on-site tech. Manage bets, payments, and accounts across every location through a single interface featuring intuitive touchscreen SSBTs and full remote monitoring. Fully integrated with your existing sportsbook and PAM stack, it ensures a unified omnichannel experience with the same credibility behind every screen and betting slip.',
     cta: 'Realworld launch',
     nav: 'Retail',
-    chips: ['Cashier', 'Terminal'],
+    chips: [
+      'Cashier & Terminal Solutions',
+      'Centralised Back Office',
+      'Remote Operations',
+      'Tailor-made Configuration',
+      '24/7 Business Support',
+      'Omnichannel Experience',
+      'Self-service Betting Terminals',
+      'Bet Reservation',
+      'Live & Pre-match Betting',
+    ],
   },
   {
     icon: 'label',
@@ -171,7 +199,17 @@ const products: Product[] = [
     text: 'Altenar’s white-label offering provides operators with a faster, lower-risk route to market, combining proven technology with operational support. Access a fully-managed platform with payment gateways, player management, and features designed to support regulatory requirements. Flexible configuration reflects your brand identity while Altenar manages the sportsbook platform, infrastructure, and system performance.',
     cta: 'Launch Fast',
     nav: 'White label',
-    chips: ['Licensing and compliance support', 'Regional expertise'],
+    chips: [
+      'Fast Market Launch',
+      'Licensing & Compliance',
+      'Sportsbook & Casino',
+      'Payment Infrastructure',
+      'Fully Customisable Brand',
+      'Clear Growth Path',
+      'Multi-brand Management',
+      'Bonus Engine',
+      'Regional Adaptation',
+    ],
   },
 ];
 
@@ -412,12 +450,22 @@ function clientLogoId(name: string) {
   return `logo-cell-${name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')}`;
 }
 
+function caseLogoId(name: string) {
+  return `case-logo-${name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')}`;
+}
+
 const allClientLogos = clientGroups.flatMap((g) => g.clients);
 const clientLogoWall = allClientLogos.slice(0, 12);
 const clientLogoTargets = clientLogoWall.map((c) => ({
   id: clientLogoId(c.name),
   imageUrl: assetUrl(c.logo),
 }));
+const caseLogoTargets = cases
+  .filter((c) => c.logo)
+  .map((c) => ({
+    id: caseLogoId(c.company),
+    imageUrl: assetUrl(c.logo!),
+  }));
 
 function App() {
   const heroParticlesRef = useRef<any>(null);
@@ -446,12 +494,30 @@ function App() {
       {HERO_MOTION_ENABLED ? (
         <FooterBrandParticles particleSize={10} particleGap={4} color="#ffffff" />
       ) : null}
+      {HERO_MOTION_ENABLED ? (
+        <CaseBrandParticles
+          particleSize={10}
+          particleGap={4}
+          color="#15161b"
+          logoTargets={caseLogoTargets}
+        />
+      ) : null}
       <main className="page">
         <section
-          className={`hero-stack${HERO_MOTION_ENABLED ? '' : ' hero-stack--static'}`}
+          className={`hero-stack${HERO_MOTION_ENABLED ? '' : ' hero-stack--static'}${HERO_SLOGAN_FROM_PARTICLES ? ' hero-stack--slogan-particles' : ' hero-stack--solid-type'}`}
           id="top"
         >
-          {HERO_MOTION_ENABLED ? (
+          {HERO_MOTION_ENABLED && HERO_MARK_LOOP && !HERO_SLOGAN_FROM_PARTICLES ? (
+            <div className="hero-bg-particles" aria-hidden="true">
+              <HeroMarkLoop
+                markSrc={assetUrl('altenar-mark-only.svg')}
+                wordmarkSrc={assetUrl('footer-brand/Altenar_Brand.svg')}
+                particleSize={10}
+                particleGap={4}
+              />
+            </div>
+          ) : null}
+          {HERO_MOTION_ENABLED && HERO_SLOGAN_FROM_PARTICLES ? (
             <div className="hero-bg-particles" aria-hidden="true">
               <HeroParticles
                 ref={heroParticlesRef}
@@ -482,7 +548,6 @@ function App() {
                   repulsionMode: 'outside',
                 }}
                 imageConfig={{
-                  // Slogan story ignores pattern plate; non-empty URL avoids empty-image overlay.
                   image: assetUrl('altenar-mark.png'),
                   logoImage: assetUrl('Altenar_Logo.svg'),
                   mode: 'fill',
@@ -495,6 +560,7 @@ function App() {
           <Hero />
         </section>
         <Clients />
+        <BridgeStatement />
         <Products />
         <Markets />
         <Proof />
@@ -504,6 +570,7 @@ function App() {
         <SeoBlock />
       </main>
       <Footer />
+      <ScrollProgressBar />
     </>
   );
 }
@@ -513,6 +580,18 @@ function ColumnGuides() {
     <div className="column-guides" aria-hidden="true">
       <div className="column-guides-inner" />
     </div>
+  );
+}
+
+function TopNavLink({ href, children }: { href: string; children: string }) {
+  const rootRef = React.useRef<HTMLAnchorElement | null>(null);
+  const labelRef = React.useRef<HTMLSpanElement | null>(null);
+  useTextScramble(rootRef, labelRef, children, { hover: true });
+
+  return (
+    <a ref={rootRef} href={href}>
+      <span ref={labelRef}>{children}</span>
+    </a>
   );
 }
 
@@ -562,9 +641,10 @@ function Header() {
         <nav className="topnav" aria-label="Main">
           {navGroups.map((group, gi) => (
             <div className="topnav-group" key={gi}>
-              <span className="topnav-marker" aria-hidden="true" />
               {group.map((l) => (
-                <a key={l.label} href={l.href}>{l.label}</a>
+                <TopNavLink key={l.label} href={l.href}>
+                  {l.label}
+                </TopNavLink>
               ))}
             </div>
           ))}
@@ -622,6 +702,30 @@ function Eyebrow({ children }: { children: string }) {
   );
 }
 
+/** Large stats: CTA scramble timing, digit charset, once on view. */
+function ScrambleDigits({
+  children,
+  className,
+}: {
+  children: string;
+  className?: string;
+}) {
+  const rootRef = React.useRef<HTMLElement | null>(null);
+  const labelRef = React.useRef<HTMLSpanElement | null>(null);
+  useTextScramble(rootRef, labelRef, children, {
+    hover: false,
+    onView: true,
+    viewMargin: '-60px',
+    charset: 'digit',
+  });
+
+  return (
+    <strong ref={rootRef as React.RefObject<HTMLStrongElement>} className={className}>
+      <span ref={labelRef}>{children}</span>
+    </strong>
+  );
+}
+
 function SectionHead({
   kicker,
   title,
@@ -634,60 +738,105 @@ function SectionHead({
   align?: 'left' | 'center' | 'right';
 }) {
   return (
-    <motion.div className={`section-head section-head--${align}`} variants={rise} initial="hidden" whileInView="visible" viewport={{ once: true, margin: '-90px' }}>
+    <div className={`section-head section-head--${align}`}>
       <Eyebrow>{kicker}</Eyebrow>
-      <h2>{title}</h2>
+      <WipeReveal as="h2">{title}</WipeReveal>
       {lead ? <p>{lead}</p> : null}
-    </motion.div>
+    </div>
   );
 }
 
 function Hero() {
-  return (
-    <div className="hero">
-      <div className="hero-layout">
-        <h1 className="visually-hidden">Stability meets flexibility</h1>
-
-        {/* Invisible anchors: particle sampler reads size/position from DOM */}
-        <div className="hero-slogan-tl" aria-hidden="true">
+  if (HERO_SLOGAN_FROM_PARTICLES) {
+    return (
+      <div className="hero">
+        <div className="hero-layout">
+          <h1 className="visually-hidden">Stability meets flexibility</h1>
+          <div className="hero-slogan-tl" aria-hidden="true">
+            <span
+              className="hero-slogan-word hero-slogan-word--stability"
+              data-particle-shot="both"
+              data-particle-color="ink"
+            >
+              Stability
+            </span>
+          </div>
           <span
-            className="hero-slogan-word hero-slogan-word--stability"
+            className="hero-slogan-word hero-slogan-word--meets-center"
+            data-particle-shot="1"
+            data-particle-color="live"
+            aria-hidden="true"
+          >
+            meets
+          </span>
+          <span
+            className="hero-slogan-word hero-slogan-word--flexibility"
             data-particle-shot="both"
             data-particle-color="ink"
+            aria-hidden="true"
           >
-            Stability
+            flexibility
           </span>
+          <motion.div
+            className="hero-side"
+            initial={{ opacity: 0, y: 18 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1], delay: 0.15 }}
+          >
+            <p className="hero-lead">
+              As your strategic partner, Altenar guides licensed operators to maximize profits and enter new markets confidently. We deliver highly flexible software—from API to fully managed operations—letting your team focus entirely on performance. Our cooperation ensures lightning-fast deployment, localized tools, and 24/7 trading support built to scale your business for shared growth.
+            </p>
+            <div className="hero-cta">
+              <CtaLink href="#scenarios" color="live">See solutions</CtaLink>
+              <CtaLink href="#demo" color="ink">Contact Us</CtaLink>
+            </div>
+          </motion.div>
         </div>
-        <span
-          className="hero-slogan-word hero-slogan-word--meets-center"
-          data-particle-shot="1"
-          data-particle-color="live"
-          aria-hidden="true"
-        >
-          meets
-        </span>
-        <span
-          className="hero-slogan-word hero-slogan-word--flexibility"
-          data-particle-shot="both"
-          data-particle-color="ink"
-          aria-hidden="true"
-        >
-          flexibility
-        </span>
+      </div>
+    );
+  }
+
+  return (
+    <div className="hero">
+      <div className="hero-layout hero-layout--solid">
+        <h1 className="visually-hidden">Stability meets flexibility</h1>
+
+        <div className="hero-slogan-solid" aria-hidden="true">
+          <WipeReveal as="span" className="hero-slogan-solid__line" delay={0.05}>
+            Stability meets
+          </WipeReveal>
+          <WipeReveal as="span" className="hero-slogan-solid__line" delay={0.18}>
+            flexibility
+          </WipeReveal>
+        </div>
+
+        <div className="hero-product">
+          <Eyebrow>Altenar</Eyebrow>
+          <Eyebrow>Sportsbook</Eyebrow>
+          <Eyebrow>Platform</Eyebrow>
+        </div>
+
+        <div className="hero-cta-row">
+          <div className="hero-cta-col hero-cta-col--1">
+            <CtaLink href="#scenarios" color="live">See solution</CtaLink>
+          </div>
+          <div className="hero-cta-col hero-cta-col--2">
+            <CtaLink href="#demo" color="ink">Contact Us</CtaLink>
+          </div>
+        </div>
 
         <motion.div
-          className="hero-side"
+          className="hero-lead-row"
           initial={{ opacity: 0, y: 18 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1], delay: 0.15 }}
         >
-          <p className="hero-lead">
-            As your strategic partner, Altenar guides licensed operators to maximize profits and enter new markets confidently. We deliver highly flexible software—from API to fully managed operations—letting your team focus entirely on performance. Our cooperation ensures lightning-fast deployment, localized tools, and 24/7 trading support built to scale your business for shared growth.
+          <p className="hero-lead-col hero-lead-col--3">
+            As your strategic partner, Altenar guides licensed operators to maximize profits and enter new markets confidently. We deliver highly flexible software—from API to fully managed operations—letting your team focus entirely on performance.
           </p>
-          <div className="hero-cta">
-            <CtaLink href="#scenarios" color="live">See solutions</CtaLink>
-            <CtaLink href="#demo" color="ink">Contact Us</CtaLink>
-          </div>
+          <p className="hero-lead-col hero-lead-col--4">
+            Our cooperation ensures lightning-fast deployment, localized tools, and 24/7 trading support built to scale your business for shared growth.
+          </p>
         </motion.div>
       </div>
     </div>
@@ -739,7 +888,74 @@ function Clients() {
           <LogoCell key={c.name} client={c} />
         ))}
       </div>
-      <CtaLink className="client-cases-link" href="#cases" color="soft">View all cases</CtaLink>
+      <div className="client-cases-link">
+        <CtaLink href="#cases" color="soft">View all cases</CtaLink>
+      </div>
+    </section>
+  );
+}
+
+const BRIDGE_STATEMENT =
+  'Altenar is a real-time technology engine that powers sportsbook operations, manages risk and optimises profitability—enabling operators to scale efficiently and achieve sustainable growth.';
+
+function BridgeStatement() {
+  const rootRef = React.useRef<HTMLElement | null>(null);
+  const [t, setT] = React.useState(0);
+  const chars = React.useMemo(() => Array.from(BRIDGE_STATEMENT), []);
+  const liveCount = Math.floor(t * chars.length);
+
+  React.useEffect(() => {
+    const root = rootRef.current;
+    if (!root) return;
+
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (reduceMotion) {
+      setT(1);
+      return;
+    }
+
+    let frame = 0;
+    const update = () => {
+      frame = 0;
+      const rect = root.getBoundingClientRect();
+      const vh = window.innerHeight || 1;
+      // Letter fill L→R: blue then dim gray (solutions-nav inactive).
+      const start = vh * 0.88;
+      const end = vh * 0.28;
+      const next = (start - rect.top) / Math.max(1, start - end);
+      setT(Math.max(0, Math.min(1, next)));
+    };
+
+    const requestUpdate = () => {
+      if (frame) return;
+      frame = window.requestAnimationFrame(update);
+    };
+
+    update();
+    window.addEventListener('scroll', requestUpdate, { passive: true });
+    window.addEventListener('resize', requestUpdate);
+    return () => {
+      if (frame) window.cancelAnimationFrame(frame);
+      window.removeEventListener('scroll', requestUpdate);
+      window.removeEventListener('resize', requestUpdate);
+    };
+  }, []);
+
+  return (
+    <section ref={rootRef} className="section section-bridge" aria-label="Altenar technology">
+      <p className="bridge-statement">
+        <span className="bridge-statement__sr">{BRIDGE_STATEMENT}</span>
+        <span className="bridge-statement__chars" aria-hidden="true">
+          {chars.map((ch, i) => (
+            <span
+              key={i}
+              className={`bridge-statement__char ${i < liveCount ? 'is-live' : 'is-dim'}`}
+            >
+              {ch}
+            </span>
+          ))}
+        </span>
+      </p>
     </section>
   );
 }
@@ -1039,15 +1255,15 @@ function Markets() {
               </p>
               <div className="market-metrics" aria-label="Altenar territory metrics">
                 <div>
-                  <strong>90</strong>
+                  <ScrambleDigits>90</ScrambleDigits>
                   <span>Countries of operation</span>
                 </div>
                 <div>
-                  <strong>50</strong>
+                  <ScrambleDigits>50</ScrambleDigits>
                   <span>Licenses obtained</span>
                 </div>
                 <div>
-                  <strong>1500</strong>
+                  <ScrambleDigits>1500</ScrambleDigits>
                   <span>Successful clients</span>
                 </div>
               </div>
@@ -1068,33 +1284,52 @@ function Proof() {
         lead="Altenar is dedicated to an idea of growing together with our clients. We believe that ambitions unlock infinite growth in the partnership."
       />
       <div className="cases">
-        {cases.map((c) => (
-          <motion.a className="case" key={c.company} href={c.href} variants={rise} initial="hidden" whileInView="visible" viewport={{ once: true, margin: '-60px' }}>
-            <span className="case-brand">
-              {c.logo ? (
-                <img src={assetUrl(c.logo)} alt={c.company} loading="lazy" />
-              ) : (
-                <span className="case-logo-text">{c.company}</span>
-              )}
-            </span>
-            <span className="case-proof">
-              <span className="case-market">{c.market}</span>
-              <strong className="case-result">{c.result}</strong>
-              <span className="case-result-label">{c.resultLabel}</span>
-            </span>
-            <div className="case-body">
-              <span className="case-copy">
-                <h3>{c.company}</h3>
-                <p>{c.text}</p>
-                <span className="case-tag">{c.tag}</span>
+        {cases.map((c) => {
+          const id = c.logo ? caseLogoId(c.company) : undefined;
+          return (
+            <motion.a
+              className={['case', c.logo ? 'case--particle' : ''].filter(Boolean).join(' ')}
+              key={c.company}
+              id={id}
+              href={c.href}
+              data-logo-id={id}
+              data-logo-src={c.logo ? assetUrl(c.logo) : undefined}
+              variants={rise}
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true, margin: '-60px' }}
+            >
+              <span className="case-brand">
+                {c.logo ? (
+                  <img
+                    className="case-brand__img case-brand__img--solid"
+                    src={assetUrl(c.logo)}
+                    alt={c.company}
+                    loading="lazy"
+                  />
+                ) : (
+                  <span className="case-logo-text">{c.company}</span>
+                )}
               </span>
-              <span className="case-arrow" aria-hidden="true">↗</span>
-            </div>
-          </motion.a>
-        ))}
-        <a className="case-all group" href="#demo" aria-label="Contact us">
-          <CtaLink as="span" triggerOnParentHover>Contact us</CtaLink>
-        </a>
+              <span className="case-proof">
+                <span className="case-market">{c.market}</span>
+                <ScrambleDigits className="case-result">{c.result}</ScrambleDigits>
+                <span className="case-result-label">{c.resultLabel}</span>
+              </span>
+              <div className="case-body">
+                <span className="case-copy">
+                  <h3>{c.company}</h3>
+                  <p>{c.text}</p>
+                  <span className="case-tag">{c.tag}</span>
+                </span>
+                <span className="case-arrow" aria-hidden="true">↗</span>
+              </div>
+            </motion.a>
+          );
+        })}
+        <div className="case-all">
+          <CtaLink href="#demo" color="live">Contact us</CtaLink>
+        </div>
       </div>
     </section>
   );
@@ -1125,8 +1360,29 @@ function Awards() {
 
 function NewsCard({ item, wide = false }: { item: NewsItem; wide?: boolean }) {
   const rootRef = React.useRef<HTMLAnchorElement | null>(null);
+  const dateRef = React.useRef<HTMLTimeElement | null>(null);
   const readLabelRef = React.useRef<HTMLSpanElement | null>(null);
   useTextScramble(rootRef, readLabelRef, 'READ', { hover: true });
+
+  React.useEffect(() => {
+    const date = dateRef.current;
+    if (!date) return;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      date.classList.add('is-in');
+      return;
+    }
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries.some((entry) => entry.isIntersecting)) {
+          date.classList.add('is-in');
+          observer.disconnect();
+        }
+      },
+      { root: null, rootMargin: '0px 0px -8% 0px', threshold: 0.2 },
+    );
+    observer.observe(date);
+    return () => observer.disconnect();
+  }, []);
 
   return (
     <a
@@ -1135,7 +1391,10 @@ function NewsCard({ item, wide = false }: { item: NewsItem; wide?: boolean }) {
       href={item.href}
     >
       <span className="news-card__top">
-        <time className="news-card__date">{item.date}</time>
+        <time ref={dateRef} className="news-card__date" dateTime={item.date}>
+          <span className="news-card__date-fill" aria-hidden="true" />
+          <span className="news-card__date-text">{item.date}</span>
+        </time>
         <span className="news-card__read">{item.read}</span>
       </span>
       <h3 className="news-card__title">{item.title}</h3>
@@ -1191,19 +1450,19 @@ function FinalCta() {
   return (
     <section className="section section-final" id="demo">
       <div className="final-grid">
-        <motion.div className="final-copy" variants={rise} initial="hidden" whileInView="visible" viewport={{ once: true, margin: '-80px' }}>
+        <div className="final-copy">
           <Eyebrow>Contact</Eyebrow>
-          <h2>Where your ambitions unlock growth</h2>
-          <p>
+          <WipeReveal as="h2">Where your ambitions unlock growth</WipeReveal>
+          <motion.p variants={rise} initial="hidden" whileInView="visible" viewport={{ once: true, margin: '-80px' }}>
             Tell us which market you are targeting and which solution you need. Altenar will help you launch, expand, and scale with confidence.
-          </p>
+          </motion.p>
           <ul className="final-list">
             <li>Turnkey sportsbook</li>
             <li>Retail / landbase</li>
             <li>White label</li>
             <li>Licensed market entry</li>
           </ul>
-        </motion.div>
+        </div>
         <motion.form className="form" variants={rise} initial="hidden" whileInView="visible" viewport={{ once: true, margin: '-80px' }} onSubmit={(e) => e.preventDefault()}>
           <label>
             <span>Name</span>
@@ -1257,7 +1516,7 @@ function SeoBlock() {
   }
 
   return (
-    <section className="section section--light section-seo" id="seo" aria-label="SEO">
+    <section className="section section-seo" id="seo" aria-label="SEO">
       <div className="seo-grid">
         {columns.map((paragraphs, columnIndex) => (
           <div className="seo-col" key={`seo-col-${columnIndex}`}>

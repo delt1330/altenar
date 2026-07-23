@@ -68,7 +68,7 @@ function curvedSwarmPoint(
   }
 }
 
-type SampledPoint = { x: number; y: number; r: number; g: number; b: number }
+type SampledPoint = { x: number; y: number; r: number; g: number; b: number; a: number }
 
 /**
  * World map assembled from particles — same swarm recipe as the client and
@@ -179,9 +179,11 @@ export default function MapParticles({ particleGap = 4, particleSize = 10 }: Pro
           pts.push({
             x: x + offX,
             y: y + offY,
-            r: isActive ? 0 : 21,
-            g: isActive ? 158 : 22,
-            b: isActive ? 227 : 27,
+            // Active countries stay brand blue; inactive land is white @ 80%.
+            r: isActive ? 0 : 255,
+            g: isActive ? 158 : 255,
+            b: isActive ? 227 : 255,
+            a: isActive ? 0.85 : 0.8,
           })
         }
       }
@@ -232,7 +234,7 @@ export default function MapParticles({ particleGap = 4, particleSize = 10 }: Pro
           r: pt.r,
           g: pt.g,
           b: pt.b,
-          a: 255,
+          a: pt.a,
           stagger: ((i % 19) / 19) * 0.38 + Math.random() * 0.06,
           arcNormal: (Math.random() < 0.5 ? -1 : 1) * (0.35 + Math.random() * 0.65),
           arcLift: 28 + Math.random() * 70,
@@ -268,6 +270,7 @@ export default function MapParticles({ particleGap = 4, particleSize = 10 }: Pro
           p.r = t.r
           p.g = t.g
           p.b = t.b
+          p.a = t.a
           p.dead = false
         } else {
           p.dead = true
@@ -351,7 +354,7 @@ export default function MapParticles({ particleGap = 4, particleSize = 10 }: Pro
         p.y = y
         if (alpha <= 0.01) continue
 
-        ctx.fillStyle = `rgba(${p.r},${p.g},${p.b},${alpha * 0.85})`
+        ctx.fillStyle = `rgba(${p.r},${p.g},${p.b},${alpha * p.a})`
         ctx.fillRect(Math.round(x - ps / 2), Math.round(y - ps / 2), ps, ps)
       }
     }
