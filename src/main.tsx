@@ -720,7 +720,12 @@ function ScrambleDigits({
   });
 
   return (
-    <strong ref={rootRef as React.RefObject<HTMLStrongElement>} className={className}>
+    <strong
+      ref={(el) => {
+        rootRef.current = el;
+      }}
+      className={className}
+    >
       <span ref={labelRef}>{children}</span>
     </strong>
   );
