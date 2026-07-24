@@ -179,11 +179,11 @@ export default function MapParticles({ particleGap = 4, particleSize = 10 }: Pro
           pts.push({
             x: x + offX,
             y: y + offY,
-            // Active countries stay brand blue; inactive land is white @ 80%.
-            r: isActive ? 0 : 255,
-            g: isActive ? 158 : 255,
-            b: isActive ? 227 : 255,
-            a: isActive ? 0.85 : 0.8,
+            // Active countries stay brand blue; inactive land is grey @ ~55%.
+            r: isActive ? 0 : 92,
+            g: isActive ? 158 : 95,
+            b: isActive ? 227 : 103,
+            a: isActive ? 0.85 : 0.55,
           })
         }
       }

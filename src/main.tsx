@@ -965,16 +965,28 @@ function BridgeStatement() {
   );
 }
 
+/** CSS-mask silhouettes (sparse particle art). */
+const PRODUCT_ICON_SRC: Record<IconName, string> = {
+  key: assetUrl('product-icons/turnkey.png'),
+  store: assetUrl('product-icons/retail.png'),
+  label: assetUrl('product-icons/label.png'),
+};
+
+/** Solid ink for HeroParticles sampling (sparse PNGs undersample into a ring). */
+const PRODUCT_ICON_SAMPLE_SRC: Record<IconName, string> = {
+  key: assetUrl('product-icons/sample/turnkey.png'),
+  store: assetUrl('product-icons/sample/retail.png'),
+  label: assetUrl('product-icons/sample/label.png'),
+};
+
 function ProductIcon({ name }: { name: IconName }) {
-  const srcByName: Record<IconName, string> = {
-    key: assetUrl('product-icons/turnkey.png'),
-    store: assetUrl('product-icons/retail.png'),
-    label: assetUrl('product-icons/label.png'),
-  };
   return (
     <span
       className="product-icon"
-      style={{ WebkitMaskImage: `url(${srcByName[name]})`, maskImage: `url(${srcByName[name]})` }}
+      style={{
+        WebkitMaskImage: `url(${PRODUCT_ICON_SRC[name]})`,
+        maskImage: `url(${PRODUCT_ICON_SRC[name]})`,
+      }}
       aria-hidden="true"
     />
   );
@@ -1056,13 +1068,12 @@ function Products() {
               <HeroParticles
                 key={active.nav}
                 className="solutions-visual__particles"
-                particleCount={12}
-                particleGap={64}
-                particleSize={32}
+                particleCount={14}
+                particleGap={24}
+                particleSize={53}
                 particleShape="square"
                 particleColor="single"
                 singleColor="#009ee3"
-                shapePreset="circle"
                 autoAssemble={false}
                 assembleWhenVisible
                 assembleAfterMoves={0}
@@ -1087,6 +1098,14 @@ function Products() {
                   repulsionForce: 14,
                   repulsionRadius: 110,
                   repulsionMode: 'outside',
+                }}
+                imageConfig={{
+                  image: PRODUCT_ICON_SAMPLE_SRC[active.icon],
+                  mode: 'fill',
+                  sizeUnit: '%',
+                  widthPct: 50,
+                  heightPct: 50,
+                  anchor: 'center',
                 }}
                 style={{ width: '100%', height: '100%' }}
               />
