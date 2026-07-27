@@ -620,17 +620,14 @@ h3 {
 .hero-stack::before {
   content: '';
   position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 50%;
+  inset: 0;
   z-index: 1;
-  width: 100vw;
-  margin-left: -50vw;
-  pointer-events: none;
+  /* Fine, barely-visible square grid — hero only. */
   background-image:
-    linear-gradient(90deg, transparent calc(25% - 0.5px), var(--line-2) calc(25% - 0.5px), var(--line-2) calc(25% + 0.5px), transparent calc(25% + 0.5px)),
-    linear-gradient(90deg, transparent calc(50% - 0.5px), var(--line-2) calc(50% - 0.5px), var(--line-2) calc(50% + 0.5px), transparent calc(50% + 0.5px)),
-    linear-gradient(90deg, transparent calc(75% - 0.5px), var(--line-2) calc(75% - 0.5px), var(--line-2) calc(75% + 0.5px), transparent calc(75% + 0.5px));
+    linear-gradient(to right, rgba(243, 244, 245, 0.08) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(243, 244, 245, 0.08) 1px, transparent 1px);
+  background-size: 24px 24px;
+  pointer-events: none;
 }
 
 .hero-bg-particles {
@@ -783,6 +780,87 @@ h3 {
   width: 100%;
   height: 100%;
   pointer-events: none;
+}
+
+.hero-match-board {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  overflow: hidden;
+  background: var(--void);
+  pointer-events: auto;
+  touch-action: none;
+}
+
+.hero-match-board__canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background: var(--void);
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+}
+
+.hero-stack:has(.hero-match-board) .hero {
+  /* Keep copy above the match; pass events through empty space to the game. */
+  min-height: 100svh;
+}
+
+.hero-stack:has(.hero-match-board) .hero-slogan-solid__line {
+  /* Soft dark rim so light type stays readable on dense particle clusters. */
+  text-shadow:
+    0 0 18px rgba(0, 0, 0, 0.55),
+    0 1px 0 rgba(0, 0, 0, 0.35);
+}
+
+/* On PLAY: all hero copy exits horizontally away from center. */
+.hero-stack.is-match-playing .hero-slogan-solid,
+.hero-stack.is-match-playing .hero-product,
+.hero-stack.is-match-playing .hero-cta-row,
+.hero-stack.is-match-playing .hero-cta-col,
+.hero-stack.is-match-playing .hero-lead-row,
+.hero-stack.is-match-playing .hero-lead-col {
+  opacity: 0;
+  pointer-events: none !important;
+}
+
+/* Left of center → left */
+.hero-stack.is-match-playing .hero-slogan-solid {
+  transform: translate3d(-55vw, 0, 0);
+  transition-delay: 0s;
+}
+
+.hero-stack.is-match-playing .hero-cta-row,
+.hero-stack.is-match-playing .hero-cta-col {
+  transform: translate3d(-55vw, 0, 0);
+  transition-delay: 0.05s;
+}
+
+/* Right of center → right */
+.hero-stack.is-match-playing .hero-product {
+  transform: translate3d(55vw, 0, 0);
+  transition-delay: 0.03s;
+}
+
+.hero-stack.is-match-playing .hero-lead-col--3 {
+  transform: translate3d(55vw, 0, 0);
+  transition-delay: 0.06s;
+}
+
+.hero-stack.is-match-playing .hero-lead-col--4 {
+  transform: translate3d(55vw, 0, 0);
+  transition-delay: 0.09s;
+}
+
+.hero-stack:has(.hero-match-board) .hero-slogan-solid,
+.hero-stack:has(.hero-match-board) .hero-product,
+.hero-stack:has(.hero-match-board) .hero-cta-row,
+.hero-stack:has(.hero-match-board) .hero-cta-col,
+.hero-stack:has(.hero-match-board) .hero-lead-col {
+  transition:
+    transform 0.9s cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 0.7s ease;
+  will-change: transform, opacity;
 }
 
 .hero-slogan-tl {

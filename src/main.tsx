@@ -8,6 +8,7 @@ import CaseBrandParticles from './components/CaseBrandParticles';
 import FooterBrandParticles from './components/FooterBrandParticles';
 import MapParticles from './components/MapParticles';
 import HeroMarkLoop from './components/HeroMarkLoop';
+import HeroMatchBoard from './components/HeroMatchBoard';
 import ScrollProgressBar from './components/ScrollProgressBar';
 import { CtaLink } from './components/CtaLink';
 import WipeReveal from './components/WipeReveal';
@@ -25,6 +26,10 @@ const HERO_MOTION_ENABLED = true;
 const HERO_MARK_LOOP = true;
 /** Legacy: slogan words assembled from particles. Keep for rollback. */
 const HERO_SLOGAN_FROM_PARTICLES = false;
+/** Experiment: ARG–ENG 1986 match particle story (frame 1). Overrides mark/slogan loops. */
+const HERO_MATCH_1986 = true;
+/** Local hero sandbox: hide all sections below hero. Flip to false to restore page. */
+const HERO_ONLY = false;
 
 type IconName = 'key' | 'store' | 'label';
 type CaseStudy = {
@@ -469,6 +474,7 @@ const caseLogoTargets = cases
 
 function App() {
   const heroParticlesRef = useRef<any>(null);
+  const [heroMatchPlaying, setHeroMatchPlaying] = React.useState(false);
 
   useEffect(() => {
     if (import.meta.env.DEV) {
@@ -483,7 +489,7 @@ function App() {
     <>
       <ColumnGuides />
       <Header />
-      {HERO_MOTION_ENABLED ? (
+      {!HERO_ONLY && HERO_MOTION_ENABLED ? (
         <GearFlowBridge
           particleSize={10}
           particleGap={4}
@@ -491,10 +497,10 @@ function App() {
           logoTargets={clientLogoTargets}
         />
       ) : null}
-      {HERO_MOTION_ENABLED ? (
+      {!HERO_ONLY && HERO_MOTION_ENABLED ? (
         <FooterBrandParticles particleSize={10} particleGap={4} color="#ffffff" />
       ) : null}
-      {HERO_MOTION_ENABLED ? (
+      {!HERO_ONLY && HERO_MOTION_ENABLED ? (
         <CaseBrandParticles
           particleSize={10}
           particleGap={4}
@@ -504,10 +510,18 @@ function App() {
       ) : null}
       <main className="page">
         <section
-          className={`hero-stack${HERO_MOTION_ENABLED ? '' : ' hero-stack--static'}${HERO_SLOGAN_FROM_PARTICLES ? ' hero-stack--slogan-particles' : ' hero-stack--solid-type'}`}
+          className={`hero-stack${HERO_MOTION_ENABLED ? '' : ' hero-stack--static'}${HERO_SLOGAN_FROM_PARTICLES ? ' hero-stack--slogan-particles' : ' hero-stack--solid-type'}${heroMatchPlaying ? ' is-match-playing' : ''}`}
           id="top"
         >
-          {HERO_MOTION_ENABLED && HERO_MARK_LOOP && !HERO_SLOGAN_FROM_PARTICLES ? (
+          {HERO_MOTION_ENABLED && HERO_MATCH_1986 ? (
+            <div className="hero-bg-particles" aria-hidden="true">
+              <HeroMatchBoard onPlayChange={setHeroMatchPlaying} />
+            </div>
+          ) : null}
+          {HERO_MOTION_ENABLED &&
+          HERO_MARK_LOOP &&
+          !HERO_SLOGAN_FROM_PARTICLES &&
+          !HERO_MATCH_1986 ? (
             <div className="hero-bg-particles" aria-hidden="true">
               <HeroMarkLoop
                 markSrc={assetUrl('altenar-mark-only.svg')}
@@ -517,7 +531,7 @@ function App() {
               />
             </div>
           ) : null}
-          {HERO_MOTION_ENABLED && HERO_SLOGAN_FROM_PARTICLES ? (
+          {HERO_MOTION_ENABLED && HERO_SLOGAN_FROM_PARTICLES && !HERO_MATCH_1986 ? (
             <div className="hero-bg-particles" aria-hidden="true">
               <HeroParticles
                 ref={heroParticlesRef}
@@ -559,18 +573,26 @@ function App() {
           ) : null}
           <Hero />
         </section>
-        <Clients />
-        <BridgeStatement />
-        <Products />
-        <Markets />
-        <Proof />
-        <Awards />
-        <News />
-        <FinalCta />
-        <SeoBlock />
+        {!HERO_ONLY ? (
+          <>
+            <Clients />
+            <BridgeStatement />
+            <Products />
+            <Markets />
+            <Proof />
+            <Awards />
+            <News />
+            <FinalCta />
+            <SeoBlock />
+          </>
+        ) : null}
       </main>
-      <Footer />
-      <ScrollProgressBar />
+      {!HERO_ONLY ? (
+        <>
+          <Footer />
+          <ScrollProgressBar />
+        </>
+      ) : null}
     </>
   );
 }

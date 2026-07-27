@@ -2,6 +2,7 @@
 // @ts-nocheck
 
 import { forwardRef, useEffect, useImperativeHandle, useRef } from "react"
+import { sampleMatchFrame, sampleMatchImageData } from "../heroMatch1986"
 // ── Helpers ────────────────────────────────────────────────────────────────
 function containRect(iW, iH, cW, cH) {
     const a = iW / iH,
@@ -1643,6 +1644,11 @@ const ParticleImage = forwardRef(function ParticleImage({
     imageConfig,
     initialLogoShot = false,
     initialPatternShot = false,
+    /** Hero ARG–ENG 1986: match frame lattice (from image or programmatic). */
+    initialMatchShot = false,
+    matchFrame = 1,
+    /** Optional reference board image for frame 1 (exact artist drawing). */
+    matchFrameSrc = undefined,
     assembleAfterHoverMs = 0,
     particleCount,
     particleSize,
@@ -3085,8 +3091,14 @@ const ParticleImage = forwardRef(function ParticleImage({
         if (!W || !H) return
         const canvas = canvasRef.current
         if (!canvas) return
-        // Non-slogan mounts still need an image URL (unless a geometric preset).
-        if (!initialPatternShot && !url && shapePreset !== "circle") return
+        // Non-slogan mounts still need an image URL (unless a geometric / match preset).
+        if (
+            !initialPatternShot &&
+            !initialMatchShot &&
+            !url &&
+            shapePreset !== "circle"
+        )
+            return
         clearTimeout(animTimerRef.current)
         clearTimeout(autoAssembleTimerRef.current)
         clearTimeout(loopTimerRef.current)
@@ -3119,6 +3131,73 @@ const ParticleImage = forwardRef(function ParticleImage({
             fieldRect: { x: 0, y: 0, w: W, h: H },
             sampleGap: gap,
             gridAlpha: 0,
+        }
+
+        // ARG–ENG 1986 match frame: image board (preferred) or programmatic lattice.
+        if (initialMatchShot) {
+            const mountFromPoints = (src, rect) => {
+                if (!src.length) return
+                const fieldRect = { x: 0, y: 0, w: W, h: H }
+                const grid = regularGridPoints(src.length, fieldRect)
+                shuffle(grid)
+                const particles = src.map((p, index) => {
+                    const anchor = grid[index] || { x: p.homeX, y: p.homeY }
+                    const pt = mkParticle(
+                        p,
+                        anchor.x,
+                        anchor.y,
+                        anchor.x,
+                        anchor.y
+                    )
+                    pt.driftPhase = 0
+                    pt.driftSpeed = 0
+                    pt.driftAmp = 0
+                    return pt
+                })
+                animStateRef.current = "idle"
+                sceneRef.current = {
+                    particles,
+                    logoRect: rect,
+                    fieldRect,
+                    sampleGap: gap,
+                    gridAlpha: 0,
+                }
+                setAssembledVis(false)
+                scheduleAutoAssemble(particles)
+            }
+
+            if (matchFrameSrc) {
+                const img = new Image()
+                img.decoding = "async"
+                img.onload = () => {
+                    const sw = img.naturalWidth || img.width
+                    const sh = img.naturalHeight || img.height
+                    const off = document.createElement("canvas")
+                    off.width = sw
+                    off.height = sh
+                    const oc = off.getContext("2d")
+                    if (!oc) return
+                    oc.drawImage(img, 0, 0)
+                    let px
+                    try {
+                        px = oc.getImageData(0, 0, sw, sh).data
+                    } catch {
+                        return
+                    }
+                    const sampled = sampleMatchImageData(px, sw, sh, W, H, gap)
+                    mountFromPoints(sampled.points, sampled.rect)
+                }
+                img.onerror = () => {
+                    const sampled = sampleMatchFrame(W, H, gap, matchFrame || 1)
+                    mountFromPoints(sampled.points, sampled.rect)
+                }
+                img.src = matchFrameSrc
+                return
+            }
+
+            const sampled = sampleMatchFrame(W, H, gap, matchFrame || 1)
+            mountFromPoints(sampled.points, sampled.rect)
+            return
         }
 
         // Spur-like solutions icon: few large pixels on a calm lattice → circle.
@@ -3581,6 +3660,9 @@ const ParticleImage = forwardRef(function ParticleImage({
         shapeAfterMoves,
         initialLogoShot,
         initialPatternShot,
+        initialMatchShot,
+        matchFrame,
+        matchFrameSrc,
         logoImage,
     ])
     useEffect(() => {
@@ -4294,7 +4376,10 @@ const ParticleImage = forwardRef(function ParticleImage({
                 ref={canvasRef}
                 style={{ display: "block", width: "100%", height: "100%" }}
             />
-            {!image && !initialPatternShot && shapePreset !== "circle" && (
+            {!image &&
+                !initialPatternShot &&
+                !initialMatchShot &&
+                shapePreset !== "circle" && (
                 <div
                     style={{
                         position: "absolute",
@@ -4324,6 +4409,9 @@ ParticleImage.defaultProps = {
     imageConfig: undefined,
     initialLogoShot: false,
     initialPatternShot: false,
+    initialMatchShot: false,
+    matchFrame: 1,
+    matchFrameSrc: undefined,
     particleCount: 20,
     particleSize: 5,
     particleShape: "circle",
