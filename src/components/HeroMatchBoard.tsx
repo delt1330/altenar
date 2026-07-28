@@ -598,6 +598,8 @@ export default function HeroMatchBoard({
     }
     let scoreEngland = 0
     let momentum = 0
+    let displayedOdds = 2.45
+    let marketTeam: 'ARG' | 'ENG' = 'ARG'
     let rally = 0
     let nextServeDirection = 1
     let ball = { x: 0, y: 0, vx: 260, vy: 95 }
@@ -750,20 +752,24 @@ export default function HeroMatchBoard({
       ].filter((element): element is HTMLElement => Boolean(element))
       const sloganBottom = slogan
         ? slogan.getBoundingClientRect().bottom - rect.top
-        : height * 0.3
+        : height * 0.28
       const lowerTops = lowerElements
         .map(
           (element) =>
             element.getBoundingClientRect().top - rect.top
         )
-        .filter((top) => top > sloganBottom)
+        .filter((top) => top > sloganBottom + 8)
       const lowerTop = lowerTops.length
         ? Math.min(...lowerTops)
-        : height * 0.76
+        : height * 0.78
+      // Center the ready cluster in the clear band between slogan and lead/CTA.
+      const bandPad = Math.round(Math.min(36, (lowerTop - sloganBottom) * 0.08))
+      const bandTop = sloganBottom + bandPad
+      const bandBottom = Math.max(bandTop + 80, lowerTop - bandPad)
       const readyCenterY = clamp(
-        sloganBottom + (lowerTop - sloganBottom) / 2,
-        originY + 28 * PITCH,
-        originY + (boardRows - 28) * PITCH
+        (bandTop + bandBottom) / 2,
+        originY + 20 * PITCH,
+        originY + (boardRows - 24) * PITCH
       )
 
       layout = {
@@ -849,6 +855,8 @@ export default function HeroMatchBoard({
       scoreArgentina = 0
       scoreEngland = 0
       momentum = 0
+      displayedOdds = 2.45
+      marketTeam = 'ARG'
       rally = 0
       sparks = []
       const geometry = getGeometry()
@@ -950,25 +958,26 @@ export default function HeroMatchBoard({
     const calculateMarket = () => {
       const progress = clamp(matchTime / GAME_DURATION, 0, 1)
       const scoreDifference = scoreArgentina - scoreEngland
-      const urgency = 1 + progress * 1.7
+      const scorePressure = 0.45 + progress * 0.55
       const argLogit = clamp(
         0.16 +
-          scoreDifference * 1.18 * urgency +
-          momentum * 0.82,
+          scoreDifference * scorePressure +
+          momentum * 0.25,
         -8,
         8
       )
       const engLogit = clamp(
         -0.04 -
-          scoreDifference * 1.18 * urgency -
-          momentum * 0.82,
+          scoreDifference * scorePressure -
+          momentum * 0.25,
         -8,
         8
       )
       const drawLogit = clamp(
         -0.36 +
-          progress * 2.2 -
-          Math.abs(scoreDifference) * (1.9 + progress),
+          progress * 1.55 -
+          Math.abs(scoreDifference) *
+            (0.75 + progress * 0.55),
         -8,
         8
       )
@@ -976,33 +985,33 @@ export default function HeroMatchBoard({
       const engWeight = Math.exp(engLogit)
       const drawWeight = Math.exp(drawLogit)
       const total = argWeight + engWeight + drawWeight
-      const outcomes = [
-        {
-          label: 'ARG WIN',
-          probability: argWeight / total,
-          color: COLORS.argentina,
-        },
-        {
-          label: 'ENG WIN',
-          probability: engWeight / total,
-          color: COLORS.england,
-        },
-        {
-          label: 'DRAW',
-          probability: drawWeight / total,
-          color: COLORS.clock,
-        },
-      ]
-      const market = outcomes.reduce((best, outcome) =>
-        outcome.probability > best.probability ? outcome : best
+      const argProbability = argWeight / total
+      const engProbability = engWeight / total
+      const marketProbability =
+        marketTeam === 'ARG' ? argProbability : engProbability
+      const targetOdds = clamp(
+        1.04 / marketProbability,
+        1.05,
+        9.99
       )
+
       return {
-        label: market.label,
-        color: market.color,
-        odds: clamp(1.04 / market.probability, 1.05, 9.99).toFixed(
-          2
-        ),
+        label: `${marketTeam} WIN`,
+        color:
+          marketTeam === 'ARG'
+            ? COLORS.argentina
+            : COLORS.england,
+        odds: displayedOdds.toFixed(2),
+        targetOdds,
       }
+    }
+
+    const updateDisplayedOdds = (dt: number) => {
+      const { targetOdds } = calculateMarket()
+      const response = scene === 'goal' ? 5.2 : 2.1
+      const blend = 1 - Math.exp(-response * dt)
+      displayedOdds += (targetOdds - displayedOdds) * blend
+      displayedOdds = clamp(displayedOdds, 1.05, 9.99)
     }
 
     const updateSparks = (dt: number) => {
@@ -1216,6 +1225,12 @@ export default function HeroMatchBoard({
         scoreEngland += 1
         momentum = clamp(momentum - 0.72, -1, 1)
       }
+      marketTeam =
+        scoreArgentina > scoreEngland
+          ? 'ARG'
+          : scoreEngland > scoreArgentina
+            ? 'ENG'
+            : scorer
       scene = 'goal'
       sceneTime = 0
       rally = 0
@@ -1349,6 +1364,7 @@ export default function HeroMatchBoard({
 
       updatePaddles(dt)
       updateSparks(dt)
+      updateDisplayedOdds(dt)
 
       if (scene === 'goal') {
         sceneTime += dt
@@ -1512,8 +1528,9 @@ export default function HeroMatchBoard({
       const labelScale = 1
       const oddsScale = layout.width < 760 ? 2 : 3
       const oddsScaleY = 2
-      const readyButtonTopOffset = 38
+      const readyButtonTopOffset = 26
       const readyButtonHeight = 14
+      // Tournament sits 12 rows above the score line; group spans tournament → PLAY.
       const readyGroupTopOffset = -12
       const readyGroupBottomOffset =
         readyButtonTopOffset + readyButtonHeight
@@ -1679,10 +1696,10 @@ export default function HeroMatchBoard({
           1
         )
         const buttonWidth = buttonCols + 25
-        const buttonHeight = 14
         const buttonLeft =
           centerCol - Math.floor(buttonWidth / 2)
-        const buttonTop = scoreRow + 26
+        const buttonTop = scoreRow + readyButtonTopOffset
+        const buttonHeight = readyButtonHeight
         const buttonColor = playAgainHovered
           ? controlledSide === 'left'
             ? COLORS.argentina
@@ -1896,6 +1913,13 @@ export default function HeroMatchBoard({
     resize()
     prepareMatch()
     seedIntroParticles(true)
+    // Remeasure after hero slogan / lead layout settles (WipeReveal, fonts).
+    const remasureId = window.requestAnimationFrame(() => {
+      window.requestAnimationFrame(() => {
+        if (!running) return
+        resize()
+      })
+    })
     root.addEventListener('pointermove', onPointerMove)
     root.addEventListener('pointerleave', onPointerLeave)
     root.addEventListener('pointerdown', onPointerDown)
@@ -1905,6 +1929,7 @@ export default function HeroMatchBoard({
     return () => {
       running = false
       cancelAnimationFrame(frame)
+      cancelAnimationFrame(remasureId)
       root.removeEventListener('pointermove', onPointerMove)
       root.removeEventListener('pointerleave', onPointerLeave)
       root.removeEventListener('pointerdown', onPointerDown)
