@@ -2,7 +2,7 @@ import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 
 export default defineConfig({
-  base: '/altenar-v4/',
+  base: '/altenar/',
   plugins: [react()],
   resolve: {
     alias: {
