@@ -33,6 +33,8 @@ const HERO_SLOGAN_FROM_PARTICLES = false;
 const HERO_MATCH_1986 = true;
 /** Local hero sandbox: hide all sections below hero. Flip to false to restore page. */
 const HERO_ONLY = false;
+/** Shared Figma-style page notes. Flip to true to restore. */
+const PAGE_NOTES_ENABLED = false;
 
 type IconName = 'key' | 'store' | 'label';
 type CaseStudy = {
@@ -633,7 +635,7 @@ function App() {
           <ScrollProgressBar />
         </>
       ) : null}
-      <PageNotes />
+      {PAGE_NOTES_ENABLED ? <PageNotes /> : null}
     </>
   );
 }
