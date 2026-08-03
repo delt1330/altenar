@@ -1,21 +1,4 @@
 {
   "version": 1,
-  "notes": [
-    {
-      "id": "6ba264c0-dc01-4390-bdf4-c1545cd253a8",
-      "x": 0.19791666666666666,
-      "y": 0.04499196572040707,
-      "author": "You",
-      "createdAt": "2026-08-03T15:08:57.602Z",
-      "updatedAt": "2026-08-03T15:08:57.602Z",
-      "messages": [
-        {
-          "id": "a560ee67-12cb-4866-9d93-2d41aa75d729",
-          "text": "Figma-style root",
-          "author": "You",
-          "createdAt": "2026-08-03T15:08:57.602Z"
-        }
-      ]
-    }
-  ]
+  "notes": []
 }
