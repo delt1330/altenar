@@ -23,13 +23,19 @@
       "y": 0.049276914836636314,
       "author": "You",
       "createdAt": "2026-08-03T15:10:11.763Z",
-      "updatedAt": "2026-08-03T15:10:11.763Z",
+      "updatedAt": "2026-08-03T15:10:13.049Z",
       "messages": [
         {
           "id": "d5b06009-4652-4a1d-ba13-e2469e3b55a4",
           "text": "Sync root 1785769811709",
           "author": "You",
           "createdAt": "2026-08-03T15:10:11.763Z"
+        },
+        {
+          "id": "84ff29ea-3f80-43c0-b82d-4be5859901ef",
+          "text": "Sync reply 1785769812982",
+          "author": "You",
+          "createdAt": "2026-08-03T15:10:13.049Z"
         }
       ]
     }
