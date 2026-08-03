@@ -1,4 +1,10 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react'
+import React, {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from 'react'
 import {
   createNoteId,
   DesignNote,
@@ -14,6 +20,9 @@ type Draft = {
   y: number
   text: string
 }
+
+const PAGE_MARGIN = 12
+const CARD_WIDTH = 280
 
 function docSize() {
   const el = document.documentElement
@@ -41,6 +50,31 @@ function pinStyle(note: Pick<DesignNote, 'x' | 'y'>): React.CSSProperties {
   }
 }
 
+/** Prefer side with more room so the card starts on-page. */
+function cardAnchorClass(x: number, y: number) {
+  const h = x > 0.58 ? 'is-left' : 'is-right'
+  const v = y > 0.72 ? 'is-above' : 'is-below'
+  return `${h} ${v}`
+}
+
+function clampCardToPage(card: HTMLElement) {
+  const { width: docW, height: docH } = docSize()
+  const rect = card.getBoundingClientRect()
+  const left = rect.left + window.scrollX
+  const top = rect.top + window.scrollY
+  const right = left + rect.width
+  const bottom = top + rect.height
+
+  let dx = 0
+  let dy = 0
+  if (right > docW - PAGE_MARGIN) dx -= right - (docW - PAGE_MARGIN)
+  if (left + dx < PAGE_MARGIN) dx += PAGE_MARGIN - (left + dx)
+  if (bottom > docH - PAGE_MARGIN) dy -= bottom - (docH - PAGE_MARGIN)
+  if (top + dy < PAGE_MARGIN) dy += PAGE_MARGIN - (top + dy)
+
+  card.style.transform = dx || dy ? `translate(${dx}px, ${dy}px)` : ''
+}
+
 function isTypingTarget(target: EventTarget | null) {
   if (!(target instanceof HTMLElement)) return false
   const tag = target.tagName
@@ -49,6 +83,45 @@ function isTypingTarget(target: EventTarget | null) {
     tag === 'TEXTAREA' ||
     tag === 'SELECT' ||
     target.isContentEditable
+  )
+}
+
+function NoteCard({
+  x,
+  y,
+  children,
+  className = '',
+}: {
+  x: number
+  y: number
+  children: React.ReactNode
+  className?: string
+}) {
+  const ref = useRef<HTMLDivElement | null>(null)
+  const { width: docW } = docSize()
+  const maxWidth = Math.max(
+    160,
+    Math.min(CARD_WIDTH, docW - PAGE_MARGIN * 2)
+  )
+
+  useLayoutEffect(() => {
+    const el = ref.current
+    if (!el) return
+    el.style.transform = ''
+    clampCardToPage(el)
+  }, [x, y, children, maxWidth, docW])
+
+  return (
+    <div
+      ref={ref}
+      className={['page-note__card', cardAnchorClass(x, y), className]
+        .filter(Boolean)
+        .join(' ')}
+      style={{ width: maxWidth, maxWidth }}
+      onClick={(event) => event.stopPropagation()}
+    >
+      {children}
+    </div>
   )
 }
 
@@ -142,7 +215,12 @@ export default function PageNotes() {
     const onKey = (event: KeyboardEvent) => {
       if (isTypingTarget(event.target)) return
       if (event.metaKey || event.ctrlKey || event.altKey) return
-      if (event.key === 'x' || event.key === 'X' || event.key === 'х' || event.key === 'Х') {
+      if (
+        event.key === 'c' ||
+        event.key === 'C' ||
+        event.key === 'с' ||
+        event.key === 'С'
+      ) {
         event.preventDefault()
         setActive((v) => {
           const next = !v
@@ -217,7 +295,7 @@ export default function PageNotes() {
     queuePersist(next)
   }
 
-  // docTick forces pin reposition after layout/resize.
+  // docTick forces pin/card reposition after layout/resize.
   void docTick
 
   return (
@@ -232,7 +310,7 @@ export default function PageNotes() {
           .join(' ')}
         role="status"
       >
-        <span className="page-notes-hint__key">X</span>
+        <span className="page-notes-hint__key">C</span>
         <span>
           {active
             ? sharing
@@ -283,10 +361,7 @@ export default function PageNotes() {
                   {index + 1}
                 </button>
                 {open ? (
-                  <div
-                    className="page-note__card"
-                    onClick={(event) => event.stopPropagation()}
-                  >
+                  <NoteCard x={note.x} y={note.y}>
                     <div className="page-note__card-head">
                       <span className="page-note__author">{note.author}</span>
                       <button
@@ -305,7 +380,7 @@ export default function PageNotes() {
                         updateNoteText(note.id, event.target.value)
                       }
                     />
-                  </div>
+                  </NoteCard>
                 ) : null}
               </div>
             )
@@ -320,7 +395,7 @@ export default function PageNotes() {
               <div className="page-note__pin" aria-hidden="true">
                 +
               </div>
-              <div className="page-note__card">
+              <NoteCard x={draft.x} y={draft.y}>
                 <div className="page-note__card-head">
                   <input
                     className="page-note__author-input"
@@ -347,7 +422,10 @@ export default function PageNotes() {
                     setDraft((d) => (d ? { ...d, text: event.target.value } : d))
                   }
                   onKeyDown={(event) => {
-                    if (event.key === 'Enter' && (event.metaKey || event.ctrlKey)) {
+                    if (
+                      event.key === 'Enter' &&
+                      (event.metaKey || event.ctrlKey)
+                    ) {
                       event.preventDefault()
                       commitDraft()
                     }
@@ -362,7 +440,7 @@ export default function PageNotes() {
                     Post
                   </button>
                 </div>
-              </div>
+              </NoteCard>
             </div>
           ) : null}
         </div>
