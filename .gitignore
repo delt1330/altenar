@@ -5,3 +5,11 @@ dist/
 .agents/
 skills-lock.json
 altenar-*.md
+
+# Local tooling / demos (not part of the site deploy)
+.claude/
+.cursor/
+Chladni-Patterns-Generator/
+human-synthesis-header/
+mesh-state-gallery/
+vite.temp.config.ts
