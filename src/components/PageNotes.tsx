@@ -86,6 +86,17 @@ function isTypingTarget(target: EventTarget | null) {
   )
 }
 
+function formatNoteTime(iso: string) {
+  const date = new Date(iso)
+  if (Number.isNaN(date.getTime())) return ''
+  return date.toLocaleString(undefined, {
+    month: 'short',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+  })
+}
+
 function NoteCard({
   x,
   y,
@@ -136,8 +147,10 @@ export default function PageNotes() {
   const [author, setAuthor] = useState(() => readCachedAuthor() || 'You')
   const [draft, setDraft] = useState<Draft | null>(null)
   const [openId, setOpenId] = useState<string | null>(null)
+  const [replyText, setReplyText] = useState('')
   const [docTick, setDocTick] = useState(0)
   const layerRef = useRef<HTMLDivElement | null>(null)
+  const replyRef = useRef<HTMLTextAreaElement | null>(null)
   const sharing = notesSharingEnabled()
   const saveTimer = useRef<number | null>(null)
   const notesRef = useRef(notes)
@@ -227,6 +240,7 @@ export default function PageNotes() {
           if (!next) {
             setDraft(null)
             setOpenId(null)
+            setReplyText('')
           } else {
             void reload()
             refreshDocMetrics()
@@ -238,17 +252,29 @@ export default function PageNotes() {
       if (event.key === 'Escape') {
         setDraft(null)
         setOpenId(null)
+        setReplyText('')
       }
     }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
   }, [reload, refreshDocMetrics])
 
+  useEffect(() => {
+    if (!openId) {
+      setReplyText('')
+      return
+    }
+    setReplyText('')
+    const id = window.setTimeout(() => replyRef.current?.focus(), 0)
+    return () => window.clearTimeout(id)
+  }, [openId])
+
   const onLayerClick = (event: React.MouseEvent<HTMLDivElement>) => {
     if (!active) return
     if (event.target !== layerRef.current) return
     const point = toPageFraction(event.clientX, event.clientY)
     setOpenId(null)
+    setReplyText('')
     setDraft({ ...point, text: '' })
   }
 
@@ -266,32 +292,61 @@ export default function PageNotes() {
       id: createNoteId(),
       x: draft.x,
       y: draft.y,
-      text,
       author: name,
       createdAt: now,
       updatedAt: now,
+      messages: [
+        {
+          id: createNoteId(),
+          text,
+          author: name,
+          createdAt: now,
+        },
+      ],
     }
     const next = [...notesRef.current, note]
     setNotes(next)
     setDraft(null)
     setOpenId(note.id)
+    setReplyText('')
     queuePersist(next)
   }
 
-  const updateNoteText = (id: string, text: string) => {
-    const next = notesRef.current.map((note) =>
-      note.id === id
-        ? { ...note, text, updatedAt: new Date().toISOString() }
-        : note
-    )
+  const commitReply = (noteId: string) => {
+    const text = replyText.trim()
+    if (!text) return
+    const name = author.trim() || 'You'
+    writeCachedAuthor(name)
+    const now = new Date().toISOString()
+    const next = notesRef.current.map((note) => {
+      if (note.id !== noteId) return note
+      return {
+        ...note,
+        updatedAt: now,
+        messages: [
+          ...note.messages,
+          {
+            id: createNoteId(),
+            text,
+            author: name,
+            createdAt: now,
+          },
+        ],
+      }
+    })
     setNotes(next)
+    setReplyText('')
     queuePersist(next)
+    window.setTimeout(() => replyRef.current?.focus(), 0)
   }
 
   const deleteNote = (id: string) => {
     const next = notesRef.current.filter((note) => note.id !== id)
     setNotes(next)
-    if (openId === id) setOpenId(null)
+    if (openId === id) {
+      setOpenId(null)
+      setReplyText('')
+    }
     queuePersist(next)
   }
 
@@ -326,7 +381,9 @@ export default function PageNotes() {
         ) : null}
         {active && error ? (
           <span className="page-notes-hint__meta" title={error}>
-            Sync error
+            {/Contents|write|token/i.test(error)
+              ? 'Token needs write'
+              : 'Sync error'}
           </span>
         ) : null}
       </div>
@@ -363,7 +420,11 @@ export default function PageNotes() {
                 {open ? (
                   <NoteCard x={note.x} y={note.y}>
                     <div className="page-note__card-head">
-                      <span className="page-note__author">{note.author}</span>
+                      <span className="page-note__author">
+                        {note.messages.length > 1
+                          ? `${note.messages.length} comments`
+                          : note.author}
+                      </span>
                       <button
                         type="button"
                         className="page-note__delete"
@@ -372,14 +433,59 @@ export default function PageNotes() {
                         Delete
                       </button>
                     </div>
-                    <textarea
-                      className="page-note__text"
-                      value={note.text}
-                      rows={4}
-                      onChange={(event) =>
-                        updateNoteText(note.id, event.target.value)
-                      }
-                    />
+                    <div className="page-note__thread">
+                      {note.messages.map((message) => (
+                        <div key={message.id} className="page-note__message">
+                          <div className="page-note__message-head">
+                            <span className="page-note__message-author">
+                              {message.author}
+                            </span>
+                            <span className="page-note__message-time">
+                              {formatNoteTime(message.createdAt)}
+                            </span>
+                          </div>
+                          <p className="page-note__message-text">
+                            {message.text}
+                          </p>
+                        </div>
+                      ))}
+                    </div>
+                    <div className="page-note__reply">
+                      <input
+                        className="page-note__author-input page-note__reply-author"
+                        value={author}
+                        onChange={(event) => setAuthor(event.target.value)}
+                        placeholder="Your name"
+                        aria-label="Author name"
+                      />
+                      <textarea
+                        ref={replyRef}
+                        className="page-note__text"
+                        value={replyText}
+                        rows={2}
+                        placeholder="Reply…"
+                        onChange={(event) => setReplyText(event.target.value)}
+                        onKeyDown={(event) => {
+                          if (
+                            event.key === 'Enter' &&
+                            (event.metaKey || event.ctrlKey)
+                          ) {
+                            event.preventDefault()
+                            commitReply(note.id)
+                          }
+                        }}
+                      />
+                      <div className="page-note__card-foot">
+                        <button
+                          type="button"
+                          className="page-note__submit"
+                          onClick={() => commitReply(note.id)}
+                          disabled={!replyText.trim()}
+                        >
+                          Post
+                        </button>
+                      </div>
+                    </div>
                   </NoteCard>
                 ) : null}
               </div>
@@ -436,6 +542,7 @@ export default function PageNotes() {
                     type="button"
                     className="page-note__submit"
                     onClick={commitDraft}
+                    disabled={!draft.text.trim()}
                   >
                     Post
                   </button>
