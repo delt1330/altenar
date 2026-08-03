@@ -27,45 +27,61 @@ export const blockRevealStagger: Variants = {
 };
 
 type BlockRevealProps = {
-  className?: string;
+  className?: string
   /** Extra delay before this block starts (seconds). */
-  delay?: number;
+  delay?: number
   /** Parent for staggered children using blockReveal / BlockRevealItem. */
-  stagger?: boolean;
-  children: React.ReactNode;
-} & Omit<React.HTMLAttributes<HTMLDivElement>, 'children' | 'className'>;
+  stagger?: boolean
+  children: React.ReactNode
+  style?: React.CSSProperties
+  id?: string
+  role?: React.AriaRole
+  'aria-label'?: string
+}
 
 export default function BlockReveal({
   className,
   delay = 0,
   stagger = false,
   children,
-  ...rest
+  style,
+  id,
+  role,
+  'aria-label': ariaLabel,
 }: BlockRevealProps) {
-  const reduceMotion = useReducedMotion();
+  const reduceMotion = useReducedMotion()
 
   if (reduceMotion) {
     return (
-      <div className={className} {...rest}>
+      <div
+        className={className}
+        style={style}
+        id={id}
+        role={role}
+        aria-label={ariaLabel}
+      >
         {children}
       </div>
-    );
+    )
   }
 
   return (
     <motion.div
       className={className}
+      style={style}
+      id={id}
+      role={role}
+      aria-label={ariaLabel}
       variants={stagger ? blockRevealStagger : blockReveal}
       custom={delay}
       initial="hidden"
       whileInView="visible"
       /* Spur ScrollTrigger start: "top 80%" ≈ rootMargin bottom -20% */
       viewport={{ once: true, amount: 0.01, margin: '0px 0px -20% 0px' }}
-      {...rest}
     >
       {children}
     </motion.div>
-  );
+  )
 }
 
 type ItemProps = {
