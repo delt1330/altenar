@@ -9,9 +9,12 @@ import FooterBrandParticles from './components/FooterBrandParticles';
 import MapParticles from './components/MapParticles';
 import HeroMarkLoop from './components/HeroMarkLoop';
 import HeroMatchBoard from './components/HeroMatchBoard';
+import PageNotes from './components/PageNotes';
 import ScrollProgressBar from './components/ScrollProgressBar';
 import { CtaLink } from './components/CtaLink';
 import WipeReveal from './components/WipeReveal';
+import BlockReveal, { blockReveal } from './components/BlockReveal';
+import BridgeTextReveal from './components/BridgeTextReveal';
 import { useTextScramble } from './components/textScramble';
 import './styles.css';
 
@@ -447,8 +450,12 @@ const navGroups = [
 ];
 
 const rise: Variants = {
-  hidden: { opacity: 0, y: 22 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.8, ease: [0.22, 1, 0.36, 1] } },
+  hidden: { opacity: 0, y: 200 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 1, ease: [0.215, 0.61, 0.355, 1] },
+  },
 };
 
 function clientLogoId(name: string) {
@@ -457,6 +464,13 @@ function clientLogoId(name: string) {
 
 function caseLogoId(name: string) {
   return `case-logo-${name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')}`;
+}
+
+function awardLogoId(item: Award) {
+  return `award-logo-${item.event}-${item.title}`
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/(^-|-$)/g, '');
 }
 
 const allClientLogos = clientGroups.flatMap((g) => g.clients);
@@ -471,6 +485,12 @@ const caseLogoTargets = cases
     id: caseLogoId(c.company),
     imageUrl: assetUrl(c.logo!),
   }));
+const awardWall = awards.slice(0, 10);
+const awardLogoTargets = awardWall.map((item) => ({
+  id: awardLogoId(item),
+  imageUrl: assetUrl(item.logo),
+}));
+const AWARD_MARK_SELECTORS = ['.award-logo__img', '.award-logo'];
 
 function App() {
   const heroParticlesRef = useRef<any>(null);
@@ -491,8 +511,8 @@ function App() {
       <Header />
       {!HERO_ONLY && HERO_MOTION_ENABLED ? (
         <GearFlowBridge
-          particleSize={10}
-          particleGap={4}
+          particleSize={1.5}
+          particleGap={1}
           color="#ffffff"
           logoTargets={clientLogoTargets}
         />
@@ -501,11 +521,31 @@ function App() {
         <FooterBrandParticles particleSize={10} particleGap={4} color="#ffffff" />
       ) : null}
       {!HERO_ONLY && HERO_MOTION_ENABLED ? (
-        <CaseBrandParticles
+        <FooterBrandParticles
+          targetId="footer-logo-small"
           particleSize={10}
           particleGap={4}
+          color="#00A7DA"
+        />
+      ) : null}
+      {!HERO_ONLY && HERO_MOTION_ENABLED ? (
+        <CaseBrandParticles
+          particleSize={1.5}
+          particleGap={1}
           color="#15161b"
           logoTargets={caseLogoTargets}
+        />
+      ) : null}
+      {!HERO_ONLY && HERO_MOTION_ENABLED ? (
+        <CaseBrandParticles
+          particleSize={1.5}
+          particleGap={1}
+          color="#15161b"
+          logoTargets={awardLogoTargets}
+          sectionId="industry-proof"
+          rowSelector=".award-card"
+          fallbackSelector=".award-card[data-logo-id]"
+          markSelectors={AWARD_MARK_SELECTORS}
         />
       ) : null}
       <main className="page">
@@ -593,6 +633,7 @@ function App() {
           <ScrollProgressBar />
         </>
       ) : null}
+      <PageNotes />
     </>
   );
 }
@@ -617,10 +658,24 @@ function TopNavLink({ href, children }: { href: string; children: string }) {
   );
 }
 
+/** After hero wipe (~1.08s), lead (~1.05s) and eyebrow scramble (1.75s). */
+const HEADER_REVEAL_DELAY_MS = 2000;
+
 function Header() {
   const [open, setOpen] = React.useState(false);
   const [isInverted, setIsInverted] = React.useState(false);
   const [isHidden, setIsHidden] = React.useState(false);
+  const [isEntered, setIsEntered] = React.useState(false);
+
+  React.useEffect(() => {
+    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (reduced) {
+      setIsEntered(true);
+      return;
+    }
+    const timer = window.setTimeout(() => setIsEntered(true), HEADER_REVEAL_DELAY_MS);
+    return () => window.clearTimeout(timer);
+  }, []);
 
   React.useEffect(() => {
     let frame = 0;
@@ -656,7 +711,16 @@ function Header() {
 
   return (
     <>
-      <header className={`topbar ${isInverted ? 'is-inverted' : ''} ${isHidden && !open ? 'is-hidden' : ''}`}>
+      <header
+        className={[
+          'topbar',
+          isInverted ? 'is-inverted' : '',
+          isHidden && !open ? 'is-hidden' : '',
+          isEntered ? 'is-entered' : '',
+        ]
+          .filter(Boolean)
+          .join(' ')}
+      >
         <a className="logo" href="#top">
           <img src={assetUrl(isInverted ? 'Altenar_Logo_Dark.svg' : 'Altenar_Logo.svg')} alt="Altenar" />
         </a>
@@ -768,7 +832,11 @@ function SectionHead({
     <div className={`section-head section-head--${align}`}>
       <Eyebrow>{kicker}</Eyebrow>
       <WipeReveal as="h2">{title}</WipeReveal>
-      {lead ? <p>{lead}</p> : null}
+      {lead ? (
+        <BlockReveal>
+          <p>{lead}</p>
+        </BlockReveal>
+      ) : null}
     </div>
   );
 }
@@ -880,10 +948,7 @@ function LogoCell({ client }: { client: Client }) {
       aria-label={`View cases for ${client.name}`}
       data-logo-id={id}
       data-logo-src={assetUrl(client.logo)}
-      variants={rise}
-      initial="hidden"
-      whileInView="visible"
-      viewport={{ once: true, margin: '-40px' }}
+      variants={blockReveal}
     >
       <span className="client-logo-mark">
         {/* Also used as the solid hover state over the particle silhouette. */}
@@ -910,14 +975,14 @@ function Clients() {
         title="Trusted by operators worldwide"
         lead="A selection of partners who launch, migrate, and scale with Altenar."
       />
-      <div className="client-logo-grid">
+      <BlockReveal className="client-logo-grid" stagger>
         {logos.map((c) => (
           <LogoCell key={c.name} client={c} />
         ))}
-      </div>
-      <div className="client-cases-link">
+      </BlockReveal>
+      <BlockReveal className="client-cases-link" delay={0.12}>
         <CtaLink href="#cases" color="soft">View all cases</CtaLink>
-      </div>
+      </BlockReveal>
     </section>
   );
 }
@@ -926,63 +991,9 @@ const BRIDGE_STATEMENT =
   'Altenar is a real-time technology engine that powers sportsbook operations, manages risk and optimises profitability—enabling operators to scale efficiently and achieve sustainable growth.';
 
 function BridgeStatement() {
-  const rootRef = React.useRef<HTMLElement | null>(null);
-  const [t, setT] = React.useState(0);
-  const chars = React.useMemo(() => Array.from(BRIDGE_STATEMENT), []);
-  const liveCount = Math.floor(t * chars.length);
-
-  React.useEffect(() => {
-    const root = rootRef.current;
-    if (!root) return;
-
-    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    if (reduceMotion) {
-      setT(1);
-      return;
-    }
-
-    let frame = 0;
-    const update = () => {
-      frame = 0;
-      const rect = root.getBoundingClientRect();
-      const vh = window.innerHeight || 1;
-      // Letter fill L→R: blue then dim gray (solutions-nav inactive).
-      const start = vh * 0.88;
-      const end = vh * 0.28;
-      const next = (start - rect.top) / Math.max(1, start - end);
-      setT(Math.max(0, Math.min(1, next)));
-    };
-
-    const requestUpdate = () => {
-      if (frame) return;
-      frame = window.requestAnimationFrame(update);
-    };
-
-    update();
-    window.addEventListener('scroll', requestUpdate, { passive: true });
-    window.addEventListener('resize', requestUpdate);
-    return () => {
-      if (frame) window.cancelAnimationFrame(frame);
-      window.removeEventListener('scroll', requestUpdate);
-      window.removeEventListener('resize', requestUpdate);
-    };
-  }, []);
-
   return (
-    <section ref={rootRef} className="section section-bridge" aria-label="Altenar technology">
-      <p className="bridge-statement">
-        <span className="bridge-statement__sr">{BRIDGE_STATEMENT}</span>
-        <span className="bridge-statement__chars" aria-hidden="true">
-          {chars.map((ch, i) => (
-            <span
-              key={i}
-              className={`bridge-statement__char ${i < liveCount ? 'is-live' : 'is-dim'}`}
-            >
-              {ch}
-            </span>
-          ))}
-        </span>
-      </p>
+    <section className="section section-bridge" aria-label="Altenar technology">
+      <BridgeTextReveal text={BRIDGE_STATEMENT} color="#009ee3" particleSize={1.5} particleGap={1} />
     </section>
   );
 }
@@ -1032,7 +1043,7 @@ function Products() {
         title="Our solutions"
         lead="Three ways to launch and scale a sportsbook with Altenar."
       />
-      <div className="solutions-stage">
+      <BlockReveal className="solutions-stage">
         <nav className="solutions-nav grid-nav" aria-label="Solutions">
           <span
             className="grid-nav__ink"
@@ -1078,13 +1089,7 @@ function Products() {
           })}
         </nav>
 
-        <motion.article
-          className="solutions-panel"
-          variants={rise}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, margin: '-60px' }}
-        >
+        <article className="solutions-panel">
           <div className="solutions-visual" aria-hidden="true">
             <div className="solutions-visual__stage">
               <HeroParticles
@@ -1168,8 +1173,8 @@ function Products() {
               );
             })}
           </div>
-        </motion.article>
-      </div>
+        </article>
+      </BlockReveal>
     </section>
   );
 }
@@ -1222,7 +1227,7 @@ function Markets() {
         title="Licences and regions of operation"
         lead="Altenar works with licensed operators across multiple jurisdictions, supporting launches, expansions, and long-term operations in environments where regulatory expectations are clearly defined and actively enforced."
       />
-      <div className="map-nav grid-nav" role="tablist" aria-label="Territories">
+      <BlockReveal className="map-nav grid-nav" role="tablist" aria-label="Territories">
         <span
           className="grid-nav__ink"
           aria-hidden="true"
@@ -1246,8 +1251,8 @@ function Markets() {
             </button>
           );
         })}
-      </div>
-      <div className="map-layout">
+      </BlockReveal>
+      <BlockReveal className="map-layout" delay={0.08}>
         <div className="map-stage">
           <WorldMap
             center={center}
@@ -1316,7 +1321,7 @@ function Markets() {
             </>
           )}
         </motion.div>
-      </div>
+      </BlockReveal>
     </section>
   );
 }
@@ -1329,7 +1334,7 @@ function Proof() {
         title="Growing together with our clients"
         lead="Altenar is dedicated to an idea of growing together with our clients. We believe that ambitions unlock infinite growth in the partnership."
       />
-      <div className="cases">
+      <BlockReveal className="cases" stagger>
         {cases.map((c) => {
           const id = c.logo ? caseLogoId(c.company) : undefined;
           return (
@@ -1340,10 +1345,7 @@ function Proof() {
               href={c.href}
               data-logo-id={id}
               data-logo-src={c.logo ? assetUrl(c.logo) : undefined}
-              variants={rise}
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true, margin: '-60px' }}
+              variants={blockReveal}
             >
               <span className="case-brand">
                 {c.logo ? (
@@ -1373,10 +1375,10 @@ function Proof() {
             </motion.a>
           );
         })}
-        <div className="case-all">
+        <motion.div className="case-all" variants={blockReveal}>
           <CtaLink href="#demo" color="live">Contact us</CtaLink>
-        </div>
-      </div>
+        </motion.div>
+      </BlockReveal>
     </section>
   );
 }
@@ -1385,21 +1387,41 @@ function Awards() {
   return (
     <section className="section section--light section-awards" id="industry-proof">
       <SectionHead kicker="Awards" title="Industry recognition" />
-      <div className="award-track">
-        {awards.slice(0, 10).map((item) => (
-          <article key={`${item.event}-${item.title}`} className="award-card">
-            <span className="award-logo">
-              <img src={assetUrl(item.logo)} alt={item.event} loading="lazy" />
-            </span>
-            <span className="award-meta">{item.year} · {item.category}</span>
-            <strong>{item.title}</strong>
-            <em>{item.event}</em>
-          </article>
-        ))}
-        <a className="award-all group" href="https://altenar.com/about/" aria-label="All Altenar awards">
+      <BlockReveal className="award-track" stagger>
+        {awardWall.map((item) => {
+          const id = awardLogoId(item);
+          return (
+            <motion.article
+              key={id}
+              id={id}
+              className="award-card award-card--particle"
+              data-logo-id={id}
+              data-logo-src={assetUrl(item.logo)}
+              variants={blockReveal}
+            >
+              <span className="award-logo">
+                <img
+                  className="award-logo__img award-logo__img--solid"
+                  src={assetUrl(item.logo)}
+                  alt={item.event}
+                  loading="lazy"
+                />
+              </span>
+              <span className="award-meta">{item.year}</span>
+              <strong>{item.title}</strong>
+              <em>{item.event}</em>
+            </motion.article>
+          );
+        })}
+        <motion.a
+          className="award-all group"
+          href="https://altenar.com/about/"
+          aria-label="All Altenar awards"
+          variants={blockReveal}
+        >
           <CtaLink as="span" triggerOnParentHover>All awards</CtaLink>
-        </a>
-      </div>
+        </motion.a>
+      </BlockReveal>
     </section>
   );
 }
@@ -1479,7 +1501,7 @@ function News() {
         kicker="Company news"
         title="Company news"
       />
-      <div className="news-track">
+      <BlockReveal className="news-track">
         <NewsCard item={featured} wide />
         {rest.map((item) => (
           <NewsCard key={item.title} item={item} />
@@ -1487,61 +1509,406 @@ function News() {
         <a className="news-card news-card--cta group" href="https://altenar.com/news/" aria-label="All company news">
           <CtaLink as="span" triggerOnParentHover>All news</CtaLink>
         </a>
-      </div>
+      </BlockReveal>
     </section>
   );
 }
 
+const FORM_STEPS = [
+  { id: 'details', title: 'Details' },
+  { id: 'contacts', title: 'Contacts' },
+  { id: 'info', title: 'Info' },
+] as const;
+
+const ENQUIRY_OPTIONS = [
+  'Sportsbook solution',
+  'Turnkey sportsbook solution',
+  'Retail solution',
+  'White label sportsbook solution',
+  'Product Feedback',
+  'Offering a Product / Service',
+  'PR & Marketing',
+  'Other',
+] as const;
+
+const COMMUNICATION_OPTIONS = ['Email', 'Phone', 'Telegram', 'WhatsApp'] as const;
+
+const SOURCE_OPTIONS = [
+  'Searching engine (Google, Bing, Yahoo, etc.)',
+  'Recommendation',
+  'Exhibitions',
+  'Social Media',
+  'Industry websites, blogs',
+  'ChatGPT and AI tools',
+  'Other',
+] as const;
+
+const REGION_OPTIONS = [
+  'AFRICA',
+  'ASIA',
+  'EUROPE',
+  'LATAM',
+  'NORTH AMERICA',
+  'AUSTRALIA',
+] as const;
+
+const SPORTSBOOK_OPTIONS = ['Yes', 'No'] as const;
+
+type ContactFormState = {
+  enquiryType: string;
+  firstName: string;
+  lastName: string;
+  title: string;
+  company: string;
+  communicationMethod: string;
+  accountId: string;
+  email: string;
+  phone: string;
+  source: string;
+  region: string;
+  sportsbook: string;
+  gamingLicense: string;
+  pam: string;
+  website: string;
+  message: string;
+};
+
+const CONTACT_FORM_INITIAL: ContactFormState = {
+  enquiryType: '',
+  firstName: '',
+  lastName: '',
+  title: '',
+  company: '',
+  communicationMethod: '',
+  accountId: '',
+  email: '',
+  phone: '',
+  source: '',
+  region: '',
+  sportsbook: '',
+  gamingLicense: '',
+  pam: '',
+  website: '',
+  message: '',
+};
+
 function FinalCta() {
+  const [step, setStep] = React.useState(0);
+  const [values, setValues] = React.useState<ContactFormState>(CONTACT_FORM_INITIAL);
+  const [attempted, setAttempted] = React.useState(false);
+
+  const setField = <K extends keyof ContactFormState>(key: K, value: ContactFormState[K]) => {
+    setValues((prev) => ({ ...prev, [key]: value }));
+  };
+
+  const step1Valid =
+    Boolean(values.enquiryType) &&
+    Boolean(values.firstName.trim()) &&
+    Boolean(values.lastName.trim()) &&
+    Boolean(values.title.trim()) &&
+    Boolean(values.company.trim());
+
+  const step2Valid =
+    Boolean(values.communicationMethod) &&
+    Boolean(values.email.trim());
+
+  const goNext = () => {
+    setAttempted(true);
+    if (step === 0 && !step1Valid) return;
+    if (step === 1 && !step2Valid) return;
+    setAttempted(false);
+    setStep((s) => Math.min(s + 1, FORM_STEPS.length - 1));
+  };
+
+  const goBack = () => {
+    setAttempted(false);
+    setStep((s) => Math.max(s - 1, 0));
+  };
+
+  const onSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (step < FORM_STEPS.length - 1) {
+      goNext();
+      return;
+    }
+  };
+
+  const fieldInvalid = (ok: boolean) => (attempted && !ok ? ' is-invalid' : '');
+
   return (
     <section className="section section-final" id="demo">
       <div className="final-grid">
         <div className="final-copy">
           <Eyebrow>Contact</Eyebrow>
-          <WipeReveal as="h2">Where your ambitions unlock growth</WipeReveal>
-          <motion.p variants={rise} initial="hidden" whileInView="visible" viewport={{ once: true, margin: '-80px' }}>
-            Tell us which market you are targeting and which solution you need. Altenar will help you launch, expand, and scale with confidence.
-          </motion.p>
-          <ul className="final-list">
-            <li>Turnkey sportsbook</li>
-            <li>Retail / landbase</li>
-            <li>White label</li>
-            <li>Licensed market entry</li>
-          </ul>
+          <WipeReveal as="h2">{'Where your ambitions\nunlock growth'}</WipeReveal>
+          <BlockReveal>
+            <p>
+              Tell us which market you are targeting and which solution you need. Altenar will help you launch, expand, and scale with confidence.
+            </p>
+          </BlockReveal>
+          <BlockReveal delay={0.08}>
+            <ul className="final-list">
+              <li>Turnkey sportsbook</li>
+              <li>Retail / landbase</li>
+              <li>White label</li>
+              <li>Licensed market entry</li>
+            </ul>
+          </BlockReveal>
         </div>
-        <motion.form className="form" variants={rise} initial="hidden" whileInView="visible" viewport={{ once: true, margin: '-80px' }} onSubmit={(e) => e.preventDefault()}>
-          <label>
-            <span>Name</span>
-            <input placeholder="Your name" />
-          </label>
-          <label>
-            <span>Work email</span>
-            <input type="email" placeholder="name@company.com" />
-          </label>
-          <label>
-            <span>Company</span>
-            <input placeholder="Company name" />
-          </label>
-          <label>
-            <span>Region</span>
-            <input placeholder="Europe, Latin America, North America…" />
-          </label>
-          <label>
-            <span>What you need</span>
-            <select defaultValue="">
-              <option value="" disabled>Select an option</option>
-              <option>Turnkey sportsbook</option>
-              <option>Retail / landbase</option>
-              <option>White label</option>
-            </select>
-          </label>
-          <label>
-            <span>Message</span>
-            <textarea placeholder="Briefly describe your market, current stack, and timeline" />
-          </label>
-          <CtaLink as="button" type="submit" className="form-submit" color="live">
-            Contact Us
-          </CtaLink>
+        <motion.form
+          className="form"
+          variants={rise}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, amount: 0.01, margin: '0px 0px -20% 0px' }}
+          onSubmit={onSubmit}
+        >
+          <nav className="form-steps" aria-label="Form steps">
+            <ol className="form-steps__list">
+              {FORM_STEPS.flatMap((item, index) => {
+                const stepItem = (
+                  <li
+                    key={item.id}
+                    className={[
+                      'form-steps__item',
+                      index === step ? 'is-current' : '',
+                      index < step ? 'is-done' : '',
+                    ]
+                      .filter(Boolean)
+                      .join(' ')}
+                  >
+                    <span className="form-steps__label">
+                      <span className="form-steps__index" aria-hidden="true">[{index + 1}]</span>
+                      {' '}
+                      {item.title}
+                    </span>
+                  </li>
+                );
+
+                if (index >= FORM_STEPS.length - 1) return [stepItem];
+
+                return [
+                  stepItem,
+                  <li className="form-steps__sep" key={`${item.id}-sep`} aria-hidden="true">
+                    <svg
+                      className="form-steps__arrow"
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="11"
+                      height="11"
+                      viewBox="0 0 11 11"
+                      fill="none"
+                    >
+                      <path d="M1 5H10M10 5L6 0.5M10 5L6 9.5" stroke="currentColor" strokeWidth="1" />
+                    </svg>
+                  </li>,
+                ];
+              })}
+            </ol>
+          </nav>
+
+          {step === 0 && (
+            <div className="form-step-fields">
+              <label className={fieldInvalid(Boolean(values.enquiryType))}>
+                <span>Enquiry type</span>
+                <select
+                  value={values.enquiryType}
+                  onChange={(e) => setField('enquiryType', e.target.value)}
+                  required
+                >
+                  <option value="" disabled>Select an option</option>
+                  {ENQUIRY_OPTIONS.map((opt) => (
+                    <option key={opt} value={opt}>{opt}</option>
+                  ))}
+                </select>
+              </label>
+              <label className={fieldInvalid(Boolean(values.firstName.trim()))}>
+                <span>First Name</span>
+                <input
+                  value={values.firstName}
+                  onChange={(e) => setField('firstName', e.target.value)}
+                  placeholder="Enter your first name"
+                  required
+                  autoComplete="given-name"
+                />
+              </label>
+              <label className={fieldInvalid(Boolean(values.lastName.trim()))}>
+                <span>Last Name</span>
+                <input
+                  value={values.lastName}
+                  onChange={(e) => setField('lastName', e.target.value)}
+                  placeholder="Enter your last name"
+                  required
+                  autoComplete="family-name"
+                />
+              </label>
+              <label className={fieldInvalid(Boolean(values.title.trim()))}>
+                <span>Title</span>
+                <input
+                  value={values.title}
+                  onChange={(e) => setField('title', e.target.value)}
+                  placeholder="Title"
+                  required
+                  autoComplete="organization-title"
+                />
+              </label>
+              <label className={fieldInvalid(Boolean(values.company.trim()))}>
+                <span>Company</span>
+                <input
+                  value={values.company}
+                  onChange={(e) => setField('company', e.target.value)}
+                  placeholder="Enter your company"
+                  required
+                  autoComplete="organization"
+                />
+              </label>
+            </div>
+          )}
+
+          {step === 1 && (
+            <div className="form-step-fields">
+              <label className={fieldInvalid(Boolean(values.communicationMethod))}>
+                <span>How can we reach you?</span>
+                <select
+                  value={values.communicationMethod}
+                  onChange={(e) => setField('communicationMethod', e.target.value)}
+                  required
+                >
+                  <option value="" disabled>Select an option</option>
+                  {COMMUNICATION_OPTIONS.map((opt) => (
+                    <option key={opt} value={opt}>{opt}</option>
+                  ))}
+                </select>
+              </label>
+              <label>
+                <span>ID</span>
+                <input
+                  value={values.accountId}
+                  onChange={(e) => setField('accountId', e.target.value)}
+                  placeholder="Account Id"
+                />
+              </label>
+              <label className={fieldInvalid(Boolean(values.email.trim()))}>
+                <span>E-mail</span>
+                <input
+                  type="email"
+                  value={values.email}
+                  onChange={(e) => setField('email', e.target.value)}
+                  placeholder="Enter your email address"
+                  required
+                  autoComplete="email"
+                />
+              </label>
+              <label>
+                <span>Phone</span>
+                <input
+                  type="tel"
+                  value={values.phone}
+                  onChange={(e) => setField('phone', e.target.value)}
+                  placeholder="Phone number"
+                  autoComplete="tel"
+                />
+              </label>
+            </div>
+          )}
+
+          {step === 2 && (
+            <div className="form-step-fields">
+              <label>
+                <span>How did you hear about us?</span>
+                <select
+                  value={values.source}
+                  onChange={(e) => setField('source', e.target.value)}
+                >
+                  <option value="" disabled>Select an option</option>
+                  {SOURCE_OPTIONS.map((opt) => (
+                    <option key={opt} value={opt}>{opt}</option>
+                  ))}
+                </select>
+              </label>
+              <label>
+                <span>Region of Operation</span>
+                <select
+                  value={values.region}
+                  onChange={(e) => setField('region', e.target.value)}
+                >
+                  <option value="" disabled>Select an option</option>
+                  {REGION_OPTIONS.map((opt) => (
+                    <option key={opt} value={opt}>{opt}</option>
+                  ))}
+                </select>
+              </label>
+              <label>
+                <span>Do you already have a sportsbook?</span>
+                <select
+                  value={values.sportsbook}
+                  onChange={(e) => setField('sportsbook', e.target.value)}
+                >
+                  <option value="" disabled>Select an option</option>
+                  {SPORTSBOOK_OPTIONS.map((opt) => (
+                    <option key={opt} value={opt}>{opt}</option>
+                  ))}
+                </select>
+              </label>
+              <label>
+                <span>What gaming license(s) do you have?</span>
+                <input
+                  value={values.gamingLicense}
+                  onChange={(e) => setField('gamingLicense', e.target.value)}
+                  placeholder="What gaming license(s) do you have?"
+                />
+              </label>
+              <label>
+                <span>What PAM are you using?</span>
+                <input
+                  value={values.pam}
+                  onChange={(e) => setField('pam', e.target.value)}
+                  placeholder="What PAM are you using?"
+                />
+              </label>
+              <label>
+                <span>Website</span>
+                <input
+                  value={values.website}
+                  onChange={(e) => setField('website', e.target.value)}
+                  placeholder="Enter your website"
+                  autoComplete="url"
+                />
+              </label>
+              <label>
+                <span>Your Message</span>
+                <textarea
+                  value={values.message}
+                  onChange={(e) => setField('message', e.target.value)}
+                  placeholder="Your Message"
+                />
+              </label>
+            </div>
+          )}
+
+          <p className="form-privacy">
+            This form collects your data so that we can correspond with you. Read our{' '}
+            <a href="https://altenar.com/privacy/" target="_blank" rel="noreferrer">
+              Privacy Policy
+            </a>{' '}
+            for more information
+          </p>
+
+          <div className="form-actions">
+            {step > 0 && (
+              <CtaLink as="button" type="button" className="form-back" color="dim" onClick={goBack}>
+                Back
+              </CtaLink>
+            )}
+            {step < FORM_STEPS.length - 1 ? (
+              <CtaLink as="button" type="button" className="form-submit" color="live" onClick={goNext}>
+                Next step
+              </CtaLink>
+            ) : (
+              <CtaLink as="button" type="submit" className="form-submit" color="live">
+                Send Message
+              </CtaLink>
+            )}
+          </div>
         </motion.form>
       </div>
     </section>
@@ -1549,6 +1916,11 @@ function FinalCta() {
 }
 
 function SeoBlock() {
+  const summaryRef = React.useRef<HTMLElement | null>(null);
+  const labelRef = React.useRef<HTMLSpanElement | null>(null);
+  const summaryLabel = 'More about World Cup features';
+  useTextScramble(summaryRef, labelRef, summaryLabel, { hover: true });
+
   const columnCount = 4;
   const baseSize = Math.floor(seoParagraphs.length / columnCount);
   const remainder = seoParagraphs.length % columnCount;
@@ -1563,16 +1935,117 @@ function SeoBlock() {
 
   return (
     <section className="section section-seo" id="seo" aria-label="SEO">
-      <div className="seo-grid">
-        {columns.map((paragraphs, columnIndex) => (
-          <div className="seo-col" key={`seo-col-${columnIndex}`}>
-            {paragraphs.map((paragraph) => (
-              <p key={paragraph.slice(0, 48)}>{paragraph}</p>
-            ))}
-          </div>
-        ))}
-      </div>
+      <details className="seo-fold">
+        <summary ref={summaryRef} className="seo-fold__summary">
+          <span className="seo-fold__cta">
+            <span className="seo-fold__bracket" aria-hidden="true">[</span>
+            <span className="seo-fold__label" ref={labelRef}>
+              {summaryLabel}
+            </span>
+            <svg
+              className="cta-link__arrow seo-fold__arrow"
+              xmlns="http://www.w3.org/2000/svg"
+              width="11"
+              height="11"
+              viewBox="0 0 11 11"
+              fill="none"
+              aria-hidden="true"
+            >
+              <path d="M1 5H10M10 5L6 0.5M10 5L6 9.5" stroke="currentColor" strokeWidth="1" />
+            </svg>
+            <span className="seo-fold__bracket" aria-hidden="true">]</span>
+          </span>
+        </summary>
+        <div className="seo-grid">
+          {columns.map((paragraphs, columnIndex) => (
+            <div className="seo-col" key={`seo-col-${columnIndex}`}>
+              {paragraphs.map((paragraph) => (
+                <p key={paragraph.slice(0, 48)}>{paragraph}</p>
+              ))}
+            </div>
+          ))}
+        </div>
+      </details>
     </section>
+  );
+}
+
+const FOOTER_LICENSES = [
+  {
+    title: 'ONJN',
+    href: 'https://onjn.gov.ro/',
+    src: 'footer-licenses/onjn.png',
+  },
+  {
+    title: 'Malta Gaming Authority',
+    href: 'https://authorisation.mga.org.mt/verification.aspx?lang=EN&company=96d9b88a-8dec-4294-ad7f-87d0c4f916fc&details=1',
+    src: 'footer-licenses/mga.png',
+  },
+  {
+    title: 'Gambling Commission',
+    href: 'https://www.gamblingcommission.gov.uk/public-register/business/detail/53306',
+    src: 'footer-licenses/ukgc.png',
+  },
+  {
+    title: 'AGCO',
+    href: 'https://www.agco.ca',
+    src: 'footer-licenses/agco.png',
+  },
+  {
+    title: 'Peru Homologation as a Technological platform for remote gaming and/or remote sports betting',
+    href: 'https://apuestasdeportivas.mincetur.gob.pe/Registro_plataformas_tecnologicas.html',
+    src: 'footer-licenses/peru.webp',
+  },
+  {
+    title: 'Denmark Game Supplier',
+    href: 'https://www.spillemyndigheden.dk/en/list-game-suppliers',
+    src: 'footer-licenses/denmark.webp',
+  },
+  {
+    title: 'South Africa National Manufacturer License',
+    href: 'https://www.wcgrb.co.za/gambling-devices-2/',
+    src: 'footer-licenses/sa-national.webp',
+  },
+  {
+    title: 'Sweden Game Software License',
+    href: 'https://www.spelinspektionen.se/lagar-regler/lagar--forordningar/',
+    src: 'footer-licenses/sweden.webp',
+  },
+  {
+    title: 'AGLC',
+    href: 'https://aglc.ca/',
+    src: 'footer-licenses/aglc.png',
+  },
+  {
+    title: 'DGA',
+    href: 'https://www.spillemyndigheden.dk/en/list-game-suppliers',
+    src: 'footer-licenses/dga.png',
+  },
+  {
+    title: 'Greece Manufacturer’s License',
+    href: 'https://certifications.gamingcommission.gov.gr/publicRecordsOnline/Lists/Kataskevastes/DispForm.aspx?ID=128&Source=https%3A%2F%2Fcertifications%2Egamingcommission%2Egov%2Egr%2FpublicRecordsOnline%2FSitePages%2FKataskevastesOnline%2Easpx&ContentTypeId=0x0100C5BC2D4326D9AB4F89A734B4D3ADC701',
+    src: 'footer-licenses/greece.png',
+  },
+  {
+    title: 'WCGRB',
+    href: 'https://www.wcgrb.co.za/gambling-devices-2/',
+    src: 'footer-licenses/wcgrb.png',
+  },
+] as const;
+
+function FooterLicenseLink({
+  title,
+  href,
+  src,
+}: {
+  title: string;
+  href: string;
+  src: string;
+}) {
+  return (
+    <a href={href} target="_blank" rel="nofollow noreferrer" title={title}>
+      <img src={assetUrl(src)} alt={title} loading="lazy" />
+    </a>
   );
 }
 
@@ -1580,29 +2053,62 @@ function Footer() {
   return (
     <footer className="footer">
       <div className="footer-grid">
-        <a className="footer-logo-small" href="#top" aria-label="Altenar">
+        <div className="footer-licenses" aria-label="Licences and regulators">
+          {FOOTER_LICENSES.map((item) => (
+            <div className="footer-licenses__cell" key={item.src}>
+              <FooterLicenseLink {...item} />
+            </div>
+          ))}
+        </div>
+
+        <a className="footer-logo-small" id="footer-logo-small" href="#top" aria-label="Altenar">
           <img src={assetUrl('footer-brand/logo-small.svg')} alt="Altenar" />
         </a>
         <div className="footer-cell footer-socials">
-          <span className="footer-label">© 2026 Altenar. All rights reserved.</span>
+          <div className="footer-socials-top">
+            <span className="footer-label">© 2026 Altenar. All rights reserved.</span>
+            <CtaLink
+              className="footer-more-link footer-policies-link"
+              href="https://altenar.com/privacy/"
+              target="_blank"
+              rel="noreferrer"
+              color="dim"
+            >
+              Altenar's Policies
+            </CtaLink>
+          </div>
           <div className="footer-social-links" aria-label="Altenar social links">
-            <a href="https://www.linkedin.com/company/altenar" target="_blank" rel="noreferrer" aria-label="LinkedIn Altenar">in</a>
+            <a href="https://www.linkedin.com/company/altenar/" target="_blank" rel="noreferrer" aria-label="LinkedIn Altenar">in</a>
+            <a href="https://x.com/AltenarB2B" target="_blank" rel="noreferrer" aria-label="X Altenar">x</a>
+            <a href="https://www.facebook.com/AltenarB2B/" target="_blank" rel="noreferrer" aria-label="Facebook Altenar">fb</a>
+            <a href="https://t.me/altenar_b2b" target="_blank" rel="noreferrer" aria-label="Telegram Altenar">tg</a>
+            <a href="https://www.reddit.com/user/Altenar_b2b/" target="_blank" rel="noreferrer" aria-label="Reddit Altenar">rd</a>
             <a href="https://www.youtube.com/@altenarb2b" target="_blank" rel="noreferrer" aria-label="YouTube Altenar">yt</a>
             <a href="https://www.instagram.com/altenar_b2b/" target="_blank" rel="noreferrer" aria-label="Instagram Altenar">ig</a>
           </div>
         </div>
         <div className="footer-cell footer-legal-copy">
-          <p>The Altenar logo and visual assets are intellectual property and protected from unauthorised use.</p>
-          <CtaLink className="footer-more-link" href="https://altenar.com/" target="_blank" rel="noreferrer" color="dim">
-            Learn more
-          </CtaLink>
+          <p>
+            Altenar’s logo and graphic material is the company’s intellectual property and may not be
+            copied, reproduced, distributed or displayed without written consent of Altenar. Under no
+            circumstances may Altenar’s intellectual property be displayed in connection with
+            inappropriate or harmful content, including without limitation on web sites containing
+            pornographic content or supporting illegal file sharing. Altenar is licensed and regulated
+            by the Malta Gaming Authority.
+          </p>
         </div>
         <div className="footer-cell footer-company-copy">
-          <p>Altenar’s activity is licensed and regulated by the Malta Gaming Authority.</p>
-          <CtaLink className="footer-more-link" href="https://altenar.com/" target="_blank" rel="noreferrer" color="dim">
-            Learn more
-          </CtaLink>
+          <p>
+            The following entity holds a Type2 B2B licence: Altenar Software Limited (Malta). Ref:
+            MGA/B2B/582/2018. Altenar is licensed and regulated by the Romanian National Office for
+            Gambling. The following entity holds a class 2 licence: Altenar Software Limited (Isle of
+            Man): Decision 54200/25.09.2018. Altenar Technologies Limited is licensed and regulated in
+            Great Britain by the Gambling Commission under account number 53306. The following entity
+            holds a combined remote operating license: Altenar Technologies Limited (Isle of Man). Ref:
+            000-053306-R-330805-001.
+          </p>
         </div>
+
         <div className="footer-brand" id="footer-brand">
           <img src={assetUrl('footer-brand/Altenar_Brand.svg')} alt="Altenar" />
         </div>

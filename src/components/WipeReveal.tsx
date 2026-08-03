@@ -19,7 +19,7 @@ function readText(children: React.ReactNode) {
   return null
 }
 
-function measureLines(probe: HTMLElement, text: string) {
+function measureWrappedLines(probe: HTMLElement, text: string) {
   const words = text.trim().split(/\s+/).filter(Boolean)
   if (!words.length) return [text]
 
@@ -50,6 +50,12 @@ function measureLines(probe: HTMLElement, text: string) {
   }
   if (current.length) lines.push(current)
   return lines.map((line) => line.join(' '))
+}
+
+function measureLines(probe: HTMLElement, text: string) {
+  const segments = text.split(/\n/).map((part) => part.trim()).filter(Boolean)
+  if (segments.length <= 1) return measureWrappedLines(probe, text)
+  return segments.flatMap((segment) => measureWrappedLines(probe, segment))
 }
 
 /**

@@ -17,12 +17,21 @@ const COLORS = {
   white: [243, 244, 245] as RGB,
   ink: [18, 20, 24] as RGB,
   black: [0, 0, 0] as RGB,
+  live: [0, 158, 227] as RGB,
 }
 
 const PARTICLE_SIZE = 3
 const PARTICLE_GAP = 1
 const PITCH = PARTICLE_SIZE + PARTICLE_GAP
-const INTRO_ASSEMBLE_MS = 1750
+/** Wait for header / slogan wipe / lead / CTA to settle. */
+const INTRO_UI_WAIT_MS = 2000
+const INTRO_LOADER_ASSEMBLE_MS = 2800
+const INTRO_BAR_FILL_MS = 4200
+const INTRO_MATCH_CROSSFADE_MS = 2400
+
+const INTRO_LOADING_BASE = 'LOADING'
+
+type IntroKind = 'loading' | 'bar'
 
 type IntroParticle = {
   homeX: number
@@ -30,7 +39,24 @@ type IntroParticle = {
   startX: number
   startY: number
   color: RGB
+  /** If set, color lerps from startColor → color with assemble progress. */
+  startColor?: RGB
+  /** Midpoint for explode → reassemble morph. */
+  burstX?: number
+  burstY?: number
+  /** 0–1 delay so the burst peels apart, not all at once. */
+  burstDelay?: number
+  kind: IntroKind
 }
+
+type IntroPhase =
+  | 'ui-wait'
+  | 'loader-assembling'
+  | 'loader-filling'
+  | 'match-crossfade'
+  | 'done'
+
+type IntroCell = Cell & { kind: IntroKind }
 
 const FONT: Record<string, string[]> = {
   ' ': ['000', '000', '000', '000', '000', '000', '000'],
@@ -56,6 +82,7 @@ const FONT: Record<string, string[]> = {
   G: ['01111', '10000', '10000', '10111', '10001', '10001', '01110'],
   H: ['10001', '10001', '10001', '11111', '10001', '10001', '10001'],
   I: ['111', '010', '010', '010', '010', '010', '111'],
+  K: ['10001', '10010', '10100', '11000', '10100', '10010', '10001'],
   L: ['10000', '10000', '10000', '10000', '10000', '10000', '11111'],
   M: ['10001', '11011', '10101', '10101', '10001', '10001', '10001'],
   N: ['10001', '11001', '11001', '10101', '10011', '10011', '10001'],
@@ -179,6 +206,71 @@ function addText(
   }
 }
 
+function addTextKind(
+  cells: IntroCell[],
+  text: string,
+  col: number,
+  row: number,
+  color: RGB,
+  kind: IntroKind,
+  scale = 1,
+  tracking = 1
+) {
+  const bucket: Cell[] = []
+  addText(bucket, text, col, row, color, scale, tracking)
+  for (const cell of bucket) cells.push({ ...cell, kind })
+}
+
+/** Retro battery-style loading bar (outline + optional fill cubes). */
+function addProgressBar(
+  cells: IntroCell[],
+  col: number,
+  row: number,
+  width: number,
+  height: number,
+  fill01: number,
+  outline: RGB,
+  fill: RGB
+) {
+  const w = Math.max(12, Math.round(width))
+  const h = Math.max(4, Math.round(height))
+  const nipple = Math.max(1, Math.round(h * 0.45))
+  // Left nipple (battery tip).
+  for (let y = Math.floor((h - nipple) / 2); y < Math.floor((h - nipple) / 2) + nipple; y++) {
+    cells.push({ col, row: row + y, color: outline, kind: 'bar' })
+  }
+  const bodyCol = col + 1
+  const bodyW = w - 1
+  // Outline.
+  for (let x = 0; x < bodyW; x++) {
+    cells.push({ col: bodyCol + x, row, color: outline, kind: 'bar' })
+    cells.push({ col: bodyCol + x, row: row + h - 1, color: outline, kind: 'bar' })
+  }
+  for (let y = 1; y < h - 1; y++) {
+    cells.push({ col: bodyCol, row: row + y, color: outline, kind: 'bar' })
+    cells.push({
+      col: bodyCol + bodyW - 1,
+      row: row + y,
+      color: outline,
+      kind: 'bar',
+    })
+  }
+  // Fill blocks inside (leave 1px padding).
+  const innerW = Math.max(0, bodyW - 2)
+  const innerH = Math.max(0, h - 2)
+  const filled = Math.round(innerW * clamp(fill01, 0, 1))
+  for (let x = 0; x < filled; x++) {
+    for (let y = 0; y < innerH; y++) {
+      cells.push({
+        col: bodyCol + 1 + x,
+        row: row + 1 + y,
+        color: fill,
+        kind: 'bar',
+      })
+    }
+  }
+}
+
 function addPaddle(
   cells: Cell[],
   col: number,
@@ -290,114 +382,25 @@ function drawCells(
   }
 }
 
-type FieldParticle = {
-  homeX: number
-  homeY: number
-  x: number
-  y: number
-  vx: number
-  vy: number
-  color: RGB
-}
-
-/** Same soft cursor scatter as hero mark / SvgParticles (ready board only). */
-const READY_REPULSION_FORCE = 14
-const READY_REPULSION_RADIUS = 110
-
-function drawCellsWithRepulsion(
-  ctx: CanvasRenderingContext2D,
-  cells: Cell[],
-  originX: number,
-  originY: number,
-  particles: Map<string, FieldParticle>,
-  pointer: { x: number; y: number; active: boolean },
-  excludeHitbox: {
-    left: number
-    top: number
-    right: number
-    bottom: number
-  } | null
-) {
-  const seen = new Set<string>()
-  for (const cell of cells) {
-    const key = `${cell.col},${cell.row}`
-    if (seen.has(key)) continue
-    seen.add(key)
-    const homeX = originX + cell.col * PITCH
-    const homeY = originY + cell.row * PITCH
-    let particle = particles.get(key)
-    if (!particle) {
-      particle = {
-        homeX,
-        homeY,
-        x: homeX,
-        y: homeY,
-        vx: 0,
-        vy: 0,
-        color: cell.color,
-      }
-      particles.set(key, particle)
-    } else {
-      particle.homeX = homeX
-      particle.homeY = homeY
-      particle.color = cell.color
-    }
-  }
-  for (const key of [...particles.keys()]) {
-    if (!seen.has(key)) particles.delete(key)
-  }
-
-  for (const particle of particles.values()) {
-    const onPlayButton =
-      excludeHitbox !== null &&
-      particle.homeX + PARTICLE_SIZE > excludeHitbox.left &&
-      particle.homeX < excludeHitbox.right &&
-      particle.homeY + PARTICLE_SIZE > excludeHitbox.top &&
-      particle.homeY < excludeHitbox.bottom
-
-    if (onPlayButton) {
-      // Keep PLAY solid and clickable — no cursor scatter on the button.
-      particle.vx = 0
-      particle.vy = 0
-      particle.x = particle.homeX
-      particle.y = particle.homeY
-    } else {
-      if (pointer.active) {
-        const dx = particle.x - pointer.x
-        const dy = particle.y - pointer.y
-        const dist = Math.hypot(dx, dy) || 1
-        if (dist < READY_REPULSION_RADIUS) {
-          const force =
-            ((READY_REPULSION_RADIUS - dist) /
-              READY_REPULSION_RADIUS) *
-            READY_REPULSION_FORCE *
-            0.35
-          particle.vx += (dx / dist) * force
-          particle.vy += (dy / dist) * force
-        }
-      }
-      particle.vx *= 0.86
-      particle.vy *= 0.86
-      particle.x += particle.vx
-      particle.y += particle.vy
-      particle.x += (particle.homeX - particle.x) * 0.05
-      particle.y += (particle.homeY - particle.y) * 0.05
-    }
-
-    const [r, g, b] = particle.color
-    ctx.fillStyle = `rgb(${r},${g},${b})`
-    ctx.fillRect(
-      Math.round(particle.x),
-      Math.round(particle.y),
-      PARTICLE_SIZE,
-      PARTICLE_SIZE
-    )
-  }
-}
-
 function easeOutCubic(t: number) {
   const u = clamp(t, 0, 1)
   return 1 - Math.pow(1 - u, 3)
+}
+
+function easeInCubic(t: number) {
+  const u = clamp(t, 0, 1)
+  return u * u * u
+}
+
+/**
+ * Intro assemble curve: keep the full-screen scatter readable,
+ * then ease into the target form (easeOut made the scatter vanish instantly).
+ */
+function introAssembleT(progress: number) {
+  const u = clamp(progress, 0, 1)
+  const scatterHold = 0.34
+  if (u <= scatterHold) return 0
+  return easeInCubic((u - scatterHold) / (1 - scatterHold))
 }
 
 /** Same light square grid as `.hero-stack::before` — drawn under match particles. */
@@ -421,16 +424,27 @@ function drawBackgroundGrid(
   ctx.stroke()
 }
 
+function lerpRgb(from: RGB, to: RGB, t: number): RGB {
+  const u = clamp(t, 0, 1)
+  return [
+    Math.round(from[0] + (to[0] - from[0]) * u),
+    Math.round(from[1] + (to[1] - from[1]) * u),
+    Math.round(from[2] + (to[2] - from[2]) * u),
+  ] as RGB
+}
+
 function drawIntroParticles(
   ctx: CanvasRenderingContext2D,
   particles: IntroParticle[],
   progress: number
 ) {
-  const t = easeOutCubic(progress)
+  const t = introAssembleT(progress)
   for (const p of particles) {
     const x = p.startX + (p.homeX - p.startX) * t
     const y = p.startY + (p.homeY - p.startY) * t
-    const [r, g, b] = p.color
+    const [r, g, b] = p.startColor
+      ? lerpRgb(p.startColor, p.color, t)
+      : p.color
     ctx.fillStyle = `rgb(${r},${g},${b})`
     ctx.fillRect(
       Math.round(x),
@@ -441,8 +455,42 @@ function drawIntroParticles(
   }
 }
 
+/** Loader explodes outward, then particles reassemble into the match. */
+function drawBurstMorphParticles(
+  ctx: CanvasRenderingContext2D,
+  particles: IntroParticle[],
+  progress: number
+) {
+  const u = clamp(progress, 0, 1)
+  const explodeEnd = 0.38
+  for (const p of particles) {
+    const delay = clamp(p.burstDelay ?? 0, 0, 0.28)
+    const span = Math.max(0.22, 1 - delay)
+    const local = clamp((u - delay) / span, 0, 1)
+    const burstX = p.burstX ?? p.startX
+    const burstY = p.burstY ?? p.startY
+    let x: number
+    let y: number
+    let color: RGB
+    if (local <= explodeEnd) {
+      const t = easeOutCubic(local / explodeEnd)
+      x = p.startX + (burstX - p.startX) * t
+      y = p.startY + (burstY - p.startY) * t
+      color = p.startColor ?? p.color
+    } else {
+      const t = easeOutCubic((local - explodeEnd) / (1 - explodeEnd))
+      x = burstX + (p.homeX - burstX) * t
+      y = burstY + (p.homeY - burstY) * t
+      color = p.startColor ? lerpRgb(p.startColor, p.color, t) : p.color
+    }
+    const [r, g, b] = color
+    ctx.fillStyle = `rgb(${r},${g},${b})`
+    ctx.fillRect(Math.round(x), Math.round(y), PARTICLE_SIZE, PARTICLE_SIZE)
+  }
+}
+
 function buildIntroParticles(
-  cells: Cell[],
+  cells: IntroCell[],
   originX: number,
   originY: number,
   width: number,
@@ -462,9 +510,163 @@ function buildIntroParticles(
       startX: Math.random() * Math.max(1, width - PARTICLE_SIZE),
       startY: Math.random() * Math.max(1, height - PARTICLE_SIZE),
       color: cell.color,
+      kind: cell.kind,
     })
   }
   return particles
+}
+
+/** Loader → match: explode outward, then fly into match homes. */
+function remorphIntroParticlesBurst(
+  previous: IntroParticle[],
+  cells: Cell[],
+  originX: number,
+  originY: number,
+  width: number,
+  height: number
+): IntroParticle[] {
+  const occupied = new Set<string>()
+  const homes: { x: number; y: number; color: RGB }[] = []
+  for (const cell of cells) {
+    const key = `${cell.col},${cell.row}`
+    if (occupied.has(key)) continue
+    occupied.add(key)
+    homes.push({
+      x: originX + cell.col * PITCH,
+      y: originY + cell.row * PITCH,
+      color: cell.color,
+    })
+  }
+  if (!homes.length) return previous.slice()
+
+  // Prefer source particles near the loader center so the burst reads clearly.
+  const sources = previous.length
+    ? previous.slice()
+    : homes.map((home) => ({
+        homeX: home.x,
+        homeY: home.y,
+        startX: home.x,
+        startY: home.y,
+        color: home.color,
+        kind: 'loading' as IntroKind,
+      }))
+
+  let cx = 0
+  let cy = 0
+  for (const s of sources) {
+    cx += s.homeX
+    cy += s.homeY
+  }
+  cx /= sources.length
+  cy /= sources.length
+
+  // Shuffle homes so leftover loader grains don't map in a rigid scanline.
+  for (let i = homes.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1))
+    const tmp = homes[i]
+    homes[i] = homes[j]
+    homes[j] = tmp
+  }
+
+  const maxBurst = Math.min(width, height) * 0.32
+  const out: IntroParticle[] = []
+  for (let i = 0; i < homes.length; i++) {
+    const from = sources[i % sources.length]
+    const home = homes[i]
+    const startX = from.homeX
+    const startY = from.homeY
+    // Radial explode from loader centroid, with jitter so grains fan out.
+    const dx = startX - cx
+    const dy = startY - cy
+    const radial = Math.hypot(dx, dy)
+    const baseAngle =
+      (radial < 2 ? Math.random() * Math.PI * 2 : Math.atan2(dy, dx)) +
+      (Math.random() - 0.5) * 1.4
+    const dist = 36 + Math.random() * maxBurst
+    const burstX = clamp(
+      startX + Math.cos(baseAngle) * dist,
+      PARTICLE_SIZE,
+      Math.max(PARTICLE_SIZE, width - PARTICLE_SIZE)
+    )
+    const burstY = clamp(
+      startY + Math.sin(baseAngle) * dist,
+      PARTICLE_SIZE,
+      Math.max(PARTICLE_SIZE, height - PARTICLE_SIZE)
+    )
+    out.push({
+      homeX: home.x,
+      homeY: home.y,
+      startX,
+      startY,
+      burstX,
+      burstY,
+      burstDelay: Math.random() * 0.22,
+      startColor: from.color,
+      color: home.color,
+      kind: from.kind,
+    })
+  }
+  return out
+}
+
+function loadingLabelForFill(barFill01: number): string {
+  const dots = clamp(Math.ceil(clamp(barFill01, 0, 1) * 3) || 1, 1, 3)
+  return INTRO_LOADING_BASE + '.'.repeat(dots)
+}
+
+/** Centered LOADING + dots (1→3 with bar) + retro progress bar. */
+function buildIntroLoaderCells(
+  cols: number,
+  rows: number,
+  readyCenterY: number,
+  originY: number,
+  barFill01: number
+): IntroCell[] {
+  const cells: IntroCell[] = []
+  const loadingScale = 1
+  const tracking = 1
+  const glyphRows = 7
+  const afterLoadingGap = 7
+  const barHeight = 6
+  const loadingH = glyphRows * loadingScale
+  const blockHeight = loadingH + afterLoadingGap + barHeight
+
+  const centerCol = Math.floor(cols / 2)
+  const centerRow = Math.round((readyCenterY - originY) / PITCH)
+  const firstRow = clamp(
+    centerRow - Math.floor(blockHeight / 2),
+    0,
+    Math.max(0, rows - blockHeight)
+  )
+
+  const label = loadingLabelForFill(barFill01)
+  // Keep left edge fixed so dots grow without shifting "LOADING".
+  const fullW = textWidth(INTRO_LOADING_BASE + '...', loadingScale, tracking)
+  addTextKind(
+    cells,
+    label,
+    centerCol - Math.floor(fullW / 2),
+    firstRow,
+    COLORS.white,
+    'loading',
+    loadingScale,
+    tracking
+  )
+
+  const barRow = firstRow + loadingH + afterLoadingGap
+  const barWidth = Math.min(cols - 8, Math.max(40, Math.round(cols * 0.32)))
+  addProgressBar(
+    cells,
+    centerCol - Math.floor(barWidth / 2),
+    barRow,
+    barWidth,
+    barHeight,
+    barFill01,
+    COLORS.white,
+    COLORS.live
+  )
+
+  return cells
 }
 
 function drawBall(
@@ -585,9 +787,10 @@ export default function HeroMatchBoard({
     let nextFullTimeBurstSide: 'left' | 'right' = 'left'
     let scene: 'ready' | 'playing' | 'goal' | 'fulltime' =
       'ready'
-    let introPhase: 'assembling' | 'done' = 'assembling'
+    let introPhase: IntroPhase = 'ui-wait'
     let introElapsed = 0
     let introParticles: IntroParticle[] = []
+    let introBarFillStep = -1
     let notifiedPlaying = false
     let scoreArgentina = 0
 
@@ -620,7 +823,6 @@ export default function HeroMatchBoard({
       right: number
       bottom: number
     } | null = null
-    const readyParticles = new Map<string, FieldParticle>()
     let layout = {
       width: 2,
       height: 2,
@@ -816,7 +1018,7 @@ export default function HeroMatchBoard({
           ? centerY
           : clamp(ball.y, geometry.fieldTop, geometry.fieldBottom)
 
-      if (introPhase === 'assembling') {
+      if (introPhase !== 'done' && introParticles.length) {
         introParticles = []
       }
     }
@@ -875,7 +1077,6 @@ export default function HeroMatchBoard({
     }
 
     const restartMatch = () => {
-      readyParticles.clear()
       resetMatch('playing')
       notifyPlayChange(true)
     }
@@ -889,7 +1090,9 @@ export default function HeroMatchBoard({
     }
 
     const onPointerMove = (event: PointerEvent) => {
-      if (introPhase === 'assembling') return
+      if (introPhase !== 'done') {
+        return
+      }
       const rect = root.getBoundingClientRect()
       const x = event.clientX - rect.left
       const y = event.clientY - rect.top
@@ -918,7 +1121,9 @@ export default function HeroMatchBoard({
     }
 
     const onPointerDown = (event: PointerEvent) => {
-      if (introPhase === 'assembling') return
+      if (introPhase !== 'done') {
+        return
+      }
       if (
         (scene !== 'ready' && scene !== 'fulltime') ||
         !playAgainHitbox
@@ -1688,7 +1893,7 @@ export default function HeroMatchBoard({
       }
 
       if (scene === 'ready' && showReadyButton) {
-        const buttonLabel = 'PLAY'
+        const buttonLabel = 'PLAY THE GAME'
         const buttonScale = 1
         const buttonCols = textWidth(
           buttonLabel,
@@ -1751,14 +1956,19 @@ export default function HeroMatchBoard({
       }
     }
 
-    const seedIntroParticles = (resetElapsed = true) => {
+    const seedIntroLoader = (
+      resetElapsed = true,
+      nextPhase: 'loader-assembling' | 'loader-filling' = 'loader-assembling',
+      barFill01 = 0
+    ) => {
       if (layout.cols <= 2) return
-      const cells: Cell[] = []
-      const previousScene = scene
-      // Assemble the same clean pre-match state, but reveal PLAY afterward.
-      scene = 'ready'
-      renderGame(cells, false)
-      scene = previousScene
+      const cells = buildIntroLoaderCells(
+        layout.cols,
+        layout.rows,
+        layout.readyCenterY,
+        layout.originY,
+        barFill01
+      )
       introParticles = buildIntroParticles(
         cells,
         layout.originX,
@@ -1766,8 +1976,77 @@ export default function HeroMatchBoard({
         layout.width,
         layout.height
       )
+      if (nextPhase === 'loader-filling') {
+        for (const particle of introParticles) {
+          particle.startX = particle.homeX
+          particle.startY = particle.homeY
+        }
+      }
       if (resetElapsed) introElapsed = 0
-      introPhase = 'assembling'
+      introPhase = nextPhase
+    }
+
+    const refreshIntroBarFill = (fill01: number) => {
+      if (layout.cols <= 2 || !introParticles.length) return
+      const cells = buildIntroLoaderCells(
+        layout.cols,
+        layout.rows,
+        layout.readyCenterY,
+        layout.originY,
+        fill01
+      )
+      const next = buildIntroParticles(
+        cells,
+        layout.originX,
+        layout.originY,
+        layout.width,
+        layout.height
+      )
+      // Loading dots + bar grow in place with fill (1→3 dots).
+      const loadingNext = next.filter((p) => p.kind === 'loading')
+      const remappedLoading = loadingNext.map((home) => ({
+        homeX: home.homeX,
+        homeY: home.homeY,
+        startX: home.homeX,
+        startY: home.homeY,
+        color: home.color,
+        kind: 'loading' as IntroKind,
+      }))
+      const barNext = next.filter((p) => p.kind === 'bar')
+      const remappedBar = barNext.map((home) => ({
+        homeX: home.homeX,
+        homeY: home.homeY,
+        startX: home.homeX,
+        startY: home.homeY,
+        color: home.color,
+        kind: 'bar' as IntroKind,
+      }))
+      introParticles = [...remappedLoading, ...remappedBar]
+    }
+
+    const seedIntroMatchCrossfade = () => {
+      if (layout.cols <= 2) return
+      const matchCells: Cell[] = []
+      const previousScene = scene
+      scene = 'ready'
+      renderGame(matchCells, false)
+      scene = previousScene
+      introParticles = remorphIntroParticlesBurst(
+        introParticles,
+        matchCells,
+        layout.originX,
+        layout.originY,
+        layout.width,
+        layout.height
+      )
+      introElapsed = 0
+      introPhase = 'match-crossfade'
+    }
+
+    const finishIntro = () => {
+      introParticles = []
+      introPhase = 'done'
+      prepareMatch()
     }
 
     const render = (now: number) => {
@@ -1794,37 +2073,74 @@ export default function HeroMatchBoard({
       bufferCtx.fillRect(0, 0, layout.width, layout.height)
       drawBackgroundGrid(bufferCtx, layout.width, layout.height)
 
-      if (introPhase === 'assembling') {
-        if (!introParticles.length && layout.cols > 2) {
-          seedIntroParticles(introElapsed === 0)
-        }
-        introElapsed += dt * 1000
-        const progress = Math.min(
-          1,
-          introElapsed / INTRO_ASSEMBLE_MS
-        )
-        drawIntroParticles(bufferCtx, introParticles, progress)
-        if (progress < 1) {
-          const geometry = getGeometry()
-          const centerY =
-            (geometry.fieldTop + geometry.fieldBottom) / 2
-          const homeX = layout.width * 0.5
-          const homeY = centerY
-          const startX = layout.width * 0.15
-          const startY = layout.height * 0.2
-          const t = easeOutCubic(progress)
-          drawBall(
-            bufferCtx,
-            startX + (homeX - startX) * t,
-            startY + (homeY - startY) * t,
-            0,
-            layout.originX,
-            layout.originY
+      if (introPhase !== 'done') {
+        if (
+          !introParticles.length &&
+          layout.cols > 2 &&
+          (introPhase === 'loader-assembling' ||
+            introPhase === 'loader-filling')
+        ) {
+          seedIntroLoader(
+            introElapsed === 0,
+            introPhase === 'loader-filling'
+              ? 'loader-filling'
+              : 'loader-assembling',
+            introPhase === 'loader-filling' ? 0 : 0
           )
-        } else {
-          introPhase = 'done'
-          prepareMatch()
+        } else if (
+          !introParticles.length &&
+          layout.cols > 2 &&
+          introPhase === 'match-crossfade'
+        ) {
+          seedIntroLoader(false, 'loader-filling', 1)
+          seedIntroMatchCrossfade()
         }
+
+        introElapsed += dt * 1000
+
+        if (introPhase === 'ui-wait') {
+          if (introElapsed >= INTRO_UI_WAIT_MS) {
+            introElapsed = 0
+            seedIntroLoader(true, 'loader-assembling', 0)
+          }
+        } else if (introPhase === 'loader-assembling') {
+          const progress = Math.min(
+            1,
+            introElapsed / INTRO_LOADER_ASSEMBLE_MS
+          )
+          drawIntroParticles(bufferCtx, introParticles, progress)
+          if (progress >= 1) {
+            introPhase = 'loader-filling'
+            introElapsed = 0
+            introBarFillStep = -1
+            for (const particle of introParticles) {
+              particle.startX = particle.homeX
+              particle.startY = particle.homeY
+            }
+          }
+        } else if (introPhase === 'loader-filling') {
+          const fill = Math.min(1, introElapsed / INTRO_BAR_FILL_MS)
+          const fillStep = Math.round(fill * 48)
+          if (fillStep !== introBarFillStep) {
+            introBarFillStep = fillStep
+            refreshIntroBarFill(fill)
+          }
+          drawIntroParticles(bufferCtx, introParticles, 1)
+          if (fill >= 1) {
+            seedIntroMatchCrossfade()
+            drawBurstMorphParticles(bufferCtx, introParticles, 0)
+          }
+        } else if (introPhase === 'match-crossfade') {
+          const progress = Math.min(
+            1,
+            introElapsed / INTRO_MATCH_CROSSFADE_MS
+          )
+          drawBurstMorphParticles(bufferCtx, introParticles, progress)
+          if (progress >= 1) {
+            finishIntro()
+          }
+        }
+
         ctx.setTransform(1, 0, 0, 1, 0, 0)
         ctx.imageSmoothingEnabled = false
         ctx.drawImage(buffer, 0, 0)
@@ -1835,26 +2151,12 @@ export default function HeroMatchBoard({
 
       const cells: Cell[] = []
       if (scene === 'fulltime') {
-        readyParticles.clear()
         renderFullTime(cells)
         drawCells(bufferCtx, cells, layout.originX, layout.originY)
       } else {
         playAgainHitbox = null
         renderGame(cells)
-        if (scene === 'ready') {
-          drawCellsWithRepulsion(
-            bufferCtx,
-            cells,
-            layout.originX,
-            layout.originY,
-            readyParticles,
-            pointer,
-            playAgainHitbox
-          )
-        } else {
-          readyParticles.clear()
-          drawCells(bufferCtx, cells, layout.originX, layout.originY)
-        }
+        drawCells(bufferCtx, cells, layout.originX, layout.originY)
       }
 
       if (scene === 'playing') {
@@ -1912,7 +2214,8 @@ export default function HeroMatchBoard({
 
     resize()
     prepareMatch()
-    seedIntroParticles(true)
+    introPhase = 'ui-wait'
+    introElapsed = 0
     // Remeasure after hero slogan / lead layout settles (WipeReveal, fonts).
     const remasureId = window.requestAnimationFrame(() => {
       window.requestAnimationFrame(() => {

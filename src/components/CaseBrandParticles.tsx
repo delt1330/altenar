@@ -44,12 +44,26 @@ type CaseParticle = {
 
 type LogoTarget = { id: string; imageUrl: string }
 
+const DEFAULT_MARK_SELECTORS = ['.case-brand__img', '.case-brand']
+
 type Props = {
   logoTargets?: LogoTarget[]
+  /** Drawn square size in CSS px (default 1.5). */
   particleSize?: number
+  /** Empty space between particle edges in CSS px (default 1). Lattice pitch = size + gap. */
   particleGap?: number
   /** Dark ink on light cases section (match solid case logos). */
   color?: string
+  /** Section that drives assemble range + IntersectionObserver. */
+  sectionId?: string
+  /** Row/card selector for hover resolve (e.g. `.case`, `.award-card`). */
+  rowSelector?: string
+  /** Fallback DOM scrape when logoTargets is empty. */
+  fallbackSelector?: string
+  /** Stage measure preference: first match wins. */
+  markSelectors?: string[]
+  className?: string
+  canvasClassName?: string
 }
 
 function parseHex(c: string) {
@@ -123,14 +137,19 @@ function measurePageBox(el: HTMLElement | null) {
 }
 
 /**
- * Case-row logos as pixel swarms — same recipe as client logo wall
- * (GearFlowBridge): lattice assemble on scroll, solid reveal on row hover.
+ * Logo lattice swarms (cases / awards): assemble on scroll, solid reveal on row hover.
  */
 export default function CaseBrandParticles({
   logoTargets = [],
-  particleSize = 10,
-  particleGap = 4,
+  particleSize = 1.5,
+  particleGap = 1,
   color = '#15161b',
+  sectionId = 'cases',
+  rowSelector = '.case',
+  fallbackSelector = '.case[data-logo-id]',
+  markSelectors = DEFAULT_MARK_SELECTORS,
+  className = 'case-brand-particles',
+  canvasClassName = 'case-brand-particles__canvas',
 }: Props) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const particlesRef = useRef<CaseParticle[]>([])
@@ -148,8 +167,23 @@ export default function CaseBrandParticles({
     const canvas = canvasRef.current
     if (!canvas) return
 
-    const gap = Math.max(2, Math.round(particleGap))
-    const ps = Math.max(2, Math.round(particleSize / 4))
+    const psCss = Math.max(0.5, Number(particleSize) || 1)
+    const gapBetween = Math.max(0, Number(particleGap) || 0)
+    const dpr0 = window.devicePixelRatio || 1
+    const psDev = Math.max(1, Math.round(psCss * dpr0))
+    const gapDev = gapBetween > 0 ? Math.max(1, Math.round(gapBetween * dpr0)) : 0
+    const pitchDev = psDev + gapDev
+    const ps = psDev / dpr0
+    const gap = pitchDev / dpr0
+
+    const resolveMark = (cell: HTMLElement | null) => {
+      if (!cell) return null
+      for (const sel of markSelectors) {
+        const hit = cell.querySelector(sel) as HTMLElement | null
+        if (hit) return hit
+      }
+      return cell
+    }
 
     const resize = () => {
       const dpr = window.devicePixelRatio || 1
@@ -162,10 +196,7 @@ export default function CaseBrandParticles({
     const refreshLogoStages = () => {
       for (const logo of logosRef.current) {
         const cell = document.getElementById(logo.id)
-        const mark =
-          (cell?.querySelector('.case-brand__img') as HTMLElement | null) ||
-          (cell?.querySelector('.case-brand') as HTMLElement | null) ||
-          cell
+        const mark = resolveMark(cell)
         const box = measurePageBox(mark)
         if (box) logo.stage = box
       }
@@ -173,13 +204,13 @@ export default function CaseBrandParticles({
 
     const updateRange = () => {
       const scrollY = window.scrollY || window.pageYOffset
-      const cases = document.getElementById('cases')
-      const casesRect = cases?.getBoundingClientRect()
+      const section = document.getElementById(sectionId)
+      const sectionRect = section?.getBoundingClientRect()
       refreshLogoStages()
       const vh = window.innerHeight
-      const casesDocTop = casesRect != null ? scrollY + casesRect.top : scrollY
-      const start = casesDocTop - vh * 0.7
-      const end = casesDocTop - vh * 0.12
+      const sectionDocTop = sectionRect != null ? scrollY + sectionRect.top : scrollY
+      const start = sectionDocTop - vh * 0.7
+      const end = sectionDocTop - vh * 0.12
       rangeRef.current = {
         start,
         end: Math.max(start + 120, end),
@@ -283,6 +314,7 @@ export default function CaseBrandParticles({
 
       const hovered = hoveredLogoIndexRef.current
 
+      ctx.setTransform(1, 0, 0, 1, 0, 0)
       for (const p of particles) {
         const local = clamp01((progress - p.stagger * 0.4) / (1 - p.stagger * 0.4))
         const t = easeInOut(local)
@@ -310,8 +342,15 @@ export default function CaseBrandParticles({
         const alpha = 0.2 + 0.8 * clamp01((progress - p.stagger * 0.15) / 0.85)
         const hoverFade = 1 - easeInOut(p.hoverT)
         ctx.fillStyle = `rgba(${base.r},${base.g},${base.b},${(p.a / 255) * alpha * hoverFade})`
-        ctx.fillRect(Math.round(x - ps / 2), Math.round(y - ps / 2), ps, ps)
+        // Integer device pixels: preserves uniform 1css gap with 1.5css size.
+        ctx.fillRect(
+          Math.floor(x * dpr - psDev / 2 + 1e-9),
+          Math.floor(y * dpr - psDev / 2 + 1e-9),
+          psDev,
+          psDev
+        )
       }
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
     }
     draw()
 
@@ -322,7 +361,7 @@ export default function CaseBrandParticles({
       try {
         const configs = logoTargets.length
           ? logoTargets
-          : Array.from(document.querySelectorAll<HTMLElement>('.case[data-logo-id]')).map((el) => ({
+          : Array.from(document.querySelectorAll<HTMLElement>(fallbackSelector)).map((el) => ({
               id: el.dataset.logoId || el.id,
               imageUrl: el.dataset.logoSrc || '',
             }))
@@ -338,10 +377,7 @@ export default function CaseBrandParticles({
               img = null
             }
             const cell = document.getElementById(cfg.id)
-            const mark =
-              (cell?.querySelector('.case-brand__img') as HTMLElement | null) ||
-              (cell?.querySelector('.case-brand') as HTMLElement | null) ||
-              cell
+            const mark = resolveMark(cell)
             const stage = measurePageBox(mark) || { x: 0, y: 0, w: 160, h: 80 }
             logos.push({ id: cfg.id, imageUrl: cfg.imageUrl, img, stage })
           })
@@ -397,7 +433,7 @@ export default function CaseBrandParticles({
       }
     }
 
-    const cases = document.getElementById('cases')
+    const section = document.getElementById(sectionId)
     const io = new IntersectionObserver(
       (entries) => {
         for (const entry of entries) {
@@ -408,7 +444,7 @@ export default function CaseBrandParticles({
       },
       { threshold: [0.01, 0.05, 0.1], rootMargin: '0px 0px 20% 0px' }
     )
-    if (cases) io.observe(cases)
+    if (section) io.observe(section)
 
     const onScroll = () => {
       if (startedRef.current) updateRange()
@@ -425,7 +461,7 @@ export default function CaseBrandParticles({
 
     const resolveLogoIndex = (el: HTMLElement | null) => {
       if (!el) return -1
-      const row = el.closest('.case') as HTMLElement | null
+      const row = el.closest(rowSelector) as HTMLElement | null
       if (!row) return -1
       const id = row.id || row.dataset.logoId
       if (!id) return -1
@@ -439,9 +475,9 @@ export default function CaseBrandParticles({
     const onPointerOut = (e: Event) => {
       const t = e.target as HTMLElement
       const related = (e as MouseEvent).relatedTarget as HTMLElement | null
-      const from = t.closest('.case') as HTMLElement | null
+      const from = t.closest(rowSelector) as HTMLElement | null
       if (!from) return
-      if (related?.closest?.('.case') === from) return
+      if (related?.closest?.(rowSelector) === from) return
       const idx = resolveLogoIndex(from)
       if (idx === hoveredLogoIndexRef.current) hoveredLogoIndexRef.current = -1
     }
@@ -458,11 +494,19 @@ export default function CaseBrandParticles({
       io.disconnect()
       resetFlow()
     }
-  }, [logoTargets, particleSize, particleGap])
+  }, [
+    logoTargets,
+    particleSize,
+    particleGap,
+    sectionId,
+    rowSelector,
+    fallbackSelector,
+    markSelectors,
+  ])
 
   return (
-    <div className="case-brand-particles" aria-hidden="true">
-      <canvas ref={canvasRef} className="case-brand-particles__canvas" />
+    <div className={className} aria-hidden="true">
+      <canvas ref={canvasRef} className={canvasClassName} />
     </div>
   )
 }

@@ -1196,7 +1196,7 @@ function sampleClientLogoPoints(img, W, H, gap, count, padRatio = 0.12) {
     const dh = iH * scale
     const dx = (boxW - dw) / 2
     const dy = (boxH - dh) / 2
-    const step = Math.max(2, Math.round(gap))
+    const step = Math.max(1, Number(gap) || 1)
 
     const off = document.createElement('canvas')
     off.width = boxW
@@ -1219,16 +1219,20 @@ function sampleClientLogoPoints(img, W, H, gap, count, padRatio = 0.12) {
     }
 
     const raw = []
-    const x0 = Math.floor(dx / step) * step
-    const y0 = Math.floor(dy / step) * step
-    const x1 = Math.ceil(dx + dw)
-    const y1 = Math.ceil(dy + dh)
-    for (let y = y0; y <= y1; y += step) {
-        for (let x = x0; x <= x1; x += step) {
-            if (x < 0 || y < 0 || x >= boxW || y >= boxH) continue
-            const i = (y * boxW + x) * 4
-            const a = px[i + 3]
-            const lum = px[i] + px[i + 1] + px[i + 2]
+    // Integer lattice indices keep pitch exact (avoids float drift from y += step).
+    const i0 = Math.ceil(dx / step - 1e-9)
+    const j0 = Math.ceil(dy / step - 1e-9)
+    const i1 = Math.floor((dx + dw) / step + 1e-9)
+    const j1 = Math.floor((dy + dh) / step + 1e-9)
+    for (let j = j0; j <= j1; j++) {
+        for (let i = i0; i <= i1; i++) {
+            const x = i * step
+            const y = j * step
+            const ix = Math.min(boxW - 1, Math.max(0, Math.round(x)))
+            const iy = Math.min(boxH - 1, Math.max(0, Math.round(y)))
+            const idx = (iy * boxW + ix) * 4
+            const a = px[idx + 3]
+            const lum = px[idx] + px[idx + 1] + px[idx + 2]
             if (a < 24 || lum < 40) continue
             raw.push({
                 homeX: x,

@@ -95,8 +95,9 @@ type FlowParticle = {
 
 type Props = {
   scenariosId?: string
+  /** Drawn square size in CSS px (default 1.5). */
   particleSize?: number
-  /** Lattice pitch — match hero `particleGap` (default 4). */
+  /** Empty space between particle edges in CSS px (default 1). Lattice pitch = size + gap. */
   particleGap?: number
   color?: string
   logoTargets?: LogoTargetConfig[]
@@ -210,8 +211,8 @@ function measureGearStagePage(section: HTMLElement) {
  */
 export default function GearFlowBridge({
   scenariosId = 'scenarios',
-  particleSize = 10,
-  particleGap = 4,
+  particleSize = 1.5,
+  particleGap = 1,
   color = '#ffffff',
   logoTargets = [],
 }: Props) {
@@ -240,9 +241,15 @@ export default function GearFlowBridge({
     const canvas = canvasRef.current
     if (!canvas) return
 
-    const gap = Math.max(2, Math.round(particleGap))
-    // Same rhythm as hero canvas: particleSize/4 CSS px squares on `gap` lattice.
-    const ps = Math.max(2, Math.round(particleSize / 4))
+    const psCss = Math.max(0.5, Number(particleSize) || 1)
+    const gapBetween = Math.max(0, Number(particleGap) || 0)
+    // Device-pixel metrics keep size/gap uniform (no subpixel AA bleed).
+    const dpr0 = window.devicePixelRatio || 1
+    const psDev = Math.max(1, Math.round(psCss * dpr0))
+    const gapDev = gapBetween > 0 ? Math.max(1, Math.round(gapBetween * dpr0)) : 0
+    const pitchDev = psDev + gapDev
+    const ps = psDev / dpr0
+    const gap = pitchDev / dpr0
 
     const resize = () => {
       const dpr = window.devicePixelRatio || 1
@@ -474,6 +481,7 @@ export default function GearFlowBridge({
 
       const hovered = hoveredLogoIndexRef.current
 
+      ctx.setTransform(1, 0, 0, 1, 0, 0)
       for (const p of particles) {
         let pageX = p.pageX
         let pageY = p.pageY
@@ -531,8 +539,15 @@ export default function GearFlowBridge({
         const hoverFade = 1 - easeInOut(ht)
 
         ctx.fillStyle = `rgba(${base.r},${base.g},${base.b},${(p.a / 255) * alpha * hoverFade})`
-        ctx.fillRect(Math.round(x - ps / 2), Math.round(y - ps / 2), ps, ps)
+        // Integer device pixels: preserves uniform 1css gap with 1.5css size.
+        ctx.fillRect(
+          Math.floor(x * dpr - psDev / 2 + 1e-9),
+          Math.floor(y * dpr - psDev / 2 + 1e-9),
+          psDev,
+          psDev
+        )
       }
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
     }
     draw()
 
