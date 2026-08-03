@@ -235,12 +235,18 @@ function addProgressBar(
   const w = Math.max(12, Math.round(width))
   const h = Math.max(4, Math.round(height))
   const nipple = Math.max(1, Math.round(h * 0.45))
+  const nippleY0 = Math.floor((h - nipple) / 2)
   // Left nipple (battery tip).
-  for (let y = Math.floor((h - nipple) / 2); y < Math.floor((h - nipple) / 2) + nipple; y++) {
+  for (let y = nippleY0; y < nippleY0 + nipple; y++) {
     cells.push({ col, row: row + y, color: outline, kind: 'bar' })
   }
   const bodyCol = col + 1
-  const bodyW = w - 1
+  const bodyW = Math.max(4, w - 2)
+  // Right nipple (mirror of left).
+  const rightCol = bodyCol + bodyW
+  for (let y = nippleY0; y < nippleY0 + nipple; y++) {
+    cells.push({ col: rightCol, row: row + y, color: outline, kind: 'bar' })
+  }
   // Outline.
   for (let x = 0; x < bodyW; x++) {
     cells.push({ col: bodyCol + x, row, color: outline, kind: 'bar' })
@@ -627,7 +633,7 @@ function buildIntroLoaderCells(
   const tracking = 1
   const glyphRows = 7
   const afterLoadingGap = 7
-  const barHeight = 6
+  const barHeight = 7
   const loadingH = glyphRows * loadingScale
   const blockHeight = loadingH + afterLoadingGap + barHeight
 

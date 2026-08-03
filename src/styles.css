@@ -4819,15 +4819,35 @@ h3 {
 
 .page-note__card {
   position: absolute;
-  left: 36px;
-  top: -8px;
-  width: min(280px, calc(100vw - 48px));
+  width: 280px;
+  max-width: calc(100vw - 24px);
   padding: 10px;
   border-radius: 8px;
   background: #2c2c2c;
   border: 1px solid rgba(255, 255, 255, 0.08);
   box-shadow: 0 16px 40px rgba(0, 0, 0, 0.45);
   cursor: default;
+  box-sizing: border-box;
+}
+
+.page-note__card.is-right {
+  left: 36px;
+  right: auto;
+}
+
+.page-note__card.is-left {
+  left: auto;
+  right: 36px;
+}
+
+.page-note__card.is-below {
+  top: 36px;
+  bottom: auto;
+}
+
+.page-note__card.is-above {
+  top: auto;
+  bottom: 36px;
 }
 
 .page-note__card-head {
