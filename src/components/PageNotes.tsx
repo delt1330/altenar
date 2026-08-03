@@ -153,6 +153,7 @@ export default function PageNotes() {
   const replyRef = useRef<HTMLTextAreaElement | null>(null)
   const sharing = notesSharingEnabled()
   const saveTimer = useRef<number | null>(null)
+  const persistChain = useRef(Promise.resolve())
   const notesRef = useRef(notes)
   const shaRef = useRef(sha)
   notesRef.current = notes
@@ -181,9 +182,12 @@ export default function PageNotes() {
 
   const queuePersist = useCallback(
     (nextNotes: DesignNote[]) => {
+      notesRef.current = nextNotes
       if (saveTimer.current) window.clearTimeout(saveTimer.current)
       saveTimer.current = window.setTimeout(() => {
-        void persist(nextNotes)
+        persistChain.current = persistChain.current
+          .catch(() => undefined)
+          .then(() => persist(notesRef.current))
       }, 280)
     },
     [persist]
