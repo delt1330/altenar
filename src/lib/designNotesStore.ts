@@ -271,30 +271,41 @@ export async function saveDesignNotes(
   })
 
   if (res.status === 409 || res.status === 422) {
-    // Conflict — reload and retry once with latest sha.
-    const latest = await loadDesignNotes()
-    const merged: DesignNotesFile = {
-      version: 1,
-      notes: mergeNotes(latest.file.notes, normalized.notes),
+    // Conflict — reload and retry a few times with latest sha.
+    let latestSha = sha
+    let mergedNotes = normalized.notes
+    for (let attempt = 0; attempt < 3; attempt += 1) {
+      const latest = await loadDesignNotes()
+      const merged: DesignNotesFile = {
+        version: 1,
+        notes: mergeNotes(latest.file.notes, mergedNotes),
+      }
+      writeCache(merged)
+      mergedNotes = merged.notes
+      latestSha = latest.sha
+      const retryBody: Record<string, string> = {
+        message: `chore(notes): update design notes (${merged.notes.length})`,
+        content: encodeContent(merged),
+        branch: branch(),
+      }
+      if (latestSha) retryBody.sha = latestSha
+      const retry = await githubFetch(putUrl(), {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(retryBody),
+      })
+      if (retry.ok) {
+        const data = (await retry.json()) as { content?: { sha?: string } }
+        return { sha: data.content?.sha ?? latestSha, mode: 'remote' }
+      }
+      if (retry.status !== 409 && retry.status !== 422) {
+        const err = await retry.text()
+        throw new Error(githubErrorMessage(retry.status, err, 'save'))
+      }
     }
-    writeCache(merged)
-    const retryBody: Record<string, string> = {
-      message: `chore(notes): update design notes (${merged.notes.length})`,
-      content: encodeContent(merged),
-      branch: branch(),
-    }
-    if (latest.sha) retryBody.sha = latest.sha
-    const retry = await githubFetch(putUrl(), {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(retryBody),
-    })
-    if (!retry.ok) {
-      const err = await retry.text()
-      throw new Error(githubErrorMessage(retry.status, err, 'save'))
-    }
-    const data = (await retry.json()) as { content?: { sha?: string } }
-    return { sha: data.content?.sha ?? latest.sha, mode: 'remote' }
+    throw new Error(
+      'GitHub save failed (409): could not resolve conflict after retries'
+    )
   }
 
   if (!res.ok) {
