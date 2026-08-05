@@ -14,11 +14,29 @@ const sampleClientLogoPoints = sampleClientLogoPointsRaw as (
   stage: { x: number; y: number; w: number; h: number }
 }
 
+type LogoTarget = {
+  id: string
+  imageUrl: string
+  /** Override global particleSize for this logo (CSS px). */
+  particleSize?: number
+  /** Override global particleGap for this logo (CSS px). */
+  particleGap?: number
+  /** Grow silhouette before sampling (CSS px radius). */
+  dilate?: number
+}
+
 type LogoRuntime = {
   id: string
   imageUrl: string
   img: HTMLImageElement | null
   stage: { x: number; y: number; w: number; h: number }
+  particleSize: number
+  particleGap: number
+  dilate: number
+  psDev: number
+  gap: number
+  sampledW: number
+  sampledH: number
 }
 
 type CaseParticle = {
@@ -40,11 +58,14 @@ type CaseParticle = {
   arcBias: number
   flightPhase: number
   hoverT: number
+  psDev: number
 }
 
-type LogoTarget = { id: string; imageUrl: string }
-
-const DEFAULT_MARK_SELECTORS = ['.case-brand__img', '.case-brand']
+const DEFAULT_MARK_SELECTORS = [
+  '.case-brand__mark',
+  '.case-brand__img',
+  '.case-brand',
+]
 
 type Props = {
   logoTargets?: LogoTarget[]
@@ -136,6 +157,27 @@ function measurePageBox(el: HTMLElement | null) {
   }
 }
 
+function latticeFromCss(sizeCss: number, gapCss: number, dpr: number) {
+  const psDev = Math.max(1, Math.round(Math.max(0.5, sizeCss) * dpr))
+  const gapDev = gapCss > 0 ? Math.max(1, Math.round(gapCss * dpr)) : 0
+  const pitchDev = psDev + gapDev
+  return {
+    psDev,
+    gap: pitchDev / dpr,
+  }
+}
+
+function sampleLogo(
+  img: HTMLImageElement,
+  localW: number,
+  localH: number,
+  gap: number,
+  _dilate: number
+) {
+  // Same lattice sampling as client logos (GearFlowBridge).
+  return sampleClientLogoPoints(img, localW, localH, gap, 0, 0.06)
+}
+
 /**
  * Logo lattice swarms (cases / awards): assemble on scroll, solid reveal on row hover.
  */
@@ -167,14 +209,12 @@ export default function CaseBrandParticles({
     const canvas = canvasRef.current
     if (!canvas) return
 
-    const psCss = Math.max(0.5, Number(particleSize) || 1)
-    const gapBetween = Math.max(0, Number(particleGap) || 0)
     const dpr0 = window.devicePixelRatio || 1
-    const psDev = Math.max(1, Math.round(psCss * dpr0))
-    const gapDev = gapBetween > 0 ? Math.max(1, Math.round(gapBetween * dpr0)) : 0
-    const pitchDev = psDev + gapDev
-    const ps = psDev / dpr0
-    const gap = pitchDev / dpr0
+    const defaultLattice = latticeFromCss(
+      Math.max(0.5, Number(particleSize) || 1),
+      Math.max(0, Number(particleGap) || 0),
+      dpr0
+    )
 
     const resolveMark = (cell: HTMLElement | null) => {
       if (!cell) return null
@@ -223,32 +263,84 @@ export default function CaseBrandParticles({
       }
     }
 
-    const applyLogoHomes = () => {
+    const makeParticle = (
+      logo: LogoRuntime,
+      logoIndex: number,
+      home: { homeX: number; homeY: number; a?: number },
+      i: number,
+      reuse?: CaseParticle
+    ): CaseParticle => {
+      const cx = logo.stage.x + logo.stage.w * 0.5
+      const cy = logo.stage.y + logo.stage.h * 0.5
+      const scatterAngle = reuse?.scatterAngle ?? Math.random() * Math.PI * 2
+      const scatterDist = reuse?.scatterDist ?? 140 + Math.random() * 320
+      const startX = cx + Math.cos(scatterAngle) * scatterDist
+      const startY = cy + Math.sin(scatterAngle) * scatterDist
+      return {
+        logoIndex,
+        pageX: reuse?.pageX ?? startX,
+        pageY: reuse?.pageY ?? startY,
+        scatterAngle,
+        scatterDist,
+        scatterPageX: startX,
+        scatterPageY: startY,
+        logoLocalX: home.homeX,
+        logoLocalY: home.homeY,
+        logoPageX: logo.stage.x + home.homeX,
+        logoPageY: logo.stage.y + home.homeY,
+        a: home.a ?? 255,
+        stagger: reuse?.stagger ?? ((i % 19) / 19) * 0.38 + Math.random() * 0.06,
+        arcNormal:
+          reuse?.arcNormal ??
+          (Math.random() < 0.5 ? -1 : 1) * (0.35 + Math.random() * 0.65),
+        arcLift: reuse?.arcLift ?? 28 + Math.random() * 70,
+        arcBias: reuse?.arcBias ?? 0.25 + Math.random() * 0.5,
+        flightPhase: reuse?.flightPhase ?? Math.random() * Math.PI * 2,
+        hoverT: reuse?.hoverT ?? 0,
+        psDev: logo.psDev,
+      }
+    }
+
+    /** Full lattice rebuild when stage size changes — remap alone keeps the old sparse silhouette. */
+    const rebuildLogoParticles = (force = false) => {
       refreshLogoStages()
+      const logos = logosRef.current
+      if (!logos.length) return
+
+      let needsRebuild = force || !particlesRef.current.length
+      if (!needsRebuild) {
+        for (const logo of logos) {
+          const w = Math.max(2, Math.round(logo.stage.w))
+          const h = Math.max(2, Math.round(logo.stage.h))
+          if (Math.abs(w - logo.sampledW) > 1 || Math.abs(h - logo.sampledH) > 1) {
+            needsRebuild = true
+            break
+          }
+        }
+      }
+      if (!needsRebuild) return
+
       const byLogo = new Map<number, CaseParticle[]>()
       for (const p of particlesRef.current) {
         const list = byLogo.get(p.logoIndex) || []
         list.push(p)
         byLogo.set(p.logoIndex, list)
       }
-      for (const [logoIndex, group] of byLogo) {
-        const logo = logosRef.current[logoIndex]
-        if (!logo?.img || !group.length) continue
-        const sampled = sampleClientLogoPoints(
-          logo.img,
-          Math.max(2, Math.round(logo.stage.w)),
-          Math.max(2, Math.round(logo.stage.h)),
-          gap,
-          group.length,
-          0.06
-        )
-        group.forEach((p, i) => {
-          const home = sampled.points[i] || sampled.points[sampled.points.length - 1]
-          if (!home) return
-          p.logoLocalX = home.homeX
-          p.logoLocalY = home.homeY
+
+      const next: CaseParticle[] = []
+      logos.forEach((logo, logoIndex) => {
+        if (!logo.img) return
+        const localW = Math.max(2, Math.round(logo.stage.w))
+        const localH = Math.max(2, Math.round(logo.stage.h))
+        logo.sampledW = localW
+        logo.sampledH = localH
+        const sampled = sampleLogo(logo.img, localW, localH, logo.gap, logo.dilate)
+        const prev = byLogo.get(logoIndex) || []
+        sampled.points.forEach((home, i) => {
+          next.push(makeParticle(logo, logoIndex, home, i, prev[i]))
         })
-      }
+      })
+      particlesRef.current = next
     }
 
     const resetFlow = () => {
@@ -271,27 +363,25 @@ export default function CaseBrandParticles({
       const ctx = canvas.getContext('2d')
       if (!ctx) return
       const dpr = window.devicePixelRatio || 1
-      const vw = window.innerWidth
-      const vh = window.innerHeight
-      ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
-      ctx.clearRect(0, 0, vw, vh)
+      ctx.setTransform(1, 0, 0, 1, 0, 0)
+      ctx.clearRect(0, 0, canvas.width, canvas.height)
 
+      const scrollX = window.scrollX || window.pageXOffset
+      const scrollY = window.scrollY || window.pageYOffset
+      const { start, end } = rangeRef.current
+      const raw = clamp01((scrollY - start) / Math.max(1, end - start))
+      const target = Math.max(latchedProgressRef.current, raw)
+      if (target > latchedProgressRef.current) latchedProgressRef.current = target
+      const blend = 1 - Math.exp((-dt / 1000) * 3.2)
+      smoothProgressRef.current += (target - smoothProgressRef.current) * blend
+      const progress = smoothProgressRef.current
       const particles = particlesRef.current
       if (!particles.length) return
 
       const base = colorRef.current
-      const scrollX = window.scrollX || window.pageXOffset
-      const scrollY = window.scrollY || window.pageYOffset
-      const { start, end } = rangeRef.current
+      const vw = window.innerWidth
+      const vh = window.innerHeight
 
-      // Reversible like client logos: assemble in view, scatter on reverse scroll.
-      const rawProgress = clamp01((scrollY - start) / Math.max(1, end - start))
-      latchedProgressRef.current = rawProgress
-      const follow = 1 - Math.exp(-dt / 190)
-      smoothProgressRef.current += (latchedProgressRef.current - smoothProgressRef.current) * follow
-      const progress = clamp01(smoothProgressRef.current)
-
-      refreshLogoStages()
       for (const p of particles) {
         const logo = logosRef.current[p.logoIndex]
         if (!logo) continue
@@ -342,24 +432,38 @@ export default function CaseBrandParticles({
         const alpha = 0.2 + 0.8 * clamp01((progress - p.stagger * 0.15) / 0.85)
         const hoverFade = 1 - easeInOut(p.hoverT)
         ctx.fillStyle = `rgba(${base.r},${base.g},${base.b},${(p.a / 255) * alpha * hoverFade})`
-        // Integer device pixels: preserves uniform 1css gap with 1.5css size.
+        const size = p.psDev || defaultLattice.psDev
         ctx.fillRect(
-          Math.floor(x * dpr - psDev / 2 + 1e-9),
-          Math.floor(y * dpr - psDev / 2 + 1e-9),
-          psDev,
-          psDev
+          Math.floor(x * dpr - size / 2 + 1e-9),
+          Math.floor(y * dpr - size / 2 + 1e-9),
+          size,
+          size
         )
       }
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
     }
     draw()
 
+    const markResizeObserver = new ResizeObserver(() => {
+      if (!startedRef.current) return
+      updateRange()
+      rebuildLogoParticles()
+    })
+    const observeMarks = () => {
+      markResizeObserver.disconnect()
+      for (const logo of logosRef.current) {
+        const cell = document.getElementById(logo.id)
+        const mark = resolveMark(cell)
+        if (mark) markResizeObserver.observe(mark)
+      }
+    }
+
     let starting = false
     const startFlow = async () => {
       if (startedRef.current || starting) return
       starting = true
       try {
-        const configs = logoTargets.length
+        const configs: LogoTarget[] = logoTargets.length
           ? logoTargets
           : Array.from(document.querySelectorAll<HTMLElement>(fallbackSelector)).map((el) => ({
               id: el.dataset.logoId || el.id,
@@ -379,7 +483,23 @@ export default function CaseBrandParticles({
             const cell = document.getElementById(cfg.id)
             const mark = resolveMark(cell)
             const stage = measurePageBox(mark) || { x: 0, y: 0, w: 160, h: 80 }
-            logos.push({ id: cfg.id, imageUrl: cfg.imageUrl, img, stage })
+            const sizeCss = cfg.particleSize ?? Math.max(0.5, Number(particleSize) || 1)
+            const gapCss = cfg.particleGap ?? Math.max(0, Number(particleGap) || 0)
+            const dilate = Math.max(0, cfg.dilate ?? 0)
+            const lattice = latticeFromCss(sizeCss, gapCss, dpr0)
+            logos.push({
+              id: cfg.id,
+              imageUrl: cfg.imageUrl,
+              img,
+              stage,
+              particleSize: sizeCss,
+              particleGap: gapCss,
+              dilate,
+              psDev: lattice.psDev,
+              gap: lattice.gap,
+              sampledW: 0,
+              sampledH: 0,
+            })
           })
         )
         logosRef.current = logos.filter((l) => l.img)
@@ -389,45 +509,10 @@ export default function CaseBrandParticles({
         smoothProgressRef.current = 0
         latchedProgressRef.current = 0
         updateRange()
-
-        const next: CaseParticle[] = []
-        logosRef.current.forEach((logo, logoIndex) => {
-          if (!logo.img) return
-          const localW = Math.max(2, Math.round(logo.stage.w))
-          const localH = Math.max(2, Math.round(logo.stage.h))
-          const sampled = sampleClientLogoPoints(logo.img, localW, localH, gap, 0, 0.06)
-          const cx = logo.stage.x + logo.stage.w * 0.5
-          const cy = logo.stage.y + logo.stage.h * 0.5
-          sampled.points.forEach((home, i) => {
-            const scatterAngle = Math.random() * Math.PI * 2
-            const scatterDist = 140 + Math.random() * 320
-            const startX = cx + Math.cos(scatterAngle) * scatterDist
-            const startY = cy + Math.sin(scatterAngle) * scatterDist
-            next.push({
-              logoIndex,
-              pageX: startX,
-              pageY: startY,
-              scatterAngle,
-              scatterDist,
-              scatterPageX: startX,
-              scatterPageY: startY,
-              logoLocalX: home.homeX,
-              logoLocalY: home.homeY,
-              logoPageX: logo.stage.x + home.homeX,
-              logoPageY: logo.stage.y + home.homeY,
-              a: home.a ?? 255,
-              stagger: ((i % 19) / 19) * 0.38 + Math.random() * 0.06,
-              arcNormal: (Math.random() < 0.5 ? -1 : 1) * (0.35 + Math.random() * 0.65),
-              arcLift: 28 + Math.random() * 70,
-              arcBias: 0.25 + Math.random() * 0.5,
-              flightPhase: Math.random() * Math.PI * 2,
-              hoverT: 0,
-            })
-          })
-        })
-        particlesRef.current = next
+        rebuildLogoParticles(true)
         particleUiReadyRef.current = true
         markParticleReady(true)
+        observeMarks()
       } finally {
         starting = false
       }
@@ -455,7 +540,7 @@ export default function CaseBrandParticles({
       resize()
       if (!startedRef.current || !particlesRef.current.length) return
       updateRange()
-      applyLogoHomes()
+      rebuildLogoParticles()
     }
     window.addEventListener('resize', onResize)
 
@@ -491,6 +576,7 @@ export default function CaseBrandParticles({
       window.removeEventListener('scroll', onScroll)
       document.removeEventListener('pointerover', onPointerOver)
       document.removeEventListener('pointerout', onPointerOut)
+      markResizeObserver.disconnect()
       io.disconnect()
       resetFlow()
     }

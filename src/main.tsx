@@ -47,6 +47,10 @@ type CaseStudy = {
   href: string;
   logo?: string;
 };
+type ProductChip = {
+  label: string;
+  description?: string;
+};
 type Product = {
   icon: IconName;
   scenario: string;
@@ -55,7 +59,7 @@ type Product = {
   cta: string;
   nav: string;
   /** Module labels shown as chips (from product/service pages). */
-  chips: string[];
+  chips: ProductChip[];
 };
 type MarketDetail = { name: string; country: string; year: string; result: string };
 type Market = {
@@ -172,15 +176,36 @@ const products: Product[] = [
     cta: 'Launch turnkey',
     nav: 'Turnkey',
     chips: [
-      'Premium Data Feeds',
-      'Trading & Risk Management',
-      'Multi-channel Frontend',
-      'Custom content management',
-      '24/7 Business Support',
-      'Bonus Engine',
-      'Bet Builder',
-      'Cash Out',
-      'Boosted Odds',
+      {
+        label: 'Premium Data Feeds',
+        description:
+          'Official, low-latency sports data and odds from multiple leading providers.',
+      },
+      {
+        label: 'Trading & Risk Management',
+        description:
+          '24/7 trading, real-time liability monitoring, player profiling and fully configurable limits.',
+      },
+      {
+        label: 'Multi-channel Frontend',
+        description:
+          'A unified betting experience across desktop, mobile, tablet and retail terminals.',
+      },
+      {
+        label: 'Custom Content Management',
+        description:
+          'Control layouts, content, odds, margins, limits and market visibility from a single back office.',
+      },
+      {
+        label: 'Scalable Technology',
+        description:
+          'High-availability architecture designed to scale rapidly and adapt to jurisdictional requirements.',
+      },
+      {
+        label: '24/7 Business Support',
+        description:
+          'Incident response, dedicated account management and direct access to qualified specialists.',
+      },
     ],
   },
   {
@@ -191,15 +216,36 @@ const products: Product[] = [
     cta: 'Realworld launch',
     nav: 'Retail',
     chips: [
-      'Cashier & Terminal Solutions',
-      'Centralised Back Office',
-      'Remote Operations',
-      'Tailor-made Configuration',
-      '24/7 Business Support',
-      'Omnichannel Experience',
-      'Self-service Betting Terminals',
-      'Bet Reservation',
-      'Live & Pre-match Betting',
+      {
+        label: 'Cashier & Terminal Solutions',
+        description:
+          'Extend your sportsbook into staffed cashiers, self-service terminals and physical venues.',
+      },
+      {
+        label: 'Centralised Back Office',
+        description:
+          'Manage bets, accounts, payments, odds and limits across every location from one interface.',
+      },
+      {
+        label: 'Omnichannel Experience',
+        description:
+          'Connect retail, desktop and mobile channels through a consistent betting experience.',
+      },
+      {
+        label: 'Remote Operations',
+        description:
+          'Monitor and manage your entire retail network without requiring on-site technical teams.',
+      },
+      {
+        label: 'Tailor-made Configuration',
+        description:
+          'Adapt interfaces, limits, content and operational workflows to each market and venue.',
+      },
+      {
+        label: '24/7 Business Support',
+        description:
+          'Get continuous incident response, account management and access to qualified specialists.',
+      },
     ],
   },
   {
@@ -210,15 +256,36 @@ const products: Product[] = [
     cta: 'Launch Fast',
     nav: 'White label',
     chips: [
-      'Fast Market Launch',
-      'Licensing & Compliance',
-      'Sportsbook & Casino',
-      'Payment Infrastructure',
-      'Fully Customisable Brand',
-      'Clear Growth Path',
-      'Multi-brand Management',
-      'Bonus Engine',
-      'Regional Adaptation',
+      {
+        label: 'Fast Market Launch',
+        description:
+          'Bring a fully branded iGaming business to market quickly with a proven ready-to-use platform.',
+      },
+      {
+        label: 'Licensing & Compliance',
+        description:
+          'Launch with support for licensing and regulatory requirements across target jurisdictions.',
+      },
+      {
+        label: 'Sportsbook & Casino',
+        description:
+          'Offer a complete, customisable sportsbook and casino experience under your own brand.',
+      },
+      {
+        label: 'Payment Infrastructure',
+        description:
+          'Access the payment systems and operational setup required to start accepting players.',
+      },
+      {
+        label: 'Fully Customisable Brand',
+        description:
+          'Tailor layouts, content, languages, odds formats and promotions to your audience.',
+      },
+      {
+        label: 'Clear Growth Path',
+        description:
+          'Move from a white-label operation to an independent gaming business without changing providers.',
+      },
     ],
   },
 ];
@@ -438,18 +505,151 @@ const seoParagraphs = [
   'These new features follow on from the World Cup Lobby, which was recently released by Altenar as a dedicated event hub designed to enhance player engagement and streamline navigation during the upcoming tournament.',
 ];
 
-const navLinks = [
-  { label: 'Solutions & Products', href: assetUrl('solutions-products/') },
+type MegaId = 'solutions' | 'products' | 'company' | 'events';
+
+type MegaLink = { label: string; href: string };
+type MegaColumn = { num: string; title: string; links: MegaLink[] };
+type MegaFeatured = {
+  label?: string;
+  title: string;
+  image: string;
+  href: string;
+  cta?: string;
+};
+type MegaMenuConfig = {
+  title: string;
+  description: string;
+  columns: MegaColumn[];
+  featured?: MegaFeatured;
+};
+
+const navLinks: { label: string; href: string; mega?: MegaId }[] = [
+  { label: 'Solutions', href: assetUrl('solutions/'), mega: 'solutions' },
+  { label: 'Products', href: assetUrl('products/'), mega: 'products' },
   { label: 'Clients', href: assetUrl('clients/') },
-  { label: 'Events', href: assetUrl('events/') },
+  { label: 'Events', href: assetUrl('events/'), mega: 'events' },
   { label: 'Blog', href: assetUrl('blog/') },
-  { label: 'Company', href: assetUrl('company/') },
+  { label: 'Company', href: assetUrl('company/'), mega: 'company' },
 ];
 
 const navGroups = [
-  navLinks.slice(0, 2),
-  navLinks.slice(2),
+  navLinks.slice(0, 3),
+  navLinks.slice(3),
 ];
+
+const megaMenus: Record<MegaId, MegaMenuConfig> = {
+  solutions: {
+    title: 'Solution',
+    description:
+      'Find the right way to launch or scale your sportsbook. From API integration to turnkey, retail and white label — built around your market, model and ambition.',
+    columns: [
+      {
+        num: '01',
+        title: 'Sportsbook',
+        links: [
+          { label: 'Turnkey', href: '#scenarios' },
+          { label: 'Retail', href: '#scenarios' },
+          { label: 'White Label', href: '#scenarios' },
+          { label: 'Omni Channel', href: '#scenarios' },
+        ],
+      },
+      {
+        num: '02',
+        title: 'Managed Services',
+        links: [
+          { label: 'Integration', href: '#demo' },
+          { label: 'Migration', href: '#demo' },
+          { label: 'Implementation', href: '#demo' },
+          { label: 'Business Support', href: '#demo' },
+          { label: 'Risk & Trading', href: '#demo' },
+          { label: 'Client Success', href: '#demo' },
+        ],
+      },
+    ],
+  },
+  products: {
+    title: 'Products',
+    description:
+      'Explore the technology powering every bet. Sportsbook tools, trading, risk, promotions and front-end control — engineered for performance in regulated markets.',
+    columns: [
+      {
+        num: '01',
+        title: 'Products',
+        links: [
+          { label: 'Sportsbook Frontend API', href: assetUrl('products/sportsbook-frontend-api/') },
+          {
+            label: 'Sportsbook Front-End Widgets Library',
+            href: assetUrl('products/sportsbook-front-end-widgets-library/'),
+          },
+          {
+            label: 'Native Mobile App for Sportsbook',
+            href: assetUrl('products/native-mobile-app-for-sportsbook/'),
+          },
+          {
+            label: 'SSBT (Self-Service Betting Terminal) Monitoring Software',
+            href: assetUrl('products/ssbt-monitoring-software/'),
+          },
+          { label: 'iGaming Platform (AGP)', href: assetUrl('products/igaming-platform-agp/') },
+        ],
+      },
+    ],
+    featured: {
+      title: 'Altenar rolls out sportsbook product upgrades to power smarter personalisation and player engagement',
+      image: 'news/sportsbook-product-upgrades.jpg',
+      href: 'https://altenar.com/blog/altenar-rolls-out-sportsbook-product-upgrades-to-power-smarter-personalisation-and-player-engagement/',
+    },
+  },
+  company: {
+    title: 'Company',
+    description:
+      'Meet the people and principles behind Altenar. From our story since 2011 to a team of 700+ experts — discover the partner powering sportsbook growth worldwide.',
+    columns: [
+      {
+        num: '01',
+        title: 'Company',
+        links: [
+          { label: 'About Us', href: assetUrl('company/about-us/') },
+          { label: 'Territories of Expertise', href: assetUrl('company/territories-of-expertise/') },
+          { label: 'Career', href: assetUrl('company/career/') },
+          { label: 'Gambling licences', href: assetUrl('company/gambling-licences/') },
+          { label: 'Press & Media', href: assetUrl('company/press-media/') },
+        ],
+      },
+      {
+        num: '02',
+        title: 'Contact',
+        links: [
+          { label: 'Commercial Office', href: assetUrl('company/contact/commercial-office/') },
+          { label: 'Headquarters', href: assetUrl('company/contact/headquarters/') },
+          { label: 'LATAM Office', href: assetUrl('company/contact/latam-office/') },
+        ],
+      },
+    ],
+  },
+  events: {
+    title: 'Events',
+    description:
+      'Meet the Altenar team at leading iGaming events worldwide. Discover where we’ll be next — and book time with the right experts.',
+    columns: [
+      {
+        num: '01',
+        title: 'Events',
+        links: [
+          { label: 'The insider events', href: assetUrl('events/insider/') },
+          { label: 'Expo', href: assetUrl('events/expo/') },
+          { label: 'Altenar Meetup', href: assetUrl('events/meetup/') },
+        ],
+      },
+    ],
+    featured: {
+      label: 'MEXICO CITY, 1–3 SEPTEMBER',
+      title: 'SIGMA North America',
+      image: 'events/sigma-north-america.webp',
+      href: 'https://altenar.com/meetings/sigma-north-america/',
+      cta: 'Book Meeting',
+    },
+  },
+};
 
 const rise: Variants = {
   hidden: { opacity: 0, y: 200 },
@@ -492,7 +692,7 @@ const awardLogoTargets = awardWall.map((item) => ({
   id: awardLogoId(item),
   imageUrl: assetUrl(item.logo),
 }));
-const AWARD_MARK_SELECTORS = ['.award-logo__img', '.award-logo'];
+const AWARD_MARK_SELECTORS = ['.award-logo'];
 
 function App() {
   const heroParticlesRef = useRef<any>(null);
@@ -648,15 +848,63 @@ function ColumnGuides() {
   );
 }
 
-function TopNavLink({ href, children }: { href: string; children: string }) {
+function TopNavLink({
+  href,
+  children,
+  onNavigate,
+}: {
+  href: string;
+  children: string;
+  onNavigate?: () => void;
+}) {
   const rootRef = React.useRef<HTMLAnchorElement | null>(null);
   const labelRef = React.useRef<HTMLSpanElement | null>(null);
   useTextScramble(rootRef, labelRef, children, { hover: true });
 
   return (
-    <a ref={rootRef} href={href}>
+    <a
+      ref={rootRef}
+      href={href}
+      onClick={() => {
+        onNavigate?.();
+      }}
+    >
       <span ref={labelRef}>{children}</span>
     </a>
+  );
+}
+
+function TopNavMegaTrigger({
+  children,
+  expanded,
+  onOpen,
+  onClose,
+  onToggle,
+}: {
+  children: string;
+  expanded: boolean;
+  onOpen: () => void;
+  onClose: () => void;
+  onToggle: () => void;
+}) {
+  const rootRef = React.useRef<HTMLButtonElement | null>(null);
+  const labelRef = React.useRef<HTMLSpanElement | null>(null);
+  useTextScramble(rootRef, labelRef, children, { hover: true });
+
+  return (
+    <button
+      ref={rootRef}
+      type="button"
+      className={`topnav__trigger${expanded ? ' is-open' : ''}`}
+      aria-expanded={expanded}
+      aria-haspopup="true"
+      onMouseEnter={onOpen}
+      onMouseLeave={onClose}
+      onFocus={onOpen}
+      onClick={onToggle}
+    >
+      <span ref={labelRef}>{children}</span>
+    </button>
   );
 }
 
@@ -665,9 +913,15 @@ const HEADER_REVEAL_DELAY_MS = 2000;
 
 function Header() {
   const [open, setOpen] = React.useState(false);
+  const [megaOpen, setMegaOpen] = React.useState<MegaId | null>(null);
   const [isInverted, setIsInverted] = React.useState(false);
   const [isHidden, setIsHidden] = React.useState(false);
   const [isEntered, setIsEntered] = React.useState(false);
+  const megaCloseTimerRef = React.useRef<number | null>(null);
+  const activeMega = megaOpen ? megaMenus[megaOpen] : null;
+  const megaColCount = activeMega
+    ? activeMega.columns.length + 1 + (activeMega.featured ? 1 : 0)
+    : 3;
 
   React.useEffect(() => {
     const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -691,7 +945,9 @@ function Header() {
       const elements = document.elementsFromPoint(sampleX, sampleY);
       const overLightSection = elements.some((element) => element.closest('.section--light'));
       setIsInverted(overLightSection);
-      setIsHidden(currentScrollY > lastScrollY && currentScrollY > 120);
+      if (!megaOpen) {
+        setIsHidden(currentScrollY > lastScrollY && currentScrollY > 120);
+      }
       lastScrollY = Math.max(currentScrollY, 0);
     };
 
@@ -709,7 +965,68 @@ function Header() {
       window.removeEventListener('scroll', requestUpdate);
       window.removeEventListener('resize', requestUpdate);
     };
-  }, []);
+  }, [megaOpen]);
+
+  React.useEffect(() => {
+    if (!megaOpen) return;
+    setIsHidden(false);
+    const html = document.documentElement;
+    const body = document.body;
+    const prevHtml = html.style.overflow;
+    const prevBody = body.style.overflow;
+    html.style.overflow = 'hidden';
+    body.style.overflow = 'hidden';
+    html.classList.add('is-megamenu-open');
+
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setMegaOpen(null);
+    };
+    window.addEventListener('keydown', onKey);
+
+    return () => {
+      html.style.overflow = prevHtml;
+      body.style.overflow = prevBody;
+      html.classList.remove('is-megamenu-open');
+      window.removeEventListener('keydown', onKey);
+    };
+  }, [megaOpen]);
+
+  const closeMega = () => setMegaOpen(null);
+
+  const openMega = (id: MegaId) => {
+    if (megaCloseTimerRef.current != null) {
+      window.clearTimeout(megaCloseTimerRef.current);
+      megaCloseTimerRef.current = null;
+    }
+    setMegaOpen(id);
+  };
+
+  const scheduleCloseMega = () => {
+    if (megaCloseTimerRef.current != null) {
+      window.clearTimeout(megaCloseTimerRef.current);
+    }
+    megaCloseTimerRef.current = window.setTimeout(() => {
+      megaCloseTimerRef.current = null;
+      setMegaOpen(null);
+    }, 220);
+  };
+
+  const toggleMega = (id: MegaId) => {
+    if (megaCloseTimerRef.current != null) {
+      window.clearTimeout(megaCloseTimerRef.current);
+      megaCloseTimerRef.current = null;
+    }
+    setMegaOpen((v) => (v === id ? null : id));
+  };
+
+  React.useEffect(
+    () => () => {
+      if (megaCloseTimerRef.current != null) {
+        window.clearTimeout(megaCloseTimerRef.current);
+      }
+    },
+    []
+  );
 
   return (
     <>
@@ -717,23 +1034,36 @@ function Header() {
         className={[
           'topbar',
           isInverted ? 'is-inverted' : '',
-          isHidden && !open ? 'is-hidden' : '',
+          isHidden && !open && !megaOpen ? 'is-hidden' : '',
           isEntered ? 'is-entered' : '',
+          megaOpen ? 'is-mega-open' : '',
         ]
           .filter(Boolean)
           .join(' ')}
       >
-        <a className="logo" href="#top">
+        <a className="logo" href="#top" onClick={closeMega}>
           <img src={assetUrl(isInverted ? 'Altenar_Logo_Dark.svg' : 'Altenar_Logo.svg')} alt="Altenar" />
         </a>
         <nav className="topnav" aria-label="Main">
           {navGroups.map((group, gi) => (
             <div className="topnav-group" key={gi}>
-              {group.map((l) => (
-                <TopNavLink key={l.label} href={l.href}>
-                  {l.label}
-                </TopNavLink>
-              ))}
+              {group.map((l) =>
+                l.mega ? (
+                  <TopNavMegaTrigger
+                    key={l.label}
+                    expanded={megaOpen === l.mega}
+                    onOpen={() => openMega(l.mega!)}
+                    onClose={scheduleCloseMega}
+                    onToggle={() => toggleMega(l.mega!)}
+                  >
+                    {l.label}
+                  </TopNavMegaTrigger>
+                ) : (
+                  <TopNavLink key={l.label} href={l.href} onNavigate={closeMega}>
+                    {l.label}
+                  </TopNavLink>
+                )
+              )}
             </div>
           ))}
         </nav>
@@ -746,7 +1076,10 @@ function Header() {
           <button
             type="button"
             className={`burger ${open ? 'is-open' : ''}`}
-            onClick={() => setOpen((v) => !v)}
+            onClick={() => {
+              closeMega();
+              setOpen((v) => !v);
+            }}
             aria-label="Меню"
           >
             <span />
@@ -754,6 +1087,90 @@ function Header() {
           </button>
         </div>
       </header>
+
+      <div
+        className={[
+          'megamenu',
+          megaOpen ? 'is-open' : '',
+          isInverted ? 'is-inverted' : '',
+        ]
+          .filter(Boolean)
+          .join(' ')}
+        aria-hidden={!megaOpen}
+      >
+        <button type="button" className="megamenu__backdrop" aria-label="Close menu" onClick={closeMega} />
+        {activeMega ? (
+          <div
+            className={`megamenu__panel megamenu__panel--cols-${megaColCount}`}
+            role="dialog"
+            aria-label={activeMega.title}
+            onMouseEnter={() => megaOpen && openMega(megaOpen)}
+            onMouseLeave={scheduleCloseMega}
+          >
+            <div className="megamenu__intro-head">
+              <h2 className="megamenu__title">{activeMega.title}</h2>
+            </div>
+            {activeMega.columns.map((col) => (
+              <div className="megamenu__col-head" key={`${megaOpen}-${col.num}-head`}>
+                <span className="megamenu__num" aria-hidden="true">
+                  {col.num}
+                </span>
+                <h3 className="megamenu__col-title">{col.title}</h3>
+              </div>
+            ))}
+            <div className="megamenu__intro-body">
+              <p className="megamenu__desc">{activeMega.description}</p>
+            </div>
+            {activeMega.columns.map((col) => (
+              <div className="megamenu__col-body" key={`${megaOpen}-${col.num}-body`}>
+                <ul className="megamenu__list">
+                  {col.links.map((link) => (
+                    <li key={link.label}>
+                      <a className="megamenu__link" href={link.href} onClick={closeMega}>
+                        <span className="megamenu__link-label">{link.label}</span>
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+            {activeMega.featured ? (
+              <a
+                className="megamenu__featured"
+                href={activeMega.featured.href}
+                onClick={closeMega}
+              >
+                <span className="megamenu__featured-top">
+                  <span className="megamenu__num">{activeMega.featured.label ?? 'FEATURED'}</span>
+                </span>
+                <h3 className="megamenu__featured-title">{activeMega.featured.title}</h3>
+                <span className="megamenu__featured-foot">
+                  <span className="megamenu__featured-thumb">
+                    <img src={assetUrl(activeMega.featured.image)} alt="" loading="lazy" />
+                  </span>
+                  <span className="megamenu__featured-cta">
+                    <span className="megamenu__featured-cta-label">
+                      {activeMega.featured.cta ?? 'READ'}
+                    </span>
+                    <svg
+                      className="megamenu__featured-cta-arrow"
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="10"
+                      height="10"
+                      viewBox="0 0 10 10"
+                      fill="none"
+                      aria-hidden="true"
+                    >
+                      <path d="M2 8L8 2M8 2H3.5M8 2V6.5" stroke="currentColor" strokeWidth="1" />
+                    </svg>
+                  </span>
+                </span>
+              </a>
+            ) : null}
+          </div>
+        ) : null}
+      </div>
+
       <motion.div className="overlay-menu" initial={false} animate={{ opacity: open ? 1 : 0, pointerEvents: open ? 'auto' : 'none' }}>
         {navLinks.map((l, i) => (
           <motion.a
@@ -1092,6 +1509,56 @@ function Products() {
         </nav>
 
         <article className="solutions-panel">
+          <div className="solutions-copy">
+            {products.map((product, productIndex) => {
+              const isActive = productIndex === activeIndex;
+              const sentences = splitSentences(product.text);
+              return (
+                <div
+                  key={product.nav}
+                  className={`solutions-copy__panel${isActive ? ' is-active' : ''}`}
+                  aria-hidden={isActive ? undefined : true}
+                >
+                  <span className="product-scenario">{product.scenario}</span>
+                  <h3>{product.title}</h3>
+                  <div className="solutions-copy-body">
+                    <div className="solutions-copy-text">
+                      {sentences.map((sentence) => (
+                        <p key={sentence}>{sentence}</p>
+                      ))}
+                    </div>
+                    {product.chips.length > 0 ? (
+                      <ul className="solutions-chips">
+                        {product.chips.map((item) => (
+                          <li
+                            key={item.label}
+                            className={[
+                              'solutions-chip',
+                              item.description ? 'has-desc' : '',
+                            ]
+                              .filter(Boolean)
+                              .join(' ')}
+                          >
+                            <span className="solutions-chip__label">
+                              {item.label}
+                            </span>
+                            {item.description ? (
+                              <span className="solutions-chip__desc">
+                                {item.description}
+                              </span>
+                            ) : null}
+                          </li>
+                        ))}
+                      </ul>
+                    ) : null}
+                  </div>
+                  <CtaLink className="product-link" href="#demo" color="live" tabIndex={isActive ? undefined : -1}>
+                    {product.cta}
+                  </CtaLink>
+                </div>
+              );
+            })}
+          </div>
           <div className="solutions-visual" aria-hidden="true">
             <div className="solutions-visual__stage">
               <HeroParticles
@@ -1139,41 +1606,6 @@ function Products() {
                 style={{ width: '100%', height: '100%' }}
               />
             </div>
-          </div>
-          <div className="solutions-copy">
-            {products.map((product, productIndex) => {
-              const isActive = productIndex === activeIndex;
-              const sentences = splitSentences(product.text);
-              return (
-                <div
-                  key={product.nav}
-                  className={`solutions-copy__panel${isActive ? ' is-active' : ''}`}
-                  aria-hidden={isActive ? undefined : true}
-                >
-                  <span className="product-scenario">{product.scenario}</span>
-                  <h3>{product.title}</h3>
-                  <div className="solutions-copy-body">
-                    <div className="solutions-copy-text">
-                      {sentences.map((sentence) => (
-                        <p key={sentence}>{sentence}</p>
-                      ))}
-                    </div>
-                    {product.chips.length > 0 ? (
-                      <ul className="solutions-chips">
-                        {product.chips.map((item) => (
-                          <li key={item} className="solutions-chip">
-                            <span>{item}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    ) : null}
-                  </div>
-                  <CtaLink className="product-link" href="#demo" color="live" tabIndex={isActive ? undefined : -1}>
-                    {product.cta}
-                  </CtaLink>
-                </div>
-              );
-            })}
           </div>
         </article>
       </BlockReveal>
@@ -1351,12 +1783,14 @@ function Proof() {
             >
               <span className="case-brand">
                 {c.logo ? (
-                  <img
-                    className="case-brand__img case-brand__img--solid"
-                    src={assetUrl(c.logo)}
-                    alt={c.company}
-                    loading="lazy"
-                  />
+                  <span className="case-brand__mark">
+                    <img
+                      className="case-brand__img case-brand__img--solid"
+                      src={assetUrl(c.logo)}
+                      alt={c.company}
+                      loading="lazy"
+                    />
+                  </span>
                 ) : (
                   <span className="case-logo-text">{c.company}</span>
                 )}
@@ -1372,7 +1806,24 @@ function Proof() {
                   <p>{c.text}</p>
                   <span className="case-tag">{c.tag}</span>
                 </span>
-                <span className="case-arrow" aria-hidden="true">↗</span>
+                <span className="case-arrow" aria-hidden="true">
+                  <span className="case-arrow__bracket">[</span>
+                  <svg
+                    className="case-arrow__icon"
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="11"
+                    height="11"
+                    viewBox="0 0 11 11"
+                    fill="none"
+                  >
+                    <path
+                      d="M1 5H10M10 5L6 0.5M10 5L6 9.5"
+                      stroke="currentColor"
+                      strokeWidth="1"
+                    />
+                  </svg>
+                  <span className="case-arrow__bracket">]</span>
+                </span>
               </div>
             </motion.a>
           );
