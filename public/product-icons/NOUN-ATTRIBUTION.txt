@@ -1,0 +1,7 @@
+Solutions particle silhouettes (public/product-icons/sample/*):
+Drawn as chunky particle-ink maps for HeroParticles sampling (gap ~24).
+Composition referenced from The Noun Project searches via API:
+- open book with text (Sportsbook / Turnkey)
+- POS terminal (Retail)
+- blank price tag with hole (White label)
+https://thenounproject.com

@@ -1431,6 +1431,16 @@ const PRODUCT_ICON_SAMPLE_SRC: Record<IconName, string> = {
   label: assetUrl('product-icons/sample/label.png'),
 };
 
+/** Outline preview for Solutions (approve shape before particle assemble). */
+const PRODUCT_ICON_OUTLINE_SRC: Record<IconName, string> = {
+  key: assetUrl('product-icons/outline/soccer.png'),
+  store: assetUrl('product-icons/outline/harness.png'),
+  label: assetUrl('product-icons/outline/motorsport.png'),
+};
+
+/** When false, Solutions shows static outline icons for approval. */
+const SOLUTIONS_PARTICLE_ICONS = true;
+
 function ProductIcon({ name }: { name: IconName }) {
   return (
     <span
@@ -1561,50 +1571,60 @@ function Products() {
           </div>
           <div className="solutions-visual" aria-hidden="true">
             <div className="solutions-visual__stage">
-              <HeroParticles
-                key={active.nav}
-                className="solutions-visual__particles"
-                particleCount={14}
-                particleGap={24}
-                particleSize={53}
-                particleShape="square"
-                particleColor="single"
-                singleColor="#009ee3"
-                autoAssemble={false}
-                assembleWhenVisible
-                assembleAfterMoves={0}
-                assembleAfterHoverMs={0}
-                disassembleAfterSweeps={3}
-                reassembleOnMove
-                gridScatter
-                shapeStory={false}
-                shapeAfterMoves={0}
-                hoverEnabled
-                hoverConfig={{
-                  hoverType: 'hide',
-                  hideType: 'scatter',
-                  transition: { duration: 1.55, ease: 'easeOut' },
-                  roamWidth: 0,
-                  roamHeight: 0,
-                  roamOpacity: 0.35,
-                  roamShape: 'rectangle',
-                }}
-                repulsionEnabled
-                repulsionConfig={{
-                  repulsionForce: 14,
-                  repulsionRadius: 110,
-                  repulsionMode: 'outside',
-                }}
-                imageConfig={{
-                  image: PRODUCT_ICON_SAMPLE_SRC[active.icon],
-                  mode: 'fill',
-                  sizeUnit: '%',
-                  widthPct: 50,
-                  heightPct: 50,
-                  anchor: 'center',
-                }}
-                style={{ width: '100%', height: '100%' }}
-              />
+              {SOLUTIONS_PARTICLE_ICONS ? (
+                <HeroParticles
+                  key={active.nav}
+                  className="solutions-visual__particles"
+                  particleCount={0}
+                  particleGap={16}
+                  particleSize={40}
+                  particleShape="square"
+                  particleColor="single"
+                  singleColor="#009ee3"
+                  autoAssemble={false}
+                  assembleWhenVisible
+                  assembleAfterMoves={0}
+                  assembleAfterHoverMs={0}
+                  disassembleAfterSweeps={3}
+                  reassembleOnMove
+                  gridScatter
+                  shapeStory={false}
+                  shapeAfterMoves={0}
+                  hoverEnabled
+                  hoverConfig={{
+                    hoverType: 'hide',
+                    hideType: 'scatter',
+                    transition: { duration: 1.55, ease: 'easeOut' },
+                    roamWidth: 0,
+                    roamHeight: 0,
+                    roamOpacity: 0.35,
+                    roamShape: 'rectangle',
+                  }}
+                  repulsionEnabled
+                  repulsionConfig={{
+                    repulsionForce: 14,
+                    repulsionRadius: 110,
+                    repulsionMode: 'outside',
+                  }}
+                  imageConfig={{
+                    image: PRODUCT_ICON_SAMPLE_SRC[active.icon],
+                    mode: 'fill',
+                    sizeUnit: '%',
+                    // 25×16px cells = 400px ≈ 62% stage; gap 16 → one discrete particle per cell
+                    widthPct: 62,
+                    heightPct: 62,
+                    anchor: 'center',
+                  }}
+                  style={{ width: '100%', height: '100%' }}
+                />
+              ) : (
+                <img
+                  key={active.nav}
+                  className="solutions-visual__outline"
+                  src={PRODUCT_ICON_OUTLINE_SRC[active.icon]}
+                  alt=""
+                />
+              )}
             </div>
           </div>
         </article>

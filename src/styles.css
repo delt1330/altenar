@@ -2721,6 +2721,18 @@ h3 {
   height: 100%;
 }
 
+.solutions-visual__outline {
+  position: absolute;
+  inset: 14%;
+  z-index: 1;
+  width: 72%;
+  height: 72%;
+  margin: auto;
+  object-fit: contain;
+  image-rendering: pixelated;
+  pointer-events: none;
+}
+
 .solutions-copy {
   grid-column: 1 / span 2;
   display: grid;

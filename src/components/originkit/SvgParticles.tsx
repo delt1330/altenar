@@ -858,6 +858,69 @@ function sampleCircleOutline(W, H, count, color = { r: 0, g: 158, b: 227, a: 255
     }
 }
 
+/**
+ * Pixel-art sun on the same gap lattice as Solutions icons:
+ * filled circular core + 8 short rays (cardinal + diagonal).
+ */
+function sampleSunLattice(W, H, gap, count, color = { r: 0, g: 158, b: 227, a: 255 }) {
+    const step = Math.max(2, Math.round(gap || 24))
+    const stage = getShapeStageRect(W, H)
+    const cx = Math.round((stage.x + stage.w * 0.5) / step) * step
+    const cy = Math.round((stage.y + stage.h * 0.5) / step) * step
+    const ink = {
+        r: color.r,
+        g: color.g,
+        b: color.b,
+        a: color.a ?? 255,
+    }
+    const cells = new Map()
+    const add = (gx, gy) => {
+        const key = `${gx},${gy}`
+        if (cells.has(key)) return
+        cells.set(key, {
+            homeX: cx + gx * step,
+            homeY: cy + gy * step,
+            ...ink,
+        })
+    }
+
+    // Core disk (radius ~2.2 cells → compact round body).
+    for (let gy = -2; gy <= 2; gy++) {
+        for (let gx = -2; gx <= 2; gx++) {
+            if (gx * gx + gy * gy <= 5) add(gx, gy)
+        }
+    }
+
+    // Eight rays: clear gap from the core (large particleSize overlaps nearby cells).
+    const dirs = [
+        [0, -1],
+        [1, -1],
+        [1, 0],
+        [1, 1],
+        [0, 1],
+        [-1, 1],
+        [-1, 0],
+        [-1, -1],
+    ]
+    for (const [dx, dy] of dirs) {
+        add(dx * 5, dy * 5)
+        add(dx * 6, dy * 6)
+    }
+
+    let pts = Array.from(cells.values())
+    if (count && count > 0 && count < pts.length) {
+        pts = fitPointCount(pts, count, W, H)
+    }
+    return {
+        points: pts,
+        rect: boundsOfPoints(pts),
+    }
+}
+
+function isGeometricShapePreset(preset) {
+    return preset === "circle" || preset === "sun"
+}
+
 /** Full-bleed plate for patterns. Copy legibility uses soft per-line masks, not a hard rect. */
 function getPatternStageRect(W, H) {
     return {
@@ -1675,7 +1738,7 @@ const ParticleImage = forwardRef(function ParticleImage({
     disassembleAfterSweeps = 0,
     reassembleOnMove = false,
     gridScatter = false,
-    /** Geometric assemble target instead of image sampling: "circle". */
+    /** Geometric assemble target instead of image sampling: "circle" | "sun". */
     shapePreset = undefined,
     flagWind = false,
     shapeStory = false,
@@ -3100,7 +3163,7 @@ const ParticleImage = forwardRef(function ParticleImage({
             !initialPatternShot &&
             !initialMatchShot &&
             !url &&
-            shapePreset !== "circle"
+            !isGeometricShapePreset(shapePreset)
         )
             return
         clearTimeout(animTimerRef.current)
@@ -3204,14 +3267,21 @@ const ParticleImage = forwardRef(function ParticleImage({
             return
         }
 
-        // Spur-like solutions icon: few large pixels on a calm lattice → circle.
-        if (shapePreset === "circle") {
-            const want = Math.max(8, Math.min(48, count || 18))
+        // Spur-like solutions icon: few large pixels on a calm lattice → circle / sun.
+        if (isGeometricShapePreset(shapePreset)) {
             const brand =
                 particleColor === "single"
                     ? parseColor(singleColor)
                     : PARTICLE_BRAND
-            const sampled = sampleCircleOutline(W, H, want, brand)
+            const sampled =
+                shapePreset === "sun"
+                    ? sampleSunLattice(W, H, gap, count || 0, brand)
+                    : sampleCircleOutline(
+                          W,
+                          H,
+                          Math.max(8, Math.min(48, count || 18)),
+                          brand
+                      )
             const src = sampled.points
             const fieldRect = { x: 0, y: 0, w: W, h: H }
             const grid = regularGridPoints(src.length, fieldRect)
@@ -3401,6 +3471,10 @@ const ParticleImage = forwardRef(function ParticleImage({
                     oc.beginPath()
                     oc.rect(clipRect.x, clipRect.y, clipRect.w, clipRect.h)
                     oc.clip()
+                }
+                oc.imageSmoothingEnabled = false
+                if ("webkitImageSmoothingEnabled" in oc) {
+                    ;(oc as any).webkitImageSmoothingEnabled = false
                 }
                 oc.drawImage(img, rect.x, rect.y, rect.w, rect.h)
                 if (clipRect) oc.restore()
@@ -4383,7 +4457,7 @@ const ParticleImage = forwardRef(function ParticleImage({
             {!image &&
                 !initialPatternShot &&
                 !initialMatchShot &&
-                shapePreset !== "circle" && (
+                !isGeometricShapePreset(shapePreset) && (
                 <div
                     style={{
                         position: "absolute",
