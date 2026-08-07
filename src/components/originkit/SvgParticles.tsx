@@ -1355,6 +1355,55 @@ function anchorCenter(stage, w, h) {
     }
 }
 
+/** Image draw/sample rect for fill/% mode — square when widthPct === heightPct. */
+function resolveImageSampleRect(
+    W,
+    H,
+    {
+        mode = "fill",
+        sizeUnit = "%",
+        widthPx = 400,
+        heightPx = 400,
+        widthPct = 100,
+        heightPct = 100,
+        scale = 5,
+        anchor = "center",
+        naturalWidth = 1,
+        naturalHeight = 1,
+    } = {}
+) {
+    const stage = getShapeStageRect(W, H)
+    const place = (w, h) =>
+        anchor === "center"
+            ? anchorCenter(stage, w, h)
+            : anchorBottomRight(stage, w, h)
+    if (mode === "fit") {
+        const base = containRect(
+            naturalWidth || 1,
+            naturalHeight || 1,
+            W,
+            H
+        )
+        const f = Math.max(1, Math.min(20, scale)) / 10
+        return place(base.w * f, base.h * f)
+    }
+    if (sizeUnit === "px") return place(widthPx, heightPx)
+    if (Number(widthPct) === Number(heightPct)) {
+        const side = (Math.min(stage.w, stage.h) * Number(widthPct)) / 100
+        return place(side, side)
+    }
+    return place((W * widthPct) / 100, (H * heightPct) / 100)
+}
+
+function mapRectPoint(x, y, fromRect, toRect) {
+    const u = fromRect.w ? (x - fromRect.x) / fromRect.w : 0.5
+    const v = fromRect.h ? (y - fromRect.y) / fromRect.h : 0.5
+    return {
+        x: toRect.x + u * toRect.w,
+        y: toRect.y + v * toRect.h,
+    }
+}
+
 function getChartLayout(W, H, barCount = 5, stage = null) {
     const inset = getGridInset(W, H)
     // Keep the large chart footprint (~as before), park it bottom-right.
@@ -1738,6 +1787,8 @@ const ParticleImage = forwardRef(function ParticleImage({
     disassembleAfterSweeps = 0,
     reassembleOnMove = false,
     gridScatter = false,
+    /** Keep particle count/shape on resize — scale homes instead of re-sampling. */
+    preserveShapeOnResize = false,
     /** Geometric assemble target instead of image sampling: "circle" | "sun". */
     shapePreset = undefined,
     flagWind = false,
@@ -2750,6 +2801,11 @@ const ParticleImage = forwardRef(function ParticleImage({
         gridAlpha: 0,
     })
     const dimsRef = useRef({ W: 0, H: 0 })
+    /** First sampled icon side; draw size scales as currentSide / baseSide. */
+    const iconLayoutRef = useRef({ baseSide: 0 })
+    const layoutScaleRef = useRef(1)
+    const preserveShapeOnResizeRef = useRef(preserveShapeOnResize)
+    preserveShapeOnResizeRef.current = !!preserveShapeOnResize
     const samplingRef = useRef({})
     samplingRef.current = {
         image,
@@ -3192,6 +3248,8 @@ const ParticleImage = forwardRef(function ParticleImage({
         funnelPulseToggleRef.current = false
         clearShapeTimers()
         shapesRef.current = null
+        iconLayoutRef.current.baseSide = 0
+        layoutScaleRef.current = 1
         sceneRef.current = {
             particles: [],
             logoRect: null,
@@ -3416,11 +3474,6 @@ const ParticleImage = forwardRef(function ParticleImage({
             img.onload = () => {
                 let rect
                 let clipRect = null
-                const stage = getShapeStageRect(W, H)
-                const place = (w, h) =>
-                    (samplingRef.current as any)?.anchor === "center"
-                        ? anchorCenter(stage, w, h)
-                        : anchorBottomRight(stage, w, h)
                 if (initialLogoShot) {
                     const stack = document.querySelector(".hero-stack")
                     const wordmark = stack?.querySelector(".hero-wordmark")
@@ -3445,22 +3498,19 @@ const ParticleImage = forwardRef(function ParticleImage({
                         }
                     }
                 }
-                if (!rect && md === "fit") {
-                    // Size against full canvas, re-anchor to bottom-right.
-                    const base = containRect(
-                        img.naturalWidth || img.width,
-                        img.naturalHeight || img.height,
-                        W,
-                        H
-                    )
-                    const f = Math.max(1, Math.min(20, sc)) / 10
-                    const w = base.w * f
-                    const h = base.h * f
-                    rect = place(w, h)
-                } else if (!rect && sU === "px") {
-                    rect = place(wPx, hPx)
-                } else if (!rect) {
-                    rect = place((W * wPct) / 100, (H * hPct) / 100)
+                if (!rect) {
+                    rect = resolveImageSampleRect(W, H, {
+                        mode: md,
+                        sizeUnit: sU,
+                        widthPx: wPx,
+                        heightPx: hPx,
+                        widthPct: wPct,
+                        heightPct: hPct,
+                        scale: sc,
+                        anchor: (samplingRef.current as any)?.anchor || "center",
+                        naturalWidth: img.naturalWidth || img.width,
+                        naturalHeight: img.naturalHeight || img.height,
+                    })
                 }
                 const off = document.createElement("canvas")
                 off.width = W
@@ -3615,6 +3665,10 @@ const ParticleImage = forwardRef(function ParticleImage({
                     sampleGap: gap,
                     gridAlpha: 0,
                 }
+                if (preserveShapeOnResizeRef.current && rect?.w) {
+                    iconLayoutRef.current.baseSide = rect.w
+                    layoutScaleRef.current = 1
+                }
                 if (shapeStory && particles.length) {
                     const n = particles.length
                     const shapeStage = getPatternStageRect(W, H)
@@ -3679,11 +3733,83 @@ const ParticleImage = forwardRef(function ParticleImage({
     }
     const initParticlesRef = useRef(initParticles)
     initParticlesRef.current = initParticles
+
+    const scaleLayoutToSize = (W, H) => {
+        const scene = sceneRef.current
+        const oldRect = scene.logoRect
+        const particles = scene.particles
+        if (!oldRect?.w || !oldRect?.h || !particles?.length) return false
+        const cfg = samplingRef.current as any
+        const newRect = resolveImageSampleRect(W, H, {
+            mode: cfg.mode,
+            sizeUnit: cfg.sizeUnit,
+            widthPx: cfg.widthPx,
+            heightPx: cfg.heightPx,
+            widthPct: cfg.widthPct,
+            heightPct: cfg.heightPct,
+            scale: cfg.scale,
+            anchor: cfg.anchor || "center",
+        })
+        if (!newRect?.w || !newRect?.h) return false
+        const canvas = canvasRef.current
+        if (!canvas) return false
+        const dpr = window.devicePixelRatio || 1
+        canvas.width = Math.round(W * dpr)
+        canvas.height = Math.round(H * dpr)
+        dimsRef.current = { W, H }
+        for (const p of particles) {
+            const home = mapRectPoint(p.homeX, p.homeY, oldRect, newRect)
+            const cur = mapRectPoint(p.x, p.y, oldRect, newRect)
+            p.homeX = home.x
+            p.homeY = home.y
+            p.x = cur.x
+            p.y = cur.y
+            if (p.idleX != null && p.idleY != null) {
+                const idle = mapRectPoint(p.idleX, p.idleY, oldRect, newRect)
+                p.idleX = idle.x
+                p.idleY = idle.y
+            }
+            if (p.roamTargetX != null && p.roamTargetY != null) {
+                const roam = mapRectPoint(
+                    p.roamTargetX,
+                    p.roamTargetY,
+                    oldRect,
+                    newRect
+                )
+                p.roamTargetX = roam.x
+                p.roamTargetY = roam.y
+            }
+        }
+        scene.logoRect = newRect
+        scene.fieldRect = { x: 0, y: 0, w: W, h: H }
+        const base = iconLayoutRef.current.baseSide || newRect.w
+        if (!iconLayoutRef.current.baseSide) {
+            iconLayoutRef.current.baseSide = newRect.w
+        }
+        layoutScaleRef.current = newRect.w / base
+        return true
+    }
+
     useEffect(() => {
         const el = containerRef.current
         if (!el) return
         const applySize = (W, H) => {
             if (!W || !H) return
+            const prev = dimsRef.current
+            if (
+                prev.W === W &&
+                prev.H === H &&
+                sceneRef.current.particles.length > 0
+            ) {
+                return
+            }
+            const canScale =
+                preserveShapeOnResizeRef.current &&
+                prev.W > 0 &&
+                prev.H > 0 &&
+                sceneRef.current.particles.length > 0 &&
+                sceneRef.current.logoRect
+            if (canScale && scaleLayoutToSize(W, H)) return
             dimsRef.current = { W, H }
             initParticlesRef.current()
         }
@@ -3803,7 +3929,11 @@ const ParticleImage = forwardRef(function ParticleImage({
             }
             const mx = sm.x
             const my = sm.y
-            const ps = Math.max(1, Math.ceil((pSz / 4) * dpr))
+            const layoutScale = Math.max(0.05, layoutScaleRef.current || 1)
+            const ps = Math.max(
+                1,
+                Math.ceil((pSz / 4) * dpr * layoutScale)
+            )
             const { easeFn, durMs } = getTransitionParams(tr)
             const elapsed = Date.now() - animStartTimeRef.current
             const animTGlobal = Math.min(1, elapsed / durMs)
@@ -4518,6 +4648,7 @@ ParticleImage.defaultProps = {
     loopHoldScatteredMs: 900,
     loopAfterHoverMoves: 4,
     assembleAfterMoves: 0,
+    preserveShapeOnResize: false,
     flagWind: false,
     shapeStory: false,
     shapeAfterMoves: 4,

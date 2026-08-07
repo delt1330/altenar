@@ -1588,6 +1588,7 @@ function Products() {
                   disassembleAfterSweeps={3}
                   reassembleOnMove
                   gridScatter
+                  preserveShapeOnResize
                   shapeStory={false}
                   shapeAfterMoves={0}
                   hoverEnabled
@@ -1610,7 +1611,7 @@ function Products() {
                     image: PRODUCT_ICON_SAMPLE_SRC[active.icon],
                     mode: 'fill',
                     sizeUnit: '%',
-                    // 25×16px cells = 400px ≈ 62% stage; gap 16 → one discrete particle per cell
+                    // Equal % → square of min(stage)×62% (no squash on resize)
                     widthPct: 62,
                     heightPct: 62,
                     anchor: 'center',
