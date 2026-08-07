@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" fill="none">
+  <!-- Classic blank price tag, hole near tip, no text -->
+  <path
+    stroke="#009ee3"
+    stroke-width="6"
+    stroke-linejoin="round"
+    stroke-linecap="round"
+    d="M70 28h48l54 54v90c0 8-6 14-14 14H70c-8 0-14-6-14-14V42c0-8 6-14 14-14z"
+  />
+  <path
+    stroke="#009ee3"
+    stroke-width="6"
+    stroke-linejoin="round"
+    d="M118 28l54 54"
+  />
+  <circle cx="132" cy="58" r="14" stroke="#009ee3" stroke-width="6" />
+</svg>

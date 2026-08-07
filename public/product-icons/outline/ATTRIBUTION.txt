@@ -1,0 +1,8 @@
+Solutions outline / particle sample icons:
+
+- Turnkey / soccer: provided asset soccer.png
+- Retail / harness racing: provided asset kiron_harness_racing_TR.png
+- White label / motorsport: provided asset motorsport.png
+
+Rasterized to brand-blue outline PNGs and white-on-black sample masks
+for HeroParticles (public/product-icons/sample/{turnkey,retail,label}.png).
