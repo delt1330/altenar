@@ -1611,9 +1611,10 @@ function Products() {
                     image: PRODUCT_ICON_SAMPLE_SRC[active.icon],
                     mode: 'fill',
                     sizeUnit: '%',
-                    // Equal % → square of min(stage)×62% (no squash on resize)
+                    // Equal % → square frame; latticeCell locks PNG topology (25×16)
                     widthPct: 62,
                     heightPct: 62,
+                    latticeCell: 16,
                     anchor: 'center',
                   }}
                   style={{ width: '100%', height: '100%' }}

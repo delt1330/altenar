@@ -1404,6 +1404,74 @@ function mapRectPoint(x, y, fromRect, toRect) {
     }
 }
 
+/**
+ * Sample a pixel-art mask from its own lattice (not the viewport gap).
+ * 400×400 / cell 16 → stable 25×25 topology at any display size.
+ */
+function sampleImageSourceLattice(img, cell = 16) {
+    const nw = img.naturalWidth || img.width || 0
+    const nh = img.naturalHeight || img.height || 0
+    if (!nw || !nh) return { points: [], cols: 0, rows: 0, cell }
+    const step = Math.max(1, Math.round(cell))
+    const off = document.createElement("canvas")
+    off.width = nw
+    off.height = nh
+    const oc = off.getContext("2d")
+    oc.imageSmoothingEnabled = false
+    if ("webkitImageSmoothingEnabled" in oc) {
+        ;(oc as any).webkitImageSmoothingEnabled = false
+    }
+    oc.clearRect(0, 0, nw, nh)
+    oc.drawImage(img, 0, 0)
+    let px
+    try {
+        px = oc.getImageData(0, 0, nw, nh).data
+    } catch {
+        return { points: [], cols: 0, rows: 0, cell: step }
+    }
+    const points = []
+    const cols = Math.floor(nw / step)
+    const rows = Math.floor(nh / step)
+    for (let row = 0; row < rows; row++) {
+        for (let col = 0; col < cols; col++) {
+            const sx = Math.min(nw - 1, Math.floor(col * step + step / 2))
+            const sy = Math.min(nh - 1, Math.floor(row * step + step / 2))
+            const i = (sy * nw + sx) * 4
+            const lum = px[i] + px[i + 1] + px[i + 2]
+            if (px[i + 3] < 20 || lum < 40) continue
+            points.push({
+                u: (col + 0.5) / cols,
+                v: (row + 0.5) / rows,
+                r: px[i],
+                g: px[i + 1],
+                b: px[i + 2],
+                a: px[i + 3],
+            })
+        }
+    }
+    return { points, cols, rows, cell: step }
+}
+
+function unitsToRectPoints(units, rect) {
+    return units.map((p) => ({
+        homeX: rect.x + p.u * rect.w,
+        homeY: rect.y + p.v * rect.h,
+        r: p.r,
+        g: p.g,
+        b: p.b,
+        a: p.a,
+        u: p.u,
+        v: p.v,
+    }))
+}
+
+function clampToRect(x, y, rect, pad = 0) {
+    return {
+        x: Math.min(rect.x + rect.w - pad, Math.max(rect.x + pad, x)),
+        y: Math.min(rect.y + rect.h - pad, Math.max(rect.y + pad, y)),
+    }
+}
+
 function getChartLayout(W, H, barCount = 5, stage = null) {
     const inset = getGridInset(W, H)
     // Keep the large chart footprint (~as before), park it bottom-right.
@@ -1838,6 +1906,8 @@ const ParticleImage = forwardRef(function ParticleImage({
             heightPct = 100,
             scale = 5,
             anchor = "bottom-right",
+            /** Source PNG cell size for fixed lattice (Solutions masks are 16). */
+            latticeCell = 16,
         } = (imageConfig as any) || {}
         // Allow empty image for slogan-story hero (no pattern plate).
         const image =
@@ -2802,7 +2872,11 @@ const ParticleImage = forwardRef(function ParticleImage({
     })
     const dimsRef = useRef({ W: 0, H: 0 })
     /** First sampled icon side; draw size scales as currentSide / baseSide. */
-    const iconLayoutRef = useRef({ baseSide: 0 })
+    const iconLayoutRef = useRef({
+        baseSide: 0,
+        units: null,
+        cols: 25,
+    })
     const layoutScaleRef = useRef(1)
     const preserveShapeOnResizeRef = useRef(preserveShapeOnResize)
     preserveShapeOnResizeRef.current = !!preserveShapeOnResize
@@ -2817,6 +2891,7 @@ const ParticleImage = forwardRef(function ParticleImage({
         heightPct,
         scale,
         anchor: imageAnchor,
+        latticeCell,
         particleCount,
         particleGap,
         hover,
@@ -3249,6 +3324,8 @@ const ParticleImage = forwardRef(function ParticleImage({
         clearShapeTimers()
         shapesRef.current = null
         iconLayoutRef.current.baseSide = 0
+        iconLayoutRef.current.units = null
+        iconLayoutRef.current.cols = 25
         layoutScaleRef.current = 1
         sceneRef.current = {
             particles: [],
@@ -3256,6 +3333,7 @@ const ParticleImage = forwardRef(function ParticleImage({
             fieldRect: { x: 0, y: 0, w: W, h: H },
             sampleGap: gap,
             gridAlpha: 0,
+            constrainToFrame: false,
         }
 
         // ARG–ENG 1986 match frame: image board (preferred) or programmatic lattice.
@@ -3512,43 +3590,55 @@ const ParticleImage = forwardRef(function ParticleImage({
                         naturalHeight: img.naturalHeight || img.height,
                     })
                 }
-                const off = document.createElement("canvas")
-                off.width = W
-                off.height = H
-                const oc = off.getContext("2d")
-                if (clipRect) {
-                    oc.save()
-                    oc.beginPath()
-                    oc.rect(clipRect.x, clipRect.y, clipRect.w, clipRect.h)
-                    oc.clip()
-                }
-                oc.imageSmoothingEnabled = false
-                if ("webkitImageSmoothingEnabled" in oc) {
-                    ;(oc as any).webkitImageSmoothingEnabled = false
-                }
-                oc.drawImage(img, rect.x, rect.y, rect.w, rect.h)
-                if (clipRect) oc.restore()
-                let px
-                try {
-                    px = oc.getImageData(0, 0, W, H).data
-                } catch (_) {
-                    return
-                }
-                const src = []
-                for (let y = 0; y < H; y += gap)
-                    for (let x = 0; x < W; x += gap) {
-                        const i = (y * W + x) * 4
-                        const lum = px[i] + px[i + 1] + px[i + 2]
-                        if (px[i + 3] >= 20 && lum >= 40)
-                            src.push({
-                                homeX: x,
-                                homeY: y,
-                                r: px[i],
-                                g: px[i + 1],
-                                b: px[i + 2],
-                                a: px[i + 3],
-                            })
+                const useFixedLattice = preserveShapeOnResizeRef.current
+                let src = []
+                let latticeCols = 0
+                if (useFixedLattice) {
+                    const cell =
+                        Number((samplingRef.current as any)?.latticeCell) || 16
+                    const lattice = sampleImageSourceLattice(img, cell)
+                    latticeCols = lattice.cols || 25
+                    src = unitsToRectPoints(lattice.points, rect)
+                    iconLayoutRef.current.units = lattice.points
+                    iconLayoutRef.current.cols = latticeCols
+                } else {
+                    const off = document.createElement("canvas")
+                    off.width = W
+                    off.height = H
+                    const oc = off.getContext("2d")
+                    if (clipRect) {
+                        oc.save()
+                        oc.beginPath()
+                        oc.rect(clipRect.x, clipRect.y, clipRect.w, clipRect.h)
+                        oc.clip()
                     }
+                    oc.imageSmoothingEnabled = false
+                    if ("webkitImageSmoothingEnabled" in oc) {
+                        ;(oc as any).webkitImageSmoothingEnabled = false
+                    }
+                    oc.drawImage(img, rect.x, rect.y, rect.w, rect.h)
+                    if (clipRect) oc.restore()
+                    let px
+                    try {
+                        px = oc.getImageData(0, 0, W, H).data
+                    } catch (_) {
+                        return
+                    }
+                    for (let y = 0; y < H; y += gap)
+                        for (let x = 0; x < W; x += gap) {
+                            const i = (y * W + x) * 4
+                            const lum = px[i] + px[i + 1] + px[i + 2]
+                            if (px[i + 3] >= 20 && lum >= 40)
+                                src.push({
+                                    homeX: x,
+                                    homeY: y,
+                                    r: px[i],
+                                    g: px[i + 1],
+                                    b: px[i + 2],
+                                    a: px[i + 3],
+                                })
+                        }
+                }
                 shuffle(src)
                 let particles = []
                 const hidePos = (homeX, homeY) => {
@@ -3567,9 +3657,20 @@ const ParticleImage = forwardRef(function ParticleImage({
                 }
                 if (!hOn) {
                     animStateRef.current = "active"
-                    particles = src.map((p) =>
-                        mkParticle(p, p.homeX, p.homeY, p.homeX, p.homeY)
-                    )
+                    particles = src.map((p) => {
+                        const pt = mkParticle(
+                            p,
+                            p.homeX,
+                            p.homeY,
+                            p.homeX,
+                            p.homeY
+                        )
+                        if (p.u != null) {
+                            pt.u = p.u
+                            pt.v = p.v
+                        }
+                        return pt
+                    })
                 } else if (ht === "roam") {
                     const bw = Math.max(80, rw || W),
                         bh = Math.max(80, rh || H)
@@ -3587,7 +3688,10 @@ const ParticleImage = forwardRef(function ParticleImage({
                     })
                     animStateRef.current = "idle"
                 } else if (fieldStoryActive() || gridScatterRef.current) {
-                    const fieldRect = { x: 0, y: 0, w: W, h: H }
+                    // Solutions fixed-lattice icons: scatter only inside the icon frame.
+                    const fieldRect = useFixedLattice
+                        ? { x: rect.x, y: rect.y, w: rect.w, h: rect.h }
+                        : { x: 0, y: 0, w: W, h: H }
                     if (fieldStoryActive() && initialLogoShot) {
                         // Opening shot: a few calm heaps of sand scattered
                         // around the screen (stage "field" of the intro).
@@ -3644,6 +3748,10 @@ const ParticleImage = forwardRef(function ParticleImage({
                                 anchor.x,
                                 anchor.y
                             )
+                            if (p.u != null) {
+                                pt.u = p.u
+                                pt.v = p.v
+                            }
                             pt.driftPhase = 0
                             pt.driftSpeed = 0
                             pt.driftAmp = 0
@@ -3654,16 +3762,28 @@ const ParticleImage = forwardRef(function ParticleImage({
                 } else {
                     particles = src.map((p) => {
                         const [ox, oy] = hidePos(p.homeX, p.homeY)
-                        return mkParticle(p, ox, oy, ox, oy)
+                        const pt = mkParticle(p, ox, oy, ox, oy)
+                        if (p.u != null) {
+                            pt.u = p.u
+                            pt.v = p.v
+                        }
+                        return pt
                     })
                     animStateRef.current = "idle"
                 }
+                const frameRect = useFixedLattice
+                    ? { x: rect.x, y: rect.y, w: rect.w, h: rect.h }
+                    : { x: 0, y: 0, w: W, h: H }
+                const latticeGap = useFixedLattice
+                    ? Math.max(2, rect.w / Math.max(1, latticeCols || 25))
+                    : gap
                 sceneRef.current = {
                     particles,
                     logoRect: rect,
-                    fieldRect: { x: 0, y: 0, w: W, h: H },
-                    sampleGap: gap,
+                    fieldRect: frameRect,
+                    sampleGap: latticeGap,
                     gridAlpha: 0,
+                    constrainToFrame: useFixedLattice,
                 }
                 if (preserveShapeOnResizeRef.current && rect?.w) {
                     iconLayoutRef.current.baseSide = rect.w
@@ -3757,17 +3877,38 @@ const ParticleImage = forwardRef(function ParticleImage({
         canvas.width = Math.round(W * dpr)
         canvas.height = Math.round(H * dpr)
         dimsRef.current = { W, H }
-        for (const p of particles) {
-            const home = mapRectPoint(p.homeX, p.homeY, oldRect, newRect)
+        const units = iconLayoutRef.current.units
+        for (let i = 0; i < particles.length; i++) {
+            const p = particles[i]
+            let home
+            // Prefer per-particle u/v (survives shuffle); fall back to units[i].
+            if (p.u != null && p.v != null) {
+                home = {
+                    x: newRect.x + p.u * newRect.w,
+                    y: newRect.y + p.v * newRect.h,
+                }
+            } else {
+                const unit = units?.[i]
+                if (unit && unit.u != null && unit.v != null) {
+                    home = {
+                        x: newRect.x + unit.u * newRect.w,
+                        y: newRect.y + unit.v * newRect.h,
+                    }
+                } else {
+                    home = mapRectPoint(p.homeX, p.homeY, oldRect, newRect)
+                }
+            }
             const cur = mapRectPoint(p.x, p.y, oldRect, newRect)
+            const clampedCur = clampToRect(cur.x, cur.y, newRect, 1)
             p.homeX = home.x
             p.homeY = home.y
-            p.x = cur.x
-            p.y = cur.y
+            p.x = clampedCur.x
+            p.y = clampedCur.y
             if (p.idleX != null && p.idleY != null) {
                 const idle = mapRectPoint(p.idleX, p.idleY, oldRect, newRect)
-                p.idleX = idle.x
-                p.idleY = idle.y
+                const c = clampToRect(idle.x, idle.y, newRect, 1)
+                p.idleX = c.x
+                p.idleY = c.y
             }
             if (p.roamTargetX != null && p.roamTargetY != null) {
                 const roam = mapRectPoint(
@@ -3776,12 +3917,16 @@ const ParticleImage = forwardRef(function ParticleImage({
                     oldRect,
                     newRect
                 )
-                p.roamTargetX = roam.x
-                p.roamTargetY = roam.y
+                const c = clampToRect(roam.x, roam.y, newRect, 1)
+                p.roamTargetX = c.x
+                p.roamTargetY = c.y
             }
         }
         scene.logoRect = newRect
-        scene.fieldRect = { x: 0, y: 0, w: W, h: H }
+        scene.fieldRect = { x: newRect.x, y: newRect.y, w: newRect.w, h: newRect.h }
+        scene.constrainToFrame = true
+        const cols = iconLayoutRef.current.cols || 25
+        scene.sampleGap = Math.max(2, newRect.w / cols)
         const base = iconLayoutRef.current.baseSide || newRect.w
         if (!iconLayoutRef.current.baseSide) {
             iconLayoutRef.current.baseSide = newRect.w
@@ -3929,10 +4074,20 @@ const ParticleImage = forwardRef(function ParticleImage({
             }
             const mx = sm.x
             const my = sm.y
+            const constrainToFrame = !!sceneRef.current.constrainToFrame
+            const cols = iconLayoutRef.current.cols || 25
+            const cellPx =
+                constrainToFrame && logoRect?.w
+                    ? logoRect.w / cols
+                    : null
             const layoutScale = Math.max(0.05, layoutScaleRef.current || 1)
             const ps = Math.max(
                 1,
-                Math.ceil((pSz / 4) * dpr * layoutScale)
+                Math.ceil(
+                    cellPx != null
+                        ? cellPx * 0.62 * dpr
+                        : (pSz / 4) * dpr * layoutScale
+                )
             )
             const { easeFn, durMs } = getTransitionParams(tr)
             const elapsed = Date.now() - animStartTimeRef.current
@@ -4374,6 +4529,14 @@ const ParticleImage = forwardRef(function ParticleImage({
                 }
                 p.x = baseX + p.repX
                 p.y = baseY + p.repY
+                if (constrainToFrame && logoRect) {
+                    const c = clampToRect(p.x, p.y, logoRect, half / dpr)
+                    p.x = c.x
+                    p.y = c.y
+                    // Keep repulsion from parking outside the icon frame.
+                    p.repX = p.x - baseX
+                    p.repY = p.y - baseY
+                }
                 let dr, dg, db, da
                 if (state === "active") {
                     dr = p.r
