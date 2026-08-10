@@ -1,3 +1,4 @@
+import React from 'react';
 import { ComposableMap, Geographies, Geography, Marker, ZoomableGroup } from 'react-simple-maps';
 
 const geoUrl = 'https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json';
@@ -19,7 +20,17 @@ type WorldMapProps = {
   onMarkerClick?: (name: string) => void;
 };
 
+function markerBadgeText(m: MapMarker, hovered: boolean) {
+  if (m.active && m.label) {
+    return m.year ? `${m.label} · ${m.year}` : m.label;
+  }
+  if (hovered) return m.name;
+  return null;
+}
+
 export default function WorldMap({ center, zoom, highlight, markers, onCountryClick, onMarkerClick }: WorldMapProps) {
+  const [hoveredName, setHoveredName] = React.useState<string | null>(null);
+
   return (
     <ComposableMap
       projection="geoEqualEarth"
@@ -62,33 +73,53 @@ export default function WorldMap({ center, zoom, highlight, markers, onCountryCl
             })
           }
         </Geographies>
-        {markers.map((m) => (
-          <Marker key={m.name} coordinates={m.coordinates}>
-            {m.active && m.label && (
-              <g className="map-badge" transform="translate(0 -28)">
-                <rect x={-48} y={-18} width={96} height={22} rx={0} />
-                <text textAnchor="middle" y={-3}>{m.label} · {m.year}</text>
+        {markers.map((m) => {
+          const badge = markerBadgeText(m, hoveredName === m.name);
+          const badgeWidth = Math.max(72, Math.min(160, (badge?.length ?? 0) * 6.2 + 20));
+          // ZoomableGroup scales markers with the map — counteract so labels stay
+          // as large on All territories as they read on regional zooms (~2.6×).
+          const badgeScale = Math.max(1, 2.6 / zoom);
+          return (
+            <Marker key={m.name} coordinates={m.coordinates}>
+              {badge && (
+                <g
+                  className="map-badge"
+                  transform={`translate(0 ${-24 * badgeScale}) scale(${badgeScale})`}
+                >
+                  <rect x={-badgeWidth / 2} y={-18} width={badgeWidth} height={22} rx={0} />
+                  <text textAnchor="middle" y={-3}>{badge}</text>
+                </g>
+              )}
+              <g
+                className="map-marker-hit"
+                role="button"
+                tabIndex={0}
+                aria-label={`Выбрать ${m.name}`}
+                onClick={() => onMarkerClick?.(m.name)}
+                onMouseEnter={() => setHoveredName(m.name)}
+                onMouseLeave={() => setHoveredName((current) => (current === m.name ? null : current))}
+                onFocus={() => setHoveredName(m.name)}
+                onBlur={() => setHoveredName((current) => (current === m.name ? null : current))}
+                onKeyDown={(event) => {
+                  if (event.key === 'Enter' || event.key === ' ') {
+                    event.preventDefault();
+                    onMarkerClick?.(m.name);
+                  }
+                }}
+              >
+                {/* Invisible pad: larger than the visible square so All territories is easy to hit. */}
+                <circle className="map-marker-hit__pad" r={22} />
+                <rect
+                  className={m.active ? 'map-dot is-active' : 'map-dot'}
+                  x={m.active ? -3 : -2.5}
+                  y={m.active ? -3 : -2.5}
+                  width={m.active ? 6 : 5}
+                  height={m.active ? 6 : 5}
+                />
               </g>
-            )}
-            <g
-              className="map-marker-hit"
-              role="button"
-              tabIndex={0}
-              aria-label={`Выбрать ${m.name}`}
-              onClick={() => onMarkerClick?.(m.name)}
-              onKeyDown={(event) => {
-                if (event.key === 'Enter' || event.key === ' ') {
-                  event.preventDefault();
-                  onMarkerClick?.(m.name);
-                }
-              }}
-            >
-              <circle r={12} />
-            </g>
-            {m.active && <circle className="map-pulse" r={9} />}
-            <circle className={m.active ? 'map-dot is-active' : 'map-dot'} r={m.active ? 3.4 : 2.4} />
-          </Marker>
-        ))}
+            </Marker>
+          );
+        })}
       </ZoomableGroup>
     </ComposableMap>
   );

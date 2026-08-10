@@ -29,6 +29,11 @@ type Props = {
   /** Lattice pitch — match hero/client swarms (default 4). */
   particleGap?: number
   particleSize?: number
+  /**
+   * Changes when the map view changes (region tab / selection / zoom).
+   * Drives a density-matched particle remorph after the SVG settles.
+   */
+  viewKey?: string
 }
 
 function easeInOut(t: number) {
@@ -76,7 +81,11 @@ type SampledPoint = { x: number; y: number; r: number; g: number; b: number; a: 
  * interactive marker layer stays live SVG above the canvas. Map state
  * changes (tabs / selection) re-sample the countries and morph the dots.
  */
-export default function MapParticles({ particleGap = 4, particleSize = 10 }: Props) {
+export default function MapParticles({
+  particleGap = 4,
+  particleSize = 10,
+  viewKey = 'all',
+}: Props) {
   const rootRef = useRef<HTMLDivElement>(null)
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const particlesRef = useRef<MapParticle[]>([])
@@ -87,6 +96,10 @@ export default function MapParticles({ particleGap = 4, particleSize = 10 }: Pro
   const latchedProgressRef = useRef(0)
   const particleUiReadyRef = useRef(false)
   const morphStartRef = useRef(0)
+  const morphingRef = useRef(false)
+  const scheduleResampleRef = useRef<(() => void) | null>(null)
+  const pendingResampleRef = useRef(false)
+  const viewKeyBootRef = useRef(true)
 
   useEffect(() => {
     const root = rootRef.current
@@ -99,6 +112,8 @@ export default function MapParticles({ particleGap = 4, particleSize = 10 }: Pro
     // Same rhythm as hero/client canvases: particleSize/4 CSS px squares.
     const ps = Math.max(2, Math.round(particleSize / 4))
     const MORPH_MS = 700
+    // Match .rsm-zoomable-group transition (0.7s) so we sample the settled frame.
+    const RESAMPLE_AFTER_MS = 780
 
     const getSvg = () => stage.querySelector('svg.rsm-svg') as SVGSVGElement | null
 
@@ -198,8 +213,15 @@ export default function MapParticles({ particleGap = 4, particleSize = 10 }: Pro
       return ra % 2 === 0 ? a.x - b.x : b.x - a.x
     }
 
+    const pageScrollY = () =>
+      document.documentElement.scrollTop ||
+      document.body.scrollTop ||
+      window.scrollY ||
+      window.pageYOffset ||
+      0
+
     const updateRange = () => {
-      const scrollY = window.scrollY || window.pageYOffset
+      const scrollY = pageScrollY()
       const vh = window.innerHeight
       const top = stage.getBoundingClientRect().top + scrollY
       rangeRef.current = {
@@ -212,71 +234,112 @@ export default function MapParticles({ particleGap = 4, particleSize = 10 }: Pro
       stage.classList.toggle('is-particle-ready', ready)
     }
 
+    const makeParticle = (
+      pt: SampledPoint,
+      i: number,
+      fromX: number,
+      fromY: number,
+      scattered: boolean
+    ): MapParticle => {
+      const scatterAngle = Math.random() * Math.PI * 2
+      const scatterDist = 140 + Math.random() * 320
+      const startX = scattered
+        ? fromX + Math.cos(scatterAngle) * scatterDist
+        : fromX
+      const startY = scattered
+        ? fromY + Math.sin(scatterAngle) * scatterDist
+        : fromY
+      return {
+        x: startX,
+        y: startY,
+        tx: pt.x,
+        ty: pt.y,
+        scatterX: startX,
+        scatterY: startY,
+        fromX: startX,
+        fromY: startY,
+        r: pt.r,
+        g: pt.g,
+        b: pt.b,
+        a: pt.a,
+        stagger: ((i % 19) / 19) * 0.38 + Math.random() * 0.06,
+        arcNormal: (Math.random() < 0.5 ? -1 : 1) * (0.35 + Math.random() * 0.65),
+        arcLift: 28 + Math.random() * 70,
+        arcBias: 0.25 + Math.random() * 0.5,
+        flightPhase: Math.random() * Math.PI * 2,
+        dead: false,
+      }
+    }
+
     const buildParticles = (pts: SampledPoint[]) => {
       const box = stage.getBoundingClientRect()
       const cx = box.width * 0.5
       const cy = box.height * 0.5
       const sorted = [...pts].sort(localOrder)
-      particlesRef.current = sorted.map((pt, i) => {
-        const scatterAngle = Math.random() * Math.PI * 2
-        const scatterDist = 140 + Math.random() * 320
-        const sx = cx + Math.cos(scatterAngle) * scatterDist
-        const sy = cy + Math.sin(scatterAngle) * scatterDist
-        return {
-          x: sx,
-          y: sy,
-          tx: pt.x,
-          ty: pt.y,
-          scatterX: sx,
-          scatterY: sy,
-          fromX: sx,
-          fromY: sy,
-          r: pt.r,
-          g: pt.g,
-          b: pt.b,
-          a: pt.a,
-          stagger: ((i % 19) / 19) * 0.38 + Math.random() * 0.06,
-          arcNormal: (Math.random() < 0.5 ? -1 : 1) * (0.35 + Math.random() * 0.65),
-          arcLift: 28 + Math.random() * 70,
-          arcBias: 0.25 + Math.random() * 0.5,
-          flightPhase: Math.random() * Math.PI * 2,
-          dead: false,
-        }
-      })
+      particlesRef.current = sorted.map((pt, i) => makeParticle(pt, i, cx, cy, true))
     }
 
-    /** Morph the existing swarm to a freshly sampled map state. */
+    /**
+     * Morph the swarm onto a freshly sampled lattice.
+     * Spawn/despawn so particle count matches the sample — keeps the same
+     * gap density as All territories instead of stretching a fixed swarm.
+     */
     const retarget = (pts: SampledPoint[]) => {
       const particles = particlesRef.current
       if (!particles.length) {
         buildParticles(pts)
+        morphingRef.current = false
         return
       }
       const now = performance.now()
       const sortedTargets = [...pts].sort(localOrder)
-      const order = particles
-        .map((p, i) => ({ p, i }))
-        .sort((a, b) => localOrder({ x: a.p.tx, y: a.p.ty }, { x: b.p.tx, y: b.p.ty }))
-      const n = Math.min(order.length, sortedTargets.length)
-      for (let k = 0; k < order.length; k++) {
-        const p = order[k].p
+      const order = [...particles].sort((a, b) =>
+        localOrder({ x: a.tx, y: a.ty }, { x: b.tx, y: b.ty })
+      )
+      const next: MapParticle[] = []
+      const shared = Math.min(order.length, sortedTargets.length)
+
+      for (let k = 0; k < shared; k++) {
+        const p = order[k]
+        const t = sortedTargets[k]
         p.fromX = p.x
         p.fromY = p.y
-        if (k < n) {
-          // Spread targets evenly when counts differ so density stays uniform.
-          const t = sortedTargets[Math.floor((k * sortedTargets.length) / order.length)]
-          p.tx = t.x
-          p.ty = t.y
-          p.r = t.r
-          p.g = t.g
-          p.b = t.b
-          p.a = t.a
-          p.dead = false
-        } else {
-          p.dead = true
-        }
+        p.tx = t.x
+        p.ty = t.y
+        p.r = t.r
+        p.g = t.g
+        p.b = t.b
+        p.a = t.a
+        p.dead = false
+        next.push(p)
       }
+
+      // Zoom-in / denser frame: birth extra dots from nearby survivors.
+      for (let k = shared; k < sortedTargets.length; k++) {
+        const donor = order[k % order.length]
+        const t = sortedTargets[k]
+        const born = makeParticle(t, k, donor.x, donor.y, false)
+        born.x = donor.x
+        born.y = donor.y
+        born.fromX = donor.x
+        born.fromY = donor.y
+        born.scatterX = donor.x
+        born.scatterY = donor.y
+        next.push(born)
+      }
+
+      // Zoom-out / sparser frame: fade surplus dots away.
+      for (let k = shared; k < order.length; k++) {
+        const p = order[k]
+        p.fromX = p.x
+        p.fromY = p.y
+        p.dead = true
+        next.push(p)
+      }
+
+      particlesRef.current = next
       morphStartRef.current = now
+      morphingRef.current = true
     }
 
     let raf = 0
@@ -296,7 +359,7 @@ export default function MapParticles({ particleGap = 4, particleSize = 10 }: Pro
       const particles = particlesRef.current
       if (!particles.length) return
 
-      const scrollY = window.scrollY || window.pageYOffset
+      const scrollY = pageScrollY()
       const { start, end } = rangeRef.current
       // One-way latch: once the map is built it stays built.
       const rawProgress = clamp01((scrollY - start) / Math.max(1, end - start))
@@ -319,6 +382,15 @@ export default function MapParticles({ particleGap = 4, particleSize = 10 }: Pro
         ? clamp01((now - morphStartRef.current) / MORPH_MS)
         : 1
       const morphEase = morphT * morphT * (3 - 2 * morphT)
+
+      if (assembledRef.current && morphingRef.current && morphT >= 1) {
+        particlesRef.current = particlesRef.current.filter((p) => !p.dead)
+        morphingRef.current = false
+        if (pendingResampleRef.current) {
+          pendingResampleRef.current = false
+          scheduleResampleRef.current?.()
+        }
+      }
 
       for (const p of particles) {
         let x = p.x
@@ -366,10 +438,16 @@ export default function MapParticles({ particleGap = 4, particleSize = 10 }: Pro
       starting = true
       try {
         const pts = await sampleCountries()
+        // Geography JSON may still be loading — retry via bootTimer / IO.
         if (!pts) return
         startedRef.current = true
         updateRange()
         buildParticles(pts)
+        // If the stage is already on screen, skip the scroll latch delay.
+        const rect = stage.getBoundingClientRect()
+        if (rect.bottom > 0 && rect.top < window.innerHeight) {
+          latchedProgressRef.current = 1
+        }
       } finally {
         starting = false
       }
@@ -387,47 +465,65 @@ export default function MapParticles({ particleGap = 4, particleSize = 10 }: Pro
     )
     io.observe(stage)
 
-    // Map state changes (tabs, selection, zoom) mutate the SVG — re-sample
-    // after the fill transitions settle and morph the dots to the new state.
+    // Retry until the country layer exists (async geo JSON).
+    const bootTimer = window.setInterval(() => {
+      if (startedRef.current) {
+        window.clearInterval(bootTimer)
+        return
+      }
+      void startFlow()
+    }, 400)
+    void startFlow()
+
+    // Remorph is driven by viewKey / resize — not MutationObserver.
+    // Observing SVG style/fill churned on geography hover and hid markers.
     let mutateTimer = 0
     let resampling = false
+    let morphGen = 0
     const scheduleResample = () => {
       if (!startedRef.current) return
+      // Tab/selection changes must remorph even if the scroll latch hasn't finished.
+      if (!assembledRef.current) {
+        latchedProgressRef.current = 1
+        smoothProgressRef.current = 1
+        assembledRef.current = true
+        if (!particleUiReadyRef.current) {
+          particleUiReadyRef.current = true
+          markParticleReady(true)
+        }
+      }
+      // Coalesce updates that arrive mid-flight; replay after morph ends.
+      if (morphingRef.current || resampling) {
+        pendingResampleRef.current = true
+        return
+      }
+      const gen = ++morphGen
       window.clearTimeout(mutateTimer)
       mutateTimer = window.setTimeout(async () => {
-        if (resampling) return
+        if (gen !== morphGen) return
         resampling = true
         try {
           const pts = await sampleCountries()
+          if (gen !== morphGen) return
           if (pts) retarget(pts)
+          else if (pendingResampleRef.current) {
+            pendingResampleRef.current = false
+            scheduleResample()
+          }
+        } catch {
+          /* keep current lattice */
         } finally {
           resampling = false
         }
-      }, 650)
+      }, RESAMPLE_AFTER_MS)
     }
-    const mo = new MutationObserver((entries) => {
-      for (const entry of entries) {
-        const target = entry.target as Element
-        // Ignore the marker layer (pulse/badge churn) — countries only.
-        if (target.closest?.('.rsm-marker')) continue
-        scheduleResample()
-        return
-      }
-    })
-    const svgEl = getSvg()
-    if (svgEl) {
-      mo.observe(svgEl, {
-        subtree: true,
-        childList: true,
-        attributes: true,
-        attributeFilter: ['style', 'class', 'transform', 'd', 'fill'],
-      })
-    }
+    scheduleResampleRef.current = scheduleResample
 
     const onScroll = () => {
       if (startedRef.current && !assembledRef.current) updateRange()
     }
     window.addEventListener('scroll', onScroll, { passive: true })
+    document.documentElement.addEventListener('scroll', onScroll, { passive: true })
 
     const onResize = () => {
       resize()
@@ -438,14 +534,25 @@ export default function MapParticles({ particleGap = 4, particleSize = 10 }: Pro
     return () => {
       cancelAnimationFrame(raf)
       window.clearTimeout(mutateTimer)
+      window.clearInterval(bootTimer)
       window.removeEventListener('scroll', onScroll)
+      document.documentElement.removeEventListener('scroll', onScroll)
       window.removeEventListener('resize', onResize)
       io.disconnect()
-      mo.disconnect()
+      scheduleResampleRef.current = null
       markParticleReady(false)
       particlesRef.current = []
     }
   }, [particleGap, particleSize])
+
+  // Region / selection changes: remorph after zoom settles (skip first mount).
+  useEffect(() => {
+    if (viewKeyBootRef.current) {
+      viewKeyBootRef.current = false
+      return
+    }
+    scheduleResampleRef.current?.()
+  }, [viewKey])
 
   return (
     <div ref={rootRef} className="map-particles" aria-hidden="true">
