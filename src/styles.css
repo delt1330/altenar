@@ -3168,16 +3168,26 @@ h3 {
 
 .map-dot {
   fill: var(--icon-blue);
-  stroke: var(--void);
-  stroke-width: 1;
+  stroke: #000;
+  stroke-width: 1px;
+  vector-effect: non-scaling-stroke;
+  shape-rendering: crispEdges;
+  pointer-events: none;
 }
 
 .map-marker-hit {
   cursor: pointer;
+  outline: none;
 }
 
-.map-marker-hit circle {
+.map-marker-hit:focus,
+.map-marker-hit:focus-visible {
+  outline: none;
+}
+
+.map-marker-hit__pad {
   fill: transparent;
+  pointer-events: auto;
 }
 
 .map-badge {
@@ -3194,19 +3204,6 @@ h3 {
   font-size: 8px;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-}
-
-.map-pulse {
-  fill: var(--icon-blue);
-  transform-box: fill-box;
-  transform-origin: center;
-  animation: mapPulse 2.4s var(--ease) infinite;
-}
-
-@keyframes mapPulse {
-  0% { transform: scale(0.4); opacity: 0.3; }
-  70% { transform: scale(1.6); opacity: 0; }
-  100% { transform: scale(0.4); opacity: 0; }
 }
 
 .map-info {
@@ -3243,6 +3240,9 @@ h3 {
 }
 
 .market-pills button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
   padding: 8px 0;
   border: 0;
   background: transparent;
@@ -3255,6 +3255,16 @@ h3 {
 .market-pills button:hover,
 .market-pills button.is-active {
   color: var(--ink);
+}
+
+.pixel-flag {
+  display: block;
+  flex-shrink: 0;
+  width: 18px;
+  height: 12px;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+  box-shadow: inset 0 0 0 1px rgba(15, 16, 19, 0.35);
 }
 
 .market-metrics {

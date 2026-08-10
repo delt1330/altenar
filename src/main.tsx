@@ -7,6 +7,7 @@ import GearFlowBridge from './components/GearFlowBridge';
 import CaseBrandParticles from './components/CaseBrandParticles';
 import FooterBrandParticles from './components/FooterBrandParticles';
 import MapParticles from './components/MapParticles';
+import PixelFlag from './components/PixelFlag';
 import HeroMarkLoop from './components/HeroMarkLoop';
 import HeroMatchBoard from './components/HeroMatchBoard';
 import PageNotes from './components/PageNotes';
@@ -1718,7 +1719,13 @@ function Markets() {
             onCountryClick={selectDetailByCountry}
             onMarkerClick={selectDetailByMarker}
           />
-          {HERO_MOTION_ENABLED ? <MapParticles particleGap={4} particleSize={10} /> : null}
+          {HERO_MOTION_ENABLED ? (
+            <MapParticles
+              particleGap={4}
+              particleSize={10}
+              viewKey={`${active}:${selectedMarketDetail ?? ''}:${zoom}`}
+            />
+          ) : null}
         </div>
         <motion.div className="map-info" key={region ? region.code : 'all'} initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}>
           {region ? (
@@ -1733,7 +1740,8 @@ function Markets() {
                     className={selectedMarketDetail === d.name ? 'is-active' : ''}
                     onClick={() => selectMarketDetail(region, d)}
                   >
-                    {d.name}
+                    <PixelFlag country={d.country} title={d.country} />
+                    <span>{d.name}</span>
                   </button>
                 ))}
               </div>
