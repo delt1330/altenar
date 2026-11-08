@@ -1,0 +1,7 @@
+/* Text and icons only; retain the existing carousel and per-card hover lighting. */
+html[data-premium][data-altenar-glow] .glow-partnership-card{display:flex;flex-direction:column;justify-content:flex-start;align-items:flex-start;gap:0;flex:0 0 400px;width:400px;height:408px;min-height:408px;padding:40px;box-sizing:border-box}
+html[data-premium][data-altenar-glow] .glow-partnership-card>.glow-partnership-icon{position:static;display:block;flex:0 0 56px;width:56px;height:56px;min-width:56px;max-width:56px;overflow:visible;margin:0;fill:none}
+html[data-premium][data-altenar-glow] .glow-partnership-card>.glow-partnership-copy{display:flex;flex-direction:column;gap:22px;width:100%;min-width:0;margin-top:auto}
+html[data-premium][data-altenar-glow] .glow-partnership-card .glow-partnership-copy>p{position:static;inset:auto;flex:none;width:100%!important;min-width:0!important;max-width:none;height:auto;margin:0;white-space:normal}
+html[data-premium][data-altenar-glow] .premium-page .glow-partnership-card .glow-partnership-copy>p:first-of-type{font-size:27px!important;line-height:1.25!important;letter-spacing:-.025em;font-weight:400!important;margin:0}
+html[data-premium][data-altenar-glow] .premium-page .glow-partnership-card .glow-partnership-copy>p:nth-of-type(2){font-size:14px!important;line-height:1.65!important;font-weight:400!important;font-synthesis:none}

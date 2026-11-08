@@ -1,0 +1,14 @@
+html[data-turnkey-product] .tp-local-reference-card{position:relative;isolation:isolate}
+html[data-turnkey-product] .tp-local-reference-card.has-interactive-globe:before{display:none}
+.shared-globe-host .rd-interactive-globe{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:min(1040px,110%);aspect-ratio:1;z-index:0;cursor:grab;background:transparent;opacity:0;transition:opacity .6s ease}
+.shared-globe-host.has-interactive-globe .rd-interactive-globe{opacity:1}
+.shared-globe-host .rd-interactive-globe:active{cursor:grabbing}
+.shared-globe-host .rd-interactive-globe canvas{background:transparent;touch-action:pan-y;cursor:inherit}
+html[data-turnkey-product] .tp-local-reference-card>.tp-disclosure-list{position:relative;z-index:1}
+@media(prefers-reduced-motion:reduce){.shared-globe-host .rd-interactive-globe{transition:none}}
+html[data-turnkey-product] .tp-local-reference-card{overflow:visible!important}
+
+.premium-globe[data-ui-globe] .rd-interactive-globe { width:min(100%,100cqh); max-height:100%; }
+.premium-globe[data-ui-globe] { container-type:size; pointer-events:auto; }
+.premium-globe[data-ui-globe].has-interactive-globe > img { visibility:hidden; }
+.premium-globe[data-ui-globe] .rd-interactive-globe { width:min(200%,200cqh); max-height:none; }

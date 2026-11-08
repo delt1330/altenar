@@ -1,0 +1,72 @@
+html[data-altenar-glow] .glow-mega-menu{position:fixed;top:0;left:0;width:100%;z-index:1001;display:grid;grid-template-columns:minmax(240px,28%) minmax(260px,24%) 1fr;background:rgba(3,8,14,.2);border-top:1px solid rgba(255,255,255,.2);border-bottom:1px solid rgba(255,255,255,.2);-webkit-backdrop-filter:blur(24px);backdrop-filter:blur(24px);color:#fff;box-shadow:0 24px 45px rgba(0,0,0,.2);max-height:calc(100vh - 80px);overflow:auto}
+html[data-altenar-glow] .glow-mega-menu[hidden]{display:none}
+html[data-altenar-glow] .glow-mega-feature,html[data-altenar-glow] .glow-mega-sports,html[data-altenar-glow] .glow-mega-services{padding:32px}
+html[data-altenar-glow] .glow-mega-feature{background:rgba(255,255,255,.045)}
+html[data-altenar-glow] .glow-mega-label{font:400 12px/1.4 Inter,sans-serif;color:rgba(255,255,255,.55);margin-bottom:20px}
+html[data-altenar-glow] .glow-mega-feature-art{display:block;width:100%;height:auto;aspect-ratio:335/178;object-fit:cover;border-radius:10px}
+html[data-altenar-glow] .glow-mega-feature p{font:400 14px/1.35 Inter,sans-serif;color:#fff;margin:22px 0 0;max-width:335px}
+html[data-altenar-glow] .glow-mega-menu :is(button,a){text-decoration:none;display:block;width:100%;border:0;background:transparent;color:#fff;text-align:left;cursor:pointer;border-radius:6px;padding:6px 8px;margin-left:-8px;transition:background .2s ease}
+html[data-altenar-glow] .glow-mega-menu :is(button,a):is(:hover,:focus-visible){background:rgba(255,255,255,.1);outline:none}
+html[data-altenar-glow] .glow-mega-sports :is(button,a)+:is(button,a){margin-top:8px}
+html[data-altenar-glow] .glow-mega-sports strong{display:block;font:400 16px/1.3 'JetBrains Mono',monospace;text-transform:uppercase}
+html[data-altenar-glow] .glow-mega-sports span{display:block;font:400 12px/1.4 Inter,sans-serif;color:rgba(255,255,255,.6);margin-top:4px}
+html[data-altenar-glow] .glow-mega-services button{font:400 14px/1.35 Inter,sans-serif}
+@media(max-width:750px){html[data-altenar-glow] .glow-mega-menu{grid-template-columns:1fr 1fr}html[data-altenar-glow] .glow-mega-feature{grid-column:1/-1}html[data-altenar-glow] .glow-mega-feature-art{max-width:335px}html[data-altenar-glow] .glow-mega-feature,html[data-altenar-glow] .glow-mega-sports,html[data-altenar-glow] .glow-mega-services{padding:20px}}
+/* Figma navigation: inset glass island, Inter 14, and an attached glass menu. */
+html[data-premium][data-altenar-glow] .premium-page>[data-shared-navigation]{
+ position:fixed!important;top:20px!important;left:5%!important;right:auto!important;
+ width:90%!important;max-width:1296px;height:78px!important;
+ border:1px solid rgba(255,255,255,.2)!important;border-radius:24px!important;
+ background:rgba(0,0,0,.2)!important;backdrop-filter:blur(20px)!important;
+ box-shadow:0 8px 28px #00000014!important;
+ overflow:visible!important;box-sizing:border-box;transform:none!important;
+}
+@media(min-width:1440px){html[data-premium][data-altenar-glow] .premium-page>[data-shared-navigation]{left:calc((100% - 1296px)/2)!important}}
+html [data-shared-navigation] [data-name='navbar']{height:76px;width:100%}
+html [data-shared-navigation] [data-name='navbar__bar']{
+ height:76px;padding:16px 20px 16px 32px;box-sizing:border-box;
+ display:grid;grid-template-columns:139px minmax(0,1fr) auto;gap:20px;align-items:center;
+}
+html [data-shared-navigation] [data-name='navbar__inner']{display:contents}
+html [data-shared-navigation] [data-name='logo_main']{width:139px!important;height:28px!important;min-width:139px;align-self:center}
+html [data-shared-navigation] [data-name='navbar/nav']{grid-area:1/2;justify-self:center;display:flex;align-items:center;padding:4px;gap:0;overflow:visible;height:44px;box-sizing:border-box}
+html [data-shared-navigation] [data-name='navbar-actions__pair']{grid-area:1/3;display:flex;gap:12px;align-items:center;height:44px;position:static}
+html[data-premium][data-altenar-glow] [data-shared-navigation] [data-name='navbar__link']{padding:8px 12px;min-height:36px;box-sizing:border-box;border-radius:8px!important;gap:0}
+html[data-premium][data-altenar-glow] [data-shared-navigation] :is([data-name='navbar__link'],[data-name='language-trigger--slant'],[data-name='navbar__cta']) p{
+ font-family:Inter,Arial,sans-serif!important;font-size:14px!important;font-weight:500!important;
+ line-height:20px!important;text-transform:none!important;letter-spacing:0!important;
+}
+html [data-shared-navigation] [data-name='navbar__link']:is(:hover,:focus-visible,[aria-expanded='true']){background:#ffffff14!important}
+html [data-shared-navigation] :is([data-name='navbar__chevron'],[data-name='language-trigger__chevron']){display:none!important}
+html [data-shared-navigation] [data-name='language-trigger--slant']{width:70px;height:44px}
+html [data-shared-navigation] [data-name='language-trigger--slant'] p{top:12px}
+html[data-premium][data-altenar-glow] [data-shared-navigation] [data-name='navbar__cta']{
+ height:44px;min-height:44px;border-radius:12px!important;padding:0 20px;
+ background:linear-gradient(90deg,#018DFF 0%,#00CDF1 53%,#4EFF83 100%)!important;
+}
+html[data-premium][data-altenar-glow] [data-shared-navigation] [data-name='navbar__cta'] p{color:#141a22!important;-webkit-text-fill-color:#141a22!important}
+html[data-premium][data-altenar-glow] .glow-mega-menu{
+ margin-top:12px;left:50%!important;transform:translateX(-50%);width:min(943px,90vw)!important;
+ border:1px solid #ffffff33!important;border-radius:24px;
+ background:rgba(0,0,0,.7)!important;backdrop-filter:blur(20px)!important;
+ grid-template-columns:minmax(240px,38%) minmax(220px,28%) 1fr;max-height:calc(100vh - 130px);
+}
+html[data-premium][data-altenar-glow] .glow-mega-menu .glow-mega-feature{background:transparent}
+html[data-premium][data-altenar-glow] .glow-mega-menu :is(.glow-mega-feature,.glow-mega-sports,.glow-mega-services){padding:28px}
+html[data-premium][data-altenar-glow] .glow-mega-menu :is(button,a,strong){font-family:Inter,Arial,sans-serif!important;font-size:14px!important;line-height:1.4!important;text-transform:none!important;letter-spacing:0!important}
+html[data-premium][data-altenar-glow] .glow-mega-menu strong{font-weight:500!important}
+@media(max-width:1180px){
+ html [data-shared-navigation] [data-name='navbar__bar']{grid-template-columns:124px minmax(0,1fr) auto;gap:10px;padding-left:22px;padding-right:16px}
+ html [data-shared-navigation] [data-name='logo_main']{width:124px!important;min-width:124px;height:25px!important}
+ html[data-premium][data-altenar-glow] [data-shared-navigation] [data-name='navbar__link']{padding-inline:9px}
+ html [data-shared-navigation] [data-name='navbar-actions__pair']{gap:4px}
+ html[data-premium][data-altenar-glow] [data-shared-navigation] [data-name='navbar__cta']{padding-inline:14px}
+}
+
+/* Home's full-width header has a separate border overlay. The island owns its outline. */
+html[data-premium][data-altenar-glow] .premium-page>[data-shared-navigation] [data-name='navbar__cta'] { box-shadow:none!important }
+html[data-premium][data-altenar-glow] .premium-page>[data-shared-navigation] [data-name='navbar__cta']::after { content:none!important }
+html[data-premium][data-altenar-glow] [data-shared-navigation] [data-name='language-trigger--slant'] p {
+  top:50%!important;
+  transform:translateY(-50%)!important;
+}

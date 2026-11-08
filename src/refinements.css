@@ -1,0 +1,36 @@
+/* Existing desktop dimensions are retained; no new layout breakpoints. */
+[data-name='hero__aside']{align-items:flex-end}
+[data-name='hero__aside']>.split-button{width:max-content;max-width:none;align-self:flex-end;flex:0 0 auto}
+.morph-video video{visibility:visible}
+.contact-video-shade{visibility:visible}
+.product-video{object-fit:cover}
+.footer-video-logo{mask-image:url('/assets/footer-letter-mask.svg');mask-size:100% 100%;mask-repeat:no-repeat;mask-mode:alpha}
+.footer-logo-video{object-fit:cover}
+.motion-eyebrow{line-height:1.25;overflow:visible;text-box-trim:none;mask:none}
+.motion-label-container{overflow:visible!important}
+.entrance-line{overflow:visible}
+.partner-details{position:relative}
+[data-name='section-partners'],.partner-details,.partner-detail,.partner-logo-slot{overflow:visible}
+.partner-detail{grid-area:1/1;display:flex;flex-direction:column;align-self:center;gap:24px;width:100%;min-height:180px;justify-content:center}
+.partner-logo-slot{display:flex;align-items:center;justify-content:center;width:100%;height:152px;flex-shrink:0}
+.partner-logo{display:block;max-width:222px;max-height:76px;width:auto;height:auto;object-fit:contain;object-position:center;flex-shrink:0;transform:scale(2);transform-origin:center}
+.partner-description{font-size:16px;line-height:1.4;letter-spacing:-.32px;color:rgba(20,26,34,.6);width:100%}
+.partner-row.partner-active{color:#141a22!important}
+/* The track switches only between matching folded shapes; SVG owns motion. */
+.cases-track{transition:none}
+[data-name='case__logo']>img{object-fit:contain;object-position:left center}
+.case-wordmark-pending{font-size:32px;font-weight:500;color:#141a22;line-height:37px}
+[data-name='case__metric--media']{width:auto;max-width:29%;overflow:visible}
+.benefit-morph{position:absolute;inset:0;width:400px;height:340px;pointer-events:none}
+/* One rollover system, with stationary Y and unchanged arrow orientation. */
+[data-name='news-card-slant']:hover,[data-name='news-card-slant']:focus-within{--arrow-glyph-color:#ffffff}
+[data-name='news__arrows'] .nav-arrow:hover,[data-name='news__arrows'] .nav-arrow:focus-visible{--arrow-glyph-color:#ffffff}
+[data-name='news-card-slant']:hover [data-name='news-card__arrow']::before{background:#1a2c42}
+.split-button[data-case-link-missing]{pointer-events:auto;cursor:pointer}
+[data-name='awards__header']>p:first-child{align-self:center;text-align:center}
+[data-award-event='sigma-brazil']>p:last-of-type{color:#70747a}
+[data-award-event='sigma-brazil']:hover>p:last-of-type,[data-award-event='sigma-brazil']:focus-visible>p:last-of-type{color:#1d1d1f}
+/* Both rollover glyphs inherit the same section-specific hover color. */
+[data-name='section-benefits'] :is(.nav-arrow,.split-button,.slant-button):is(:hover,:focus-visible),
+[data-node-id='4011:41475'] :is(.nav-arrow,.split-button,.slant-button):is(:hover,:focus-visible){--arrow-glyph-color:#fff}
+@media(prefers-reduced-motion:reduce){.cases-track{transition:none}.rollover-glyph{transition:none}}

@@ -1,0 +1,55 @@
+/* Animation layers use the supplied desktop viewBoxes; HTML remains separate. */
+[data-morph-section]{position:relative;isolation:isolate}
+.morph-art{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:0}
+.morph-defs{position:absolute;width:0;height:0;overflow:hidden;pointer-events:none}
+.morph-video{position:absolute;inset:0;z-index:1;pointer-events:none}
+.morph-video video{display:block;width:100%;height:100%;object-fit:cover;visibility:hidden}
+.morph-video[data-video-ready=true] video{visibility:visible}
+.morph-video-hero{background:#063365}
+.morph-video-contact video{width:51.1%;height:100%;object-fit:cover}
+.contact-video-shade{position:absolute;inset:0;background:rgba(0,0,0,var(--contact-video-shade,.2));visibility:hidden}
+.morph-video[data-video-ready=true] .contact-video-shade{visibility:visible}
+[data-node-id='4011:38373']{height:auto;min-height:0}
+[data-name='hero__stage']{aspect-ratio:1360/722;flex:none;height:auto}
+[data-name='hero__main'],[data-name='hero__aside']{z-index:2}
+[data-name='hero__aside']{width:255px;flex-shrink:0}
+[data-name='hero__aside']>div{width:255px}
+[data-name='positioning__panel']{height:auto;aspect-ratio:1360/578}
+[data-name='positioning__content']{z-index:2}
+[data-name='cases__slide']{height:auto;aspect-ratio:1360/615}
+[data-name='case__content'],[data-name='case__tag'],[data-name='case__metric--media']{z-index:2}
+/* Restore the source contact geometry, rather than a half-width grid. */
+/* Figma: 1360×600 panel, 552×490 form at (760,48), bottom inset 62.
+   Let the real form determine height if desktop text wraps onto more lines. */
+[data-name='contact__panel']{display:grid;grid-template-columns:55.882353% 40.588235% 3.529412%;min-height:600px;height:auto;aspect-ratio:auto;overflow:hidden}
+[data-name='contact__lead']{position:absolute;top:56px;left:56px;right:auto;bottom:auto;width:32.352941%;padding:0;z-index:2;gap:24px}
+[data-node-id='4001:111622']{font-size:64px}
+[data-name='contact__form']{position:relative;inset:auto;grid-column:2;grid-row:1;align-self:start;width:100%;max-width:none;min-width:0;height:auto;padding:0;margin:48px 0 62px;gap:48px;z-index:2}
+[data-name='contact__groups']{gap:40px}
+[data-name='contact__group']{gap:24px}
+[data-name='contact-group__options']{width:100%;gap:8px;display:flex;flex-wrap:wrap}
+.choice-chip{position:relative;cursor:pointer}
+.choice-chip input{position:absolute;width:1px;height:1px;opacity:0;left:0;top:0;margin:0}
+.choice-chip:has(input:focus-visible){outline:2px solid #0099ef;outline-offset:3px}
+[data-name='contact__actions']{gap:24px}
+[data-name='contact__actions'] button{padding:0;background:none;text-align:inherit;color:inherit}
+/* Morph geometry and arrow translation are independent. */
+.control-morph{position:absolute;inset:0;display:block;max-width:none;pointer-events:none}
+.control-morph path{transition:fill .18s ease}
+.slant-button [data-name='button__cap']>div{transition:background-color .18s ease}
+.has-morph-background::before{display:none}
+[data-name='button__cap'] .control-morph{width:20px;height:44px}
+.faq-morph-toggle>img{visibility:hidden}
+.faq-morph-toggle .control-morph{width:51px;height:44px}
+/* Previous review corrections. */
+[data-name='country-card__list']{background:#f2f6f8}
+.country-card-cta{background:#f7f7f9}
+[data-name='section-awards']{align-items:stretch;justify-content:flex-start;gap:48px;height:auto}
+[data-name='awards__header']{width:100%;height:auto;min-height:0;flex:none;align-items:flex-start}
+[data-name='awards__header']>p{flex:none;min-height:0}
+[data-node-id='I4011:36550;3933:59146']{line-height:1.1}
+[data-name='awards__list']{width:100%;border-color:#d9e6f1}
+[data-name='awards__row']{border-color:#d9e6f1}
+.partner-placeholder-copy{font-size:16px;line-height:1.4;letter-spacing:-.32px;color:rgba(20,26,34,.6);margin-top:24px}
+[data-name='news-card-slant']:hover [data-name='news-card__arrow']::before{background:#1a2c42}
+[data-name='news-card-slant']:hover [data-name='news-card__arrow'] [data-name='button__icon'] img{filter:brightness(0) invert(1)}

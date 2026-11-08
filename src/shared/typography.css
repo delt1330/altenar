@@ -1,0 +1,131 @@
+/* Shared text roles measured on Turnkey. Keep colour, wrapping and entrance effects in the page styles. */
+:root {
+  --ui-sans: Inter, Arial, sans-serif;
+  --ui-mono: "JetBrains Mono", monospace;
+  --ui-type-hero: 400 clamp(45px,5.55vw,80px)/1.1 var(--ui-sans);
+  --ui-type-section: 400 clamp(40px,4.1vw,64px)/1.12 var(--ui-sans);
+  --ui-type-tools: 400 clamp(40px,4.1vw,64px)/1.1 var(--ui-sans);
+  --ui-type-library: 400 clamp(40px,3.75vw,60px)/1.12 var(--ui-sans);
+  --ui-type-editorial: 400 64px/1.1 var(--ui-sans);
+  --ui-type-contact: 400 64px/1.05 var(--ui-sans);
+  --ui-type-body: 400 14px/1.65 var(--ui-sans);
+  --ui-type-support: 400 14px/1.65 var(--ui-sans);
+  --ui-type-eyebrow: 400 13px/1.5 var(--ui-mono);
+  --ui-type-label: 400 14px/1.2 var(--ui-mono);
+  --ui-type-card: 400 18px/1.35 var(--ui-sans);
+  --ui-type-detail: 400 21px/1.3 var(--ui-sans);
+  --ui-type-subheading: 400 28px/1.3 var(--ui-sans);
+  --ui-type-faq: 400 18px/1.4 var(--ui-sans);
+  --ui-type-form-choice: 500 14px/1.4 var(--ui-sans);
+  --ui-type-form-step: 400 14px/normal var(--ui-sans);
+  --ui-type-form-note: 400 16px/1.4 var(--ui-sans);
+  --ui-type-button: 400 14px/normal var(--ui-mono);
+  --ui-type-next: 400 16px/normal var(--ui-mono);
+  --ui-type-footer-link: 400 16px/1.4 var(--ui-sans);
+  --ui-type-menu: 500 14px/20px var(--ui-sans);
+}
+html[data-premium][data-altenar-glow] .premium-page:is(.premium-page,.ui-specificity) :is(.tp-hero h1, [data-node-id="4001:111760"],[data-ui-type="hero"]) {
+  font: var(--ui-type-hero) !important;
+  letter-spacing: -.04em !important;
+  text-transform: none !important;
+}
+html[data-premium][data-altenar-glow] .premium-page:is(.premium-page,.ui-specificity) :is(.tp-platform h2,.tp-local h2,.premium-solutions > .solutions-sticky h2:not(.solution-panel h2),.premium-heading:not([data-name="contact__lead"] *,[data-name="faq__aside"] *,[data-name="statement__plate"] *),[data-ui-type="section"]) {
+  font: var(--ui-type-section) !important;
+  letter-spacing: -.045em !important;
+  text-transform: none !important;
+}
+html[data-premium][data-altenar-glow] .premium-page:is(.premium-page,.ui-specificity) :is(.rd-tools h2,[data-ui-type="tools"]) {
+  font: var(--ui-type-tools) !important;
+  letter-spacing: -.045em !important;
+  text-transform: none !important;
+}
+html[data-premium][data-altenar-glow] .premium-page:is(.premium-page,.ui-specificity) :is(.tp-feature-header h2,[data-ui-type="library"]) {
+  font: var(--ui-type-library) !important;
+  letter-spacing: -.045em !important;
+  text-transform: none !important;
+}
+html[data-premium][data-altenar-glow] .premium-page:is(.premium-page,.ui-specificity) :is([data-name="faq__aside"] .premium-heading,[data-name="statement__plate"] .premium-heading,[data-ui-type="editorial"]) {
+  font: var(--ui-type-editorial) !important;
+  letter-spacing: -.03em !important;
+  text-transform: none !important;
+}
+html[data-premium][data-altenar-glow] .premium-page:is(.premium-page,.ui-specificity) :is([data-name="contact__lead"] .premium-heading p,[data-ui-type="contact"]) {
+  font: var(--ui-type-contact) !important;
+  letter-spacing: -.03em !important;
+  text-transform: none !important;
+}
+html[data-premium][data-altenar-glow] .premium-page:is(.premium-page,.ui-specificity) :is(.tp-body,.tp-disclosure-body p,.tp-feature-description,[data-name="hero__aside"]>div:first-child p,.solution-panel-copy>p,[data-name="benefit-card"] p:nth-of-type(2),[data-node-id="I4011:36550;3933:80293"],[data-ui-type="body"]) {
+  font: var(--ui-type-body) !important;
+  letter-spacing: normal !important;
+  text-transform: none !important;
+}
+html[data-premium][data-altenar-glow] .premium-page:is(.premium-page,.ui-specificity) :is([data-name="faq__aside"]>p:last-child,[data-name="contact__lead"]>p:last-child,.glow-faq-answer p,[data-ui-type="support"]) {
+  font: var(--ui-type-support) !important;
+  letter-spacing: -.32px !important;
+  text-transform: none !important;
+}
+html[data-premium][data-altenar-glow] .premium-page:is(.premium-page,.ui-specificity) :is(.tp-eyebrow,[data-name="hero__main"]>p:first-child,.premium-solutions .eyebrow,.premium-page p.d87:not([data-name="navbar--sketch-a"] *,[data-name="contact__panel"] *,[data-name="footer--window"] *,[data-name="faq__aside"] *),[data-ui-type="eyebrow"]) {
+  font: var(--ui-type-eyebrow) !important;
+  letter-spacing: .07em !important;
+  text-transform: uppercase !important;
+}
+html[data-premium][data-altenar-glow] .premium-page:is(.premium-page,.ui-specificity) :is([data-name="faq__aside"]>p:first-child,[data-name="contact__lead"]>p:first-child,[data-name="contact__group"]>p:first-child,[data-ui-type="label"]) {
+  font: var(--ui-type-label) !important;
+  letter-spacing: normal !important;
+  text-transform: uppercase !important;
+}
+html[data-premium][data-altenar-glow] .premium-page:is(.premium-page,.ui-specificity) :is(.tp-feature-card h4,[data-name="news-card__body"]>p:first-child,[data-name="benefit-card"]>p:first-child,[data-ui-type="card"]) {
+  font: var(--ui-type-card) !important;
+  letter-spacing: -.015em !important;
+  text-transform: none !important;
+}
+html[data-premium][data-altenar-glow] .premium-page:is(.premium-page,.ui-specificity) :is(.tp-disclosure h3,[data-ui-type="detail"]) {
+  font: var(--ui-type-detail) !important;
+  letter-spacing: -.025em !important;
+  text-transform: none !important;
+}
+html[data-premium][data-altenar-glow] .premium-page:is(.premium-page,.ui-specificity) :is(.rd-copy h3,.solution-panel h2,[data-ui-type="subheading"]) {
+  font: var(--ui-type-subheading) !important;
+  letter-spacing: normal !important;
+  text-transform: none !important;
+}
+html[data-premium][data-altenar-glow] .premium-page:is(.premium-page,.ui-specificity) :is([data-name="faq-item__header"]>p,[data-ui-type="faq"]) {
+  font: var(--ui-type-faq) !important;
+  letter-spacing: -.4px !important;
+  text-transform: none !important;
+}
+html[data-premium][data-altenar-glow] .premium-page:is(.premium-page,.ui-specificity) :is(.choice-chip p,[data-ui-type="form-choice"]) {
+  font: var(--ui-type-form-choice) !important;
+  letter-spacing: -.02em !important;
+  text-transform: none !important;
+}
+html[data-premium][data-altenar-glow] .premium-page:is(.premium-page,.ui-specificity) :is([data-name="contact__form"]>p:first-child,[data-ui-type="form-step"]) {
+  font: var(--ui-type-form-step) !important;
+  letter-spacing: -.02em !important;
+  text-transform: none !important;
+}
+html[data-premium][data-altenar-glow] .premium-page:is(.premium-page,.ui-specificity) :is([data-name="contact__actions"]>p:first-child,[data-ui-type="form-note"]) {
+  font: var(--ui-type-form-note) !important;
+  letter-spacing: -.02em !important;
+  text-transform: none !important;
+}
+html[data-premium][data-altenar-glow] .premium-page:is(.premium-page,.ui-specificity) :is([data-name="button-split__label"]>p,[data-ui-type="button"]) {
+  font: var(--ui-type-button) !important;
+  letter-spacing: -.32px !important;
+  text-transform: uppercase !important;
+}
+html[data-premium][data-altenar-glow] .premium-page:is(.premium-page,.ui-specificity) :is([data-name="contact__actions"] [data-name="button-split__label"]>p,[data-ui-type="next"]) {
+  font: var(--ui-type-next) !important;
+  letter-spacing: -.32px !important;
+  text-transform: uppercase !important;
+}
+html[data-premium][data-altenar-glow] .premium-page:is(.premium-page,.ui-specificity) :is([data-name="footer__links"] p,[data-ui-type="footer-link"]) {
+  font: var(--ui-type-footer-link) !important;
+  letter-spacing: -.02em !important;
+  text-transform: none !important;
+}
+html[data-premium][data-altenar-glow] .premium-page:is(.premium-page,.ui-specificity) :is([data-name="navbar--sketch-a"] :is([data-name="navbar__link"],[data-name="language-trigger--slant"],[data-name="navbar__cta"]) p,[data-ui-type="menu"]) {
+  font: var(--ui-type-menu) !important;
+  letter-spacing: 0 !important;
+  text-transform: none !important;
+}

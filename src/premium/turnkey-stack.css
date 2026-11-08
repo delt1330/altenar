@@ -1,0 +1,17 @@
+html[data-premium] .premium-solutions .turnkey-stack.is-active{pointer-events:auto}
+.turnkey-stack{display:grid;place-items:center;isolation:isolate;container-type:size}
+.turnkey-stack-canvas{position:relative;width:100%;max-height:100%;aspect-ratio:998/994}
+@supports (width:1cqh){.turnkey-stack-canvas{width:min(100%,calc(100cqh * 998 / 994))}}
+.turnkey-layer{position:absolute;display:block;border:0;padding:0;margin:0;background:transparent;border-radius:0;z-index:var(--layer);opacity:0;transform:translateY(-120px);transform-origin:50% 100%;pointer-events:none}
+.turnkey-layer img{display:block;width:100%;height:100%;object-fit:contain;user-select:none}
+.turnkey-stack[data-assembly='ready'] .turnkey-layer{opacity:1;transform:translateY(0) scale(1);transition:transform .3s cubic-bezier(.215,.61,.355,1),filter .3s cubic-bezier(.215,.61,.355,1);transform-origin:50% 50%}
+.turnkey-stack.has-active-layer{cursor:pointer}
+.turnkey-stack.has-active-layer .turnkey-layer{filter:brightness(.55) saturate(.65);opacity:.5;transition-duration:.25s}
+.turnkey-stack.has-active-layer .turnkey-layer.is-highlighted{z-index:10;opacity:1;filter:brightness(1.08);transform:translateY(-8px) scale(1)}
+.turnkey-layer:focus-visible{outline:2px solid #018dfe;outline-offset:4px;border-radius:16px}
+.turnkey-tooltip{position:absolute;z-index:20;width:max-content;max-width:min(264px,calc(100vw - 32px));padding:12px 15px;border:1px solid #e1e8ef;border-radius:12px;background:rgba(255,255,255,.98);color:#141a22;box-shadow:0 6px 22px #172d4614;pointer-events:none;opacity:0;transform:translate(-50%,calc(-100% + 2px));transition:top .25s cubic-bezier(.215,.61,.355,1),left .25s cubic-bezier(.215,.61,.355,1),opacity .25s cubic-bezier(.215,.61,.355,1),transform .25s cubic-bezier(.215,.61,.355,1);font:400 13px/1.45 Inter,sans-serif;text-align:left}
+.turnkey-tooltip strong{display:block;font-size:14px;font-weight:500}
+.turnkey-tooltip span{display:block;margin-top:4px;color:#526174}
+.turnkey-tooltip span[hidden]{display:none}
+.turnkey-tooltip.is-visible{opacity:1;transform:translate(-50%,calc(-100% - 6px))}
+@media(prefers-reduced-motion:reduce){.turnkey-layer,.turnkey-tooltip{transition:none!important}.turnkey-stack .turnkey-layer{opacity:1;transform:none!important}}

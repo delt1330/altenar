@@ -1,0 +1,24 @@
+/* Center the contact introduction above one rounded, dark glass form. */
+html[data-altenar-glow] .premium-contact{margin-bottom:0!important;padding:160px var(--page-gutter)!important;border-radius:0!important}
+html[data-altenar-glow] [data-name='contact__panel']{display:flex!important;flex-direction:column;align-items:center!important;gap:72px;min-height:0!important;height:auto!important;overflow:visible!important}
+html[data-altenar-glow] [data-name='contact__panel']>.morph-art{display:none!important}
+html[data-altenar-glow] [data-name='contact__lead']{position:relative!important;inset:auto!important;width:min(100%,700px)!important;max-width:700px!important;margin:0!important;padding:0!important;align-self:center!important;align-items:center!important;text-align:center!important;gap:24px!important}
+html[data-altenar-glow] [data-name='contact__lead']>*{max-width:100%!important}
+html[data-altenar-glow] [data-name='contact__lead']>.premium-heading{width:100%;text-align:center;line-height:1.05}
+html[data-altenar-glow] [data-name='contact__lead']>p:last-child{width:min(100%,560px);text-align:center}
+html[data-altenar-glow] [data-name='contact__form']{position:relative!important;inset:auto!important;align-self:center!important;width:min(100%,800px)!important;max-width:800px!important;margin:0!important;padding:48px!important;box-sizing:border-box;background:rgba(0,0,0,.2)!important;border:1px solid rgba(255,255,255,.2)!important;border-radius:24px!important;gap:48px!important}
+html[data-altenar-glow] [data-name='contact__form'] :is([data-name='contact__groups'],[data-name='contact__group'],[data-name='contact-group__options'],[data-name='contact__actions']){width:100%;max-width:100%}
+html[data-altenar-glow] [data-name='contact__actions']{flex-wrap:wrap;justify-content:space-between}
+@media(max-width:700px){html[data-altenar-glow] .premium-contact{padding:96px var(--page-gutter)!important}html[data-altenar-glow] [data-name='contact__panel']{gap:48px}html[data-altenar-glow] [data-name='contact__form']{padding:28px!important;gap:36px!important}}
+
+/* The complete form uses the Home choice and split button states. */
+html[data-altenar-glow] [data-shared-contact] .choice-chip{background:rgba(255,255,255,.12)!important}
+html[data-altenar-glow] [data-shared-contact] .choice-chip:has(input:checked){background:#018bfe!important}
+html[data-altenar-glow] [data-shared-contact] .choice-chip:has(input:focus-visible){outline:2px solid #018dff;outline-offset:4px}
+html[data-premium][data-altenar-glow] .premium-page [data-shared-contact] [data-shared-split] [data-name='button-split__label'] p {
+  color:var(--ui-button-ink)!important;
+  -webkit-text-fill-color:var(--ui-button-ink)!important;
+}
+html[data-premium][data-altenar-glow] [data-shared-contact] [data-shared-split] [data-name='button-split__arrow'] > img {
+  visibility:hidden!important;
+}

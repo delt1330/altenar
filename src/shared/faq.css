@@ -1,0 +1,76 @@
+html[data-altenar-glow] .glow-faq-item {
+  gap: 0;
+}
+
+html[data-altenar-glow] .glow-faq-item [data-name='faq-item__header'] {
+  appearance: none;
+  border: 0;
+  padding: 0;
+  background: transparent;
+  color: inherit;
+  text-align: left;
+}
+
+html[data-altenar-glow] .glow-faq-toggle {
+  position: relative;
+  display: block;
+  flex: 0 0 51px;
+  width: 51px;
+  height: 44px;
+  border: 0;
+  background: none;
+  box-shadow: none;
+  pointer-events: none;
+}
+
+html[data-altenar-glow] .glow-faq-toggle::before,
+html[data-altenar-glow] .glow-faq-toggle::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  margin: auto;
+  width: 28px;
+  height: 2px;
+  background: #fff;
+  transform-origin: center;
+  transition: opacity .6s cubic-bezier(.16, 1, .3, 1), transform .6s cubic-bezier(.16, 1, .3, 1);
+}
+
+html[data-altenar-glow] .glow-faq-toggle::after { transform: rotate(90deg); }
+html[data-altenar-glow] .glow-faq-item[data-expanded='true'] .glow-faq-toggle::before { opacity: 0; transform: rotate(45deg); }
+html[data-altenar-glow] .glow-faq-item[data-expanded='true'] .glow-faq-toggle::after { transform: rotate(180deg); }
+
+html[data-altenar-glow] .glow-faq-answer {
+  display: grid;
+  grid-template-rows: 0fr;
+  width: 100%;
+  opacity: 0;
+  visibility: hidden;
+  transition: grid-template-rows .6s cubic-bezier(.16, 1, .3, 1), opacity .6s cubic-bezier(.16, 1, .3, 1), visibility 0s .6s;
+}
+
+html[data-altenar-glow] .glow-faq-item[data-expanded='true'] .glow-faq-answer {
+  grid-template-rows: 1fr;
+  opacity: 1;
+  visibility: visible;
+  transition-delay: 0s;
+}
+
+html[data-altenar-glow] .glow-faq-answer-inner { min-height: 0; overflow: hidden; }
+html[data-altenar-glow] .glow-faq-answer-inner > p { padding-top: 16px; }
+
+@media (prefers-reduced-motion: reduce) {
+  html[data-altenar-glow] .glow-faq-toggle::before,
+  html[data-altenar-glow] .glow-faq-toggle::after,
+  html[data-altenar-glow] .glow-faq-answer { transition: none; }
+}
+
+/* The export still has legacy plus rules. Shared disclosures own their toggle. */
+html[data-premium][data-turnkey-product] .glow-faq-item [data-faq-plain] { padding:0!important; }
+html[data-premium][data-turnkey-product] .glow-faq-item [data-faq-plain]::after { content:none!important; }
+html[data-premium][data-turnkey-product] .glow-faq-item .glow-faq-toggle { display:block!important; width:51px!important; height:44px!important; }
+html[data-premium][data-turnkey-product] .glow-faq-item .glow-faq-toggle::after { content:''; }
+html[data-altenar-glow] [data-name='faq__list'],
+html[data-altenar-glow] [data-name='faq__list']>.glow-faq-item { border-color:rgba(255,255,255,.2)!important; }
+html[data-altenar-glow] [data-name='faq__list']>.glow-faq-item { border-top-width:.7px!important; }
+html[data-altenar-glow] [data-name='faq__list'] { border-bottom-width:.7px!important; }
