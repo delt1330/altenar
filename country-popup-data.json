@@ -1,0 +1,517 @@
+{
+  "fileKey": "B1ETRM92DaBb2GHC74aHZr",
+  "rootNodeId": "4011:36550",
+  "sourceUrl": "https://www.figma.com/design/B1ETRM92DaBb2GHC74aHZr/Altenar.com?node-id=4011-36550",
+  "notes": [
+    "Copied from user-supplied design; regulatory text is design content, not independently verified legal information.",
+    "Only United Kingdom has a populated country popup in the inspected source file. Other 23 country entries provide index labels and flags only. Do not copy UK statuses onto them.",
+    "For missing country detail content keep rows, popupTitle and ctaLabel null; the UI may display the supplied country index label and flag while awaiting country-specific copy."
+  ],
+  "countries": [
+    {
+      "indexName": "UK",
+      "sourceIndexId": "I4011:36550;3933:80296;2191:5254",
+      "flagSourceId": "1892:44872",
+      "flagAsset": "/assets/imgGb.svg",
+      "popupTitle": "United Kingdom",
+      "popupSourceId": "I4011:36550;3933:80302;2279:39887",
+      "ctaLabel": "Advanced Casino Software for UK",
+      "rows": [
+        {
+          "sourceId": "I4011:36550;3933:80302;2279:39887;3933:80298",
+          "title": "Online betting",
+          "note": "Regulated at local level",
+          "status": "Regulated",
+          "sourceTextIds": {
+            "title": "I4011:36550;3933:80302;2279:39887;3933:80298;2593:7836",
+            "note": "I4011:36550;3933:80302;2279:39887;3933:80298;2593:7837",
+            "status": "I4011:36550;3933:80302;2279:39887;3933:80298;2593:7838;2187:5467"
+          }
+        },
+        {
+          "sourceId": "I4011:36550;3933:80302;2279:39887;3933:80299",
+          "title": "Landbase betting",
+          "note": "Regulated at local level",
+          "status": "Regulated",
+          "sourceTextIds": {
+            "title": "I4011:36550;3933:80302;2279:39887;3933:80299;2593:7836",
+            "note": "I4011:36550;3933:80302;2279:39887;3933:80299;2593:7837",
+            "status": "I4011:36550;3933:80302;2279:39887;3933:80299;2593:7838;2187:5467"
+          }
+        },
+        {
+          "sourceId": "I4011:36550;3933:80302;2279:39887;3933:80300",
+          "title": "Online casino",
+          "note": "Regulated at local level",
+          "status": "Illegal",
+          "sourceTextIds": {
+            "title": "I4011:36550;3933:80302;2279:39887;3933:80300;2593:7836",
+            "note": "I4011:36550;3933:80302;2279:39887;3933:80300;2593:7837",
+            "status": "I4011:36550;3933:80302;2279:39887;3933:80300;2593:7838;2187:5469"
+          }
+        },
+        {
+          "sourceId": "I4011:36550;3933:80302;2279:39887;3933:80301",
+          "title": "Landbase casino",
+          "note": "Regulated at local level",
+          "status": "Regulated",
+          "sourceTextIds": {
+            "title": "I4011:36550;3933:80302;2279:39887;3933:80301;2593:7836",
+            "note": "I4011:36550;3933:80302;2279:39887;3933:80301;2593:7837",
+            "status": "I4011:36550;3933:80302;2279:39887;3933:80301;2593:7838;2187:5467"
+          }
+        }
+      ],
+      "hasCompletePopupSource": true
+    },
+    {
+      "indexName": "Malta",
+      "sourceIndexId": "I4011:36550;3933:80296;2191:5255",
+      "flagSourceId": "1892:44929",
+      "flagAsset": "/assets/imgMt.svg",
+      "popupTitle": null,
+      "popupSourceId": null,
+      "ctaLabel": null,
+      "rows": null,
+      "hasCompletePopupSource": false
+    },
+    {
+      "indexName": "Romania",
+      "sourceIndexId": "I4011:36550;3933:80296;2191:5256",
+      "flagSourceId": "1892:44935",
+      "flagAsset": "/assets/imgRo.svg",
+      "popupTitle": null,
+      "popupSourceId": null,
+      "ctaLabel": null,
+      "rows": null,
+      "hasCompletePopupSource": false
+    },
+    {
+      "indexName": "Italy",
+      "sourceIndexId": "I4011:36550;3933:80296;2191:5257",
+      "flagSourceId": "1892:44941",
+      "flagAsset": "/assets/imgIt.svg",
+      "popupTitle": null,
+      "popupSourceId": null,
+      "ctaLabel": null,
+      "rows": null,
+      "hasCompletePopupSource": false
+    },
+    {
+      "indexName": "Spain",
+      "sourceIndexId": "I4011:36550;3933:80296;2191:5258",
+      "flagSourceId": "1892:44948",
+      "flagAsset": "/assets/imgEs.svg",
+      "popupTitle": null,
+      "popupSourceId": null,
+      "ctaLabel": null,
+      "rows": null,
+      "hasCompletePopupSource": false
+    },
+    {
+      "indexName": "Sweden",
+      "sourceIndexId": "I4011:36550;3933:80296;2191:5259",
+      "flagSourceId": "1892:44957",
+      "flagAsset": "/assets/imgSe.svg",
+      "popupTitle": null,
+      "popupSourceId": null,
+      "ctaLabel": null,
+      "rows": null,
+      "hasCompletePopupSource": false
+    },
+    {
+      "indexName": "Denmark",
+      "sourceIndexId": "I4011:36550;3933:80296;2191:5260",
+      "flagSourceId": "1892:44966",
+      "flagAsset": "/assets/imgDk.svg",
+      "popupTitle": null,
+      "popupSourceId": null,
+      "ctaLabel": null,
+      "rows": null,
+      "hasCompletePopupSource": false
+    },
+    {
+      "indexName": "Netherlands",
+      "sourceIndexId": "I4011:36550;3933:80296;2191:5261",
+      "flagSourceId": "1892:44972",
+      "flagAsset": "/assets/imgNl.svg",
+      "popupTitle": null,
+      "popupSourceId": null,
+      "ctaLabel": null,
+      "rows": null,
+      "hasCompletePopupSource": false
+    },
+    {
+      "indexName": "DR Congo",
+      "sourceIndexId": "I4011:36550;3933:80296;2191:5262",
+      "flagSourceId": "1892:44981",
+      "flagAsset": "/assets/imgCd.svg",
+      "popupTitle": null,
+      "popupSourceId": null,
+      "ctaLabel": null,
+      "rows": null,
+      "hasCompletePopupSource": false
+    },
+    {
+      "indexName": "North Macedonia",
+      "sourceIndexId": "I4011:36550;3933:80296;2191:5263",
+      "flagSourceId": "1892:44996",
+      "flagAsset": "/assets/imgMk.svg",
+      "popupTitle": null,
+      "popupSourceId": null,
+      "ctaLabel": null,
+      "rows": null,
+      "hasCompletePopupSource": false
+    },
+    {
+      "indexName": "Estonia",
+      "sourceIndexId": "I4011:36550;3933:80296;2191:5264",
+      "flagSourceId": "1892:45002",
+      "flagAsset": "/assets/imgEe.svg",
+      "popupTitle": null,
+      "popupSourceId": null,
+      "ctaLabel": null,
+      "rows": null,
+      "hasCompletePopupSource": false
+    },
+    {
+      "indexName": "Belgium",
+      "sourceIndexId": "I4011:36550;3933:80296;2191:5265",
+      "flagSourceId": "1892:45008",
+      "flagAsset": "/assets/imgBe.svg",
+      "popupTitle": null,
+      "popupSourceId": null,
+      "ctaLabel": null,
+      "rows": null,
+      "hasCompletePopupSource": false
+    },
+    {
+      "indexName": "Germany",
+      "sourceIndexId": "I4011:36550;3933:80296;2191:5266",
+      "flagSourceId": "1892:45070",
+      "flagAsset": "/assets/imgDe.svg",
+      "popupTitle": null,
+      "popupSourceId": null,
+      "ctaLabel": null,
+      "rows": null,
+      "hasCompletePopupSource": false
+    },
+    {
+      "indexName": "Canada",
+      "sourceIndexId": "I4011:36550;3933:80296;2191:5267",
+      "flagSourceId": "2188:32222",
+      "flagAsset": "/assets/imgCa.svg",
+      "popupTitle": null,
+      "popupSourceId": null,
+      "ctaLabel": null,
+      "rows": null,
+      "hasCompletePopupSource": false
+    },
+    {
+      "indexName": "Colombia",
+      "sourceIndexId": "I4011:36550;3933:80296;2191:5268",
+      "flagSourceId": "2188:32192",
+      "flagAsset": "/assets/imgCo.svg",
+      "popupTitle": null,
+      "popupSourceId": null,
+      "ctaLabel": null,
+      "rows": null,
+      "hasCompletePopupSource": false
+    },
+    {
+      "indexName": "Mexico",
+      "sourceIndexId": "I4011:36550;3933:80296;2191:5269",
+      "flagSourceId": "2188:32214",
+      "flagAsset": "/assets/imgMx.svg",
+      "popupTitle": null,
+      "popupSourceId": null,
+      "ctaLabel": null,
+      "rows": null,
+      "hasCompletePopupSource": false
+    },
+    {
+      "indexName": "Portugal",
+      "sourceIndexId": "I4011:36550;3933:80296;2191:5270",
+      "flagSourceId": "1892:45016",
+      "flagAsset": "/assets/imgPt.svg",
+      "popupTitle": null,
+      "popupSourceId": null,
+      "ctaLabel": null,
+      "rows": null,
+      "hasCompletePopupSource": false
+    },
+    {
+      "indexName": "Ireland",
+      "sourceIndexId": "I4011:36550;3933:80296;2191:5271",
+      "flagSourceId": "2188:32180",
+      "flagAsset": "/assets/imgIe.svg",
+      "popupTitle": null,
+      "popupSourceId": null,
+      "ctaLabel": null,
+      "rows": null,
+      "hasCompletePopupSource": false
+    },
+    {
+      "indexName": "Greece",
+      "sourceIndexId": "I4011:36550;3933:80296;2191:5272",
+      "flagSourceId": "1892:45026",
+      "flagAsset": "/assets/imgGr.svg",
+      "popupTitle": null,
+      "popupSourceId": null,
+      "ctaLabel": null,
+      "rows": null,
+      "hasCompletePopupSource": false
+    },
+    {
+      "indexName": "Cyprus",
+      "sourceIndexId": "I4011:36550;3933:80296;2191:5273",
+      "flagSourceId": "2188:32186",
+      "flagAsset": "/assets/imgCy.svg",
+      "popupTitle": null,
+      "popupSourceId": null,
+      "ctaLabel": null,
+      "rows": null,
+      "hasCompletePopupSource": false
+    },
+    {
+      "indexName": "Czechia",
+      "sourceIndexId": "I4011:36550;3933:80296;2191:5274",
+      "flagSourceId": "1892:45064",
+      "flagAsset": "/assets/imgCz.svg",
+      "popupTitle": null,
+      "popupSourceId": null,
+      "ctaLabel": null,
+      "rows": null,
+      "hasCompletePopupSource": false
+    },
+    {
+      "indexName": "Hungary",
+      "sourceIndexId": "I4011:36550;3933:80296;2191:5275",
+      "flagSourceId": "2188:32205",
+      "flagAsset": "/assets/imgHu.svg",
+      "popupTitle": null,
+      "popupSourceId": null,
+      "ctaLabel": null,
+      "rows": null,
+      "hasCompletePopupSource": false
+    },
+    {
+      "indexName": "France",
+      "sourceIndexId": "I4011:36550;3933:80296;2191:5276",
+      "flagSourceId": "2003:68213",
+      "flagAsset": "/assets/imgFr.svg",
+      "popupTitle": null,
+      "popupSourceId": null,
+      "ctaLabel": null,
+      "rows": null,
+      "hasCompletePopupSource": false
+    },
+    {
+      "indexName": "Chile",
+      "sourceIndexId": "I4011:36550;3933:80296;2191:5277",
+      "flagSourceId": "2188:32199",
+      "flagAsset": "/assets/imgCl.svg",
+      "popupTitle": null,
+      "popupSourceId": null,
+      "ctaLabel": null,
+      "rows": null,
+      "hasCompletePopupSource": false
+    }
+  ],
+  "sourceRowLabels": [
+    "Online betting",
+    "Landbase betting",
+    "Online casino",
+    "Landbase casino"
+  ],
+  "countryIndexStyle": {
+    "componentSetId": "1994:67108",
+    "default": {
+      "sourceId": "1994:67082",
+      "background": "transparent",
+      "text": "#1D1D1F"
+    },
+    "hover": {
+      "sourceId": "1994:67092",
+      "background": "rgba(161, 161, 178, 0.08)",
+      "text": "#1D1D1F"
+    },
+    "active": {
+      "sourceId": "1994:67102",
+      "background": "rgba(161, 161, 178, 0.15)",
+      "text": "#1D1D1F"
+    }
+  },
+  "statusTagStyles": {
+    "background": "rgba(29, 29, 31, 0.06)",
+    "Regulated": {
+      "sourceId": "2187:5466",
+      "text": "#248A3D"
+    },
+    "Illegal": {
+      "sourceId": "2187:5468",
+      "text": "#FF383C"
+    }
+  },
+  "sourceInventory": [
+    {
+      "pageId": "319:6176",
+      "name": "Main",
+      "cardIds": [
+        "I2389:20634;2279:39887",
+        "I1962:31974;2389:20634;2279:39887",
+        "1980:66037",
+        "2279:39642",
+        "2279:39887",
+        "I2856:9923;2389:20634;2279:39887",
+        "I2870:17983;2279:39887",
+        "I3124:38299;2279:39887",
+        "I3127:30828;2279:39887",
+        "I3289:41926;2389:20634;2279:39887",
+        "I3289:41928;2389:20634;2279:39887",
+        "I3289:41930;2389:20634;2279:39887",
+        "I3289:41932;2389:20634;2279:39887",
+        "I3417:21254;2279:39887",
+        "I3417:21457;2279:39887",
+        "I3417:21660;2279:39887",
+        "I3425:20576;2279:39887",
+        "I3426:21025;2279:39887",
+        "I3438:22372;2279:39887",
+        "I3442:22903;2279:39887",
+        "I3442:23601;2279:39887"
+      ]
+    },
+    {
+      "pageId": "4001:118973",
+      "name": "Animation",
+      "cardIds": [
+        "I4011:36550;3933:80302;2279:39887"
+      ]
+    },
+    {
+      "pageId": "3877:23794",
+      "name": "Premium concept",
+      "cardIds": [
+        "3920:24706",
+        "3899:24533"
+      ]
+    },
+    {
+      "pageId": "2501:70114",
+      "name": "Turnkey sportsbook ",
+      "cardIds": []
+    },
+    {
+      "pageId": "3671:4732",
+      "name": "Page 20",
+      "cardIds": [
+        "I3671:6424;2279:39887",
+        "I3771:39143;2279:39887",
+        "I3852:52916;2279:39887",
+        "I3933:80302;2279:39887",
+        "I4011:40267;2279:39887",
+        "I3933:60647;2279:39887",
+        "I3978:34284;2279:39887"
+      ]
+    },
+    {
+      "pageId": "1674:51371",
+      "name": "Draft Глобус",
+      "cardIds": []
+    },
+    {
+      "pageId": "2066:31254",
+      "name": "Backup",
+      "cardIds": [
+        "2066:32531",
+        "2066:33102",
+        "2066:33419",
+        "2066:34005",
+        "2066:34330",
+        "2066:34986",
+        "2066:39295",
+        "I4001:105132;2279:39887",
+        "I4001:107545;2279:39887"
+      ]
+    },
+    {
+      "pageId": "2063:31253",
+      "name": "Blog",
+      "cardTitleNodes": []
+    },
+    {
+      "pageId": "2156:51284",
+      "name": "Contact",
+      "cardTitleNodes": []
+    },
+    {
+      "pageId": "2483:32207",
+      "name": "Clients & Partners",
+      "cardTitleNodes": []
+    },
+    {
+      "pageId": "2955:24694",
+      "name": "Technical pages",
+      "cardTitleNodes": []
+    },
+    {
+      "pageId": "2938:9022",
+      "name": "Research Solution",
+      "cardTitleNodes": []
+    },
+    {
+      "pageId": "2247:21702",
+      "name": "🗃️ Work",
+      "cardTitleNodes": [
+        {
+          "id": "I2154:57688;1980:66057",
+          "title": "United Kingdom",
+          "parent": "I2154:57688;1980:66038"
+        },
+        {
+          "id": "I2154:59197;1980:66057",
+          "title": "United Kingdom",
+          "parent": "I2154:59197;1980:66038"
+        },
+        {
+          "id": "I3248:53843;2279:39887;1980:66057",
+          "title": "United Kingdom",
+          "parent": "I3248:53843;2279:39887;1980:66038"
+        },
+        {
+          "id": "I3364:90426;2389:20634;2279:39887;1980:66057",
+          "title": "United Kingdom",
+          "parent": "I3364:90426;2389:20634;2279:39887;1980:66038"
+        },
+        {
+          "id": "I3456:70958;2279:39887;1980:66057",
+          "title": "United Kingdom",
+          "parent": "I3456:70958;2279:39887;1980:66038"
+        }
+      ]
+    },
+    {
+      "pageId": "1819:58523",
+      "name": "Reference board",
+      "cardTitleNodes": [
+        {
+          "id": "I3324:100178;2279:39887;1980:66057",
+          "title": "United Kingdom",
+          "parent": "I3324:100178;2279:39887;1980:66038"
+        }
+      ]
+    },
+    {
+      "pageId": "2957:10644",
+      "name": "Ролик Марата",
+      "cardTitleNodes": [
+        {
+          "id": "I3380:91702;2389:20634;2279:39887;1980:66057",
+          "title": "United Kingdom",
+          "parent": "I3380:91702;2389:20634;2279:39887;1980:66038"
+        }
+      ]
+    }
+  ]
+}
+

@@ -1,0 +1,152 @@
+{
+  "awards": [
+    {
+      "nodeId": "4001:115944",
+      "name": "SBC Awards Latinoamerica",
+      "path": "/assets/award-logo-sbc-latinoamerica.png",
+      "width": 231,
+      "height": 143
+    },
+    {
+      "nodeId": "4001:116018",
+      "name": "SIGMA Europe Awards",
+      "path": "/assets/award-logo-sigma-europe.png",
+      "width": 231,
+      "height": 143
+    },
+    {
+      "nodeId": "4001:116026",
+      "name": "SIGMA Brazil",
+      "path": "/assets/award-logo-sigma-brazil.png",
+      "width": 231,
+      "height": 143
+    },
+    {
+      "nodeId": "4001:116030",
+      "name": "SIGMA South Asia Awards",
+      "path": "/assets/award-logo-sigma-south-asia.png",
+      "width": 231,
+      "height": 143
+    },
+    {
+      "nodeId": "4001:116034",
+      "name": "SIGMA Euro-Med Awards",
+      "path": "/assets/award-logo-sigma-euro-med.png",
+      "width": 231,
+      "height": 143
+    },
+    {
+      "nodeId": "4001:116038",
+      "name": "SIGMA Awards",
+      "path": "/assets/award-logo-sigma.png",
+      "width": 231,
+      "height": 143
+    }
+  ],
+  "svg": [
+    {
+      "id": "3455:85566",
+      "componentId": "3455:22935",
+      "name": "split-secondary-hover-cap",
+      "path": "/assets/split-secondary-hover-cap.svg"
+    },
+    {
+      "id": "3455:85575",
+      "componentId": "3455:22953",
+      "name": "split-secondary-pressed-cap",
+      "path": "/assets/split-secondary-pressed-cap.svg"
+    },
+    {
+      "id": "3962:24911",
+      "componentId": "3962:24906",
+      "name": "split-white-accent-hover-cap",
+      "path": "/assets/split-white-accent-hover-cap.svg"
+    },
+    {
+      "id": "3962:24925",
+      "componentId": "3962:24920",
+      "name": "split-white-accent-pressed-cap",
+      "path": "/assets/split-white-accent-pressed-cap.svg"
+    },
+    {
+      "id": "3968:139940",
+      "componentId": "3968:139935",
+      "name": "split-navy-accent-hover-cap",
+      "path": "/assets/split-navy-accent-hover-cap.svg"
+    },
+    {
+      "id": "3968:139953",
+      "componentId": "3968:139948",
+      "name": "split-navy-accent-pressed-cap",
+      "path": "/assets/split-navy-accent-pressed-cap.svg"
+    },
+    {
+      "id": "3883:23829",
+      "componentId": "3883:23822",
+      "name": "tab-hover-cap",
+      "path": "/assets/tab-hover-cap.svg"
+    },
+    {
+      "id": "3453:23016",
+      "componentId": "3453:23007",
+      "name": "button-slant-hover-cap",
+      "path": "/assets/button-slant-hover-cap.svg"
+    },
+    {
+      "id": "3453:23026",
+      "componentId": "3453:23017",
+      "name": "button-slant-pressed-cap",
+      "path": "/assets/button-slant-pressed-cap.svg"
+    },
+    {
+      "id": "3453:23338",
+      "name": "Direction=Prev, Style=Secondary, State=Default",
+      "path": "/assets/direction-prev-style-secondary-state-default.svg"
+    },
+    {
+      "id": "3453:23345",
+      "name": "Direction=Prev, Style=Secondary, State=Hover",
+      "path": "/assets/direction-prev-style-secondary-state-hover.svg"
+    },
+    {
+      "id": "3453:23352",
+      "name": "Direction=Prev, Style=Secondary, State=Pressed",
+      "path": "/assets/direction-prev-style-secondary-state-pressed.svg"
+    },
+    {
+      "id": "3453:23359",
+      "name": "Direction=Prev, Style=Secondary, State=Disabled",
+      "path": "/assets/direction-prev-style-secondary-state-disabled.svg"
+    },
+    {
+      "id": "3453:23450",
+      "name": "Direction=Next, Style=Secondary, State=Default",
+      "path": "/assets/direction-next-style-secondary-state-default.svg"
+    },
+    {
+      "id": "3453:23457",
+      "name": "Direction=Next, Style=Secondary, State=Hover",
+      "path": "/assets/direction-next-style-secondary-state-hover.svg"
+    },
+    {
+      "id": "3453:23464",
+      "name": "Direction=Next, Style=Secondary, State=Pressed",
+      "path": "/assets/direction-next-style-secondary-state-pressed.svg"
+    },
+    {
+      "id": "3453:23471",
+      "name": "Direction=Next, Style=Secondary, State=Disabled",
+      "path": "/assets/direction-next-style-secondary-state-disabled.svg"
+    },
+    {
+      "id": "3453:23429",
+      "name": "Direction=Next, Style=Primary, State=Hover",
+      "path": "/assets/direction-next-style-primary-state-hover.svg"
+    },
+    {
+      "id": "3453:23436",
+      "name": "Direction=Next, Style=Primary, State=Pressed",
+      "path": "/assets/direction-next-style-primary-state-pressed.svg"
+    }
+  ]
+}

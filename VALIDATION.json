@@ -1,0 +1,16 @@
+{
+  "source": "https://altenar-october.altenar-0042.chatgpt.site/premium-glow/",
+  "version": 95,
+  "build_js_sha256": "f11b3e712a863443f775e6ecba55ac0e12a17777b4ceb6bae8fbfa0157a88936",
+  "js_matches_original": true,
+  "css_matches_original": true,
+  "dev_browser_checked": true,
+  "checks": [
+    "hero",
+    "dynamic canvas",
+    "7 partnership cards",
+    "6 faq rows",
+    "faq expansion",
+    "missing loaded images"
+  ]
+}

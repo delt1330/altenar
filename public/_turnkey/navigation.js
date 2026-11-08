@@ -1,0 +1,1 @@
+document.addEventListener('click', function(event) { if (event.target.closest('[data-name="logo_main"]')) { event.preventDefault(); event.stopImmediatePropagation(); window.location.assign('/'); } }, true);
