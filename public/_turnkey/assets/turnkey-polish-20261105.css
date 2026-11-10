@@ -54,7 +54,7 @@ html[data-turnkey-product] .rd-placeholder{min-height:400px}
 html[data-turnkey-product] .tp-component-rows .rd-item{border-bottom:1px solid #ffffff25;color:white;padding:18px 0}
 html[data-turnkey-product] .rd-item summary{cursor:pointer;font-size:18px}
 html[data-turnkey-product] .rd-item p{font-size:14px;line-height:1.6;color:#ffffffb3}
-html[data-turnkey-product] .tp-local-reference-card{background:transparent url('/_turnkey/premium-media/turnkey/globe-figma.png') center center/contain no-repeat!important;border:0!important;padding:140px 0!important;display:flex;justify-content:center;min-height:700px}
+html[data-turnkey-product] .tp-local-reference-card{background:transparent none center center/contain no-repeat!important;border:0!important;padding:140px 0!important;display:flex;justify-content:center;min-height:700px}
 html[data-turnkey-product] .tp-local-reference-card .tp-disclosure-list{display:grid;grid-template-columns:1fr 1fr;max-width:842px;background:#000a;border:1px solid #ffffff33;border-radius:24px;overflow:hidden}
 html[data-turnkey-product] .tp-local-reference-card .tp-disclosure{padding:35px!important;min-width:0;border:0}
 html[data-turnkey-product] .tp-local-reference-card .tp-disclosure+.tp-disclosure{border-left:1px solid #ffffff33}
@@ -100,7 +100,7 @@ html[data-turnkey-product] .rd-local-list li:before{content:"✓";color:#08b4ff}
 html[data-turnkey-product] .tp-platform{margin-top:60px}
 html[data-turnkey-product] .rd-placeholder{border:1px solid #ffffff32;border-radius:24px;background:#ffffff05;box-sizing:border-box}
 html[data-turnkey-product] .tp-local-reference-card{position:relative;background:none!important;isolation:isolate}
-html[data-turnkey-product] .tp-local-reference-card:before{content:"";position:absolute;inset:0;background:url('/_turnkey/premium-media/turnkey/globe-figma.png') center/contain no-repeat;mix-blend-mode:screen;pointer-events:none;z-index:-1}
+html[data-turnkey-product] .tp-local-reference-card:before{content:"";position:absolute;inset:0;background:none center/contain no-repeat;mix-blend-mode:screen;pointer-events:none;z-index:-1}
 html[data-turnkey-product] .tp-local-reference-card .tp-disclosure-list{padding:0;gap:0;backdrop-filter:blur(38px) saturate(125%);-webkit-backdrop-filter:blur(38px) saturate(125%);background:#0009}
 html[data-turnkey-product] .tp-local-reference-card .tp-disclosure+.tp-disclosure{border-left:1px solid #ffffff33!important}
 html[data-turnkey-product] .tp-local-reference-card .tp-disclosure button>.tp-soft-icon,html[data-turnkey-product] .tp-local-reference-card .tp-disclosure button>svg{display:none!important}
