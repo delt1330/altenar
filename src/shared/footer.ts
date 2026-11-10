@@ -18,6 +18,6 @@ export function mountFooter(footer: HTMLElement, assetRoot='/premium-media/foote
   }
   const background=document.createElement('div');background.className='premium-footer-background';background.setAttribute('aria-hidden','true');
   footer.prepend(background);
-  const brand = document.createElement('a'); brand.className='premium-footer-brand'; brand.href='/'; brand.setAttribute('aria-label','Altenar Home');
+  const brand = document.createElement('a'); brand.className='premium-footer-brand'; brand.href=import.meta.env.BASE_URL; brand.setAttribute('aria-label','Altenar Home');
   const logo=document.createElement('img'); logo.src='/premium-media/logo-on-dark.svg'; logo.alt='Altenar'; brand.append(logo); footer.append(brand);
 }

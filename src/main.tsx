@@ -31,7 +31,7 @@ function setupNavigation(){
   document.querySelectorAll<HTMLElement>('.slant-button').forEach(el=>button(el,()=>scroll(targetFor(el.textContent||''))));
   all('navbar__cta').forEach(el=>button(el,()=>scroll(node('4011:41478'))));
   all('navbar__link').filter(el=>!/^solutions$/i.test((el.textContent||'').trim())).forEach(el=>button(el,()=>scroll(targetFor(el.textContent||''))));
-  all('logo_main').forEach(el=>button(el,()=>window.location.assign('/'),'Home'));
+  all('logo_main').forEach(el=>button(el,()=>window.location.assign(import.meta.env.BASE_URL),'Home'));
   const footer=$('footer--window');if(footer)all('footer__links',footer).forEach(group=>Array.from(group.children).forEach((el:HTMLElement)=>{const target=targetFor(el.textContent||'');if(target)button(el,()=>scroll(target));}));
 }
 function setupMotion(){return setupPremiumStatement();}

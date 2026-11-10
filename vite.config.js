@@ -3,6 +3,8 @@ import {fileURLToPath} from 'node:url';
 
 export default defineConfig({
   appType: 'mpa',
+  // Для GitHub Pages сайт живёт в подпапке: BASE_PATH=/altenar/ (см. scripts/rebase-dist.mjs)
+  base: process.env.BASE_PATH || '/',
   build: {
     outDir: 'dist',
     rolldownOptions: {input: [

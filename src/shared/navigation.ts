@@ -5,7 +5,7 @@ export function mountNavigation(){
   if(!nav||!trigger)return()=>{};
   nav.dataset.sharedNavigation='true';
   const logo=nav.querySelector<HTMLElement>('[data-name="logo_main"]');
-  const goHome=(e:Event)=>{e.preventDefault();e.stopImmediatePropagation();window.location.assign('/');};
+  const goHome=(e:Event)=>{e.preventDefault();e.stopImmediatePropagation();window.location.assign(import.meta.env.BASE_URL);};
   const logoKey=(e:KeyboardEvent)=>{if(e.key==='Enter'||e.key===' ')goHome(e);};
   logo?.setAttribute('aria-label','Home');
   logo?.addEventListener('click',goHome,true);
