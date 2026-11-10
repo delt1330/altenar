@@ -130,7 +130,7 @@ html[data-turnkey-product] .tp-platform .tp-disclosure button>.tp-soft-icon,html
 html[data-turnkey-product] .tp-platform .tp-disclosure button,html[data-turnkey-product] .tp-platform .tp-disclosure[data-open=true] button{padding-left:37px;min-height:56px}
 html[data-turnkey-product] .tp-platform .tp-disclosure button:before{content:attr(data-step);position:absolute;left:0;top:12px;width:20px;color:#08b4ff;font:400 14px/1.4 Inter,Arial}
 html[data-turnkey-product] .tp-platform .tp-disclosure-body p{padding-left:37px}
-html[data-turnkey-product] .tp-local-reference-card:before{mix-blend-mode:normal}
+html[data-turnkey-product] .tp-local-reference-card:before{background-image:none;mix-blend-mode:normal}
 html[data-premium][data-altenar-glow][data-turnkey-product] .tp-local-reference-card h3,html[data-premium][data-altenar-glow][data-turnkey-product] .tp-local-reference-card h3 button,html[data-premium][data-altenar-glow][data-turnkey-product] .tp-local-reference-card h3 span{color:#08b4ff!important;-webkit-text-fill-color:#08b4ff!important}
 html[data-turnkey-product] .rd-local-list li:before{content:'✓'}
 html[data-turnkey-product] [data-name='faq-item__header']{position:relative;padding-right:44px;box-sizing:border-box}

@@ -751,7 +751,7 @@ function SectionHero({ className, property1 = "Default" }: SectionHeroProps) {
     return (<div className={className || "d44 d0 d1 d66 d289 d67 d290 d291 d69 d6 d71"} data-node-id="4011:38373">
       <div className="d0 d1 d116 d67 d145 d292 d293 d294 d295 d6 d73" data-node-id="4001:111755" data-name="hero__stage">
         <div className="d296 d297 d20 d298 d299 d300 d301" data-node-id="4001:111757" data-name="Vector">
-          <img alt="" className="d20 d21 d22 d23 d24" height="721.259" src={imgVector} width="1360.002"/><img alt="" data-hero-state="split" src="/assets/heroSplit.png"/><img alt="" data-hero-state="initial" src="/assets/heroInitial.png"/>
+          <img alt="" className="d20 d21 d22 d23 d24" height="721.259" src={imgVector} width="1360.002"/><img alt="" data-hero-state="split" src="/_turnkey/assets/heroSplit.png"/><img alt="" data-hero-state="initial" src="/_turnkey/assets/heroInitial.png"/>
         </div>
         <div className="d9 d0 d1 d66 d302 d67 d145 d6 d13 d50 d303" data-node-id="4001:111758" data-name="hero__main">
           <p className="d7 d8 d87 d61 d88 d6 d13 d89 d91 d17 d73" data-node-id="4001:111759">
