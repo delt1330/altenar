@@ -61,7 +61,12 @@ Node 22.12+ (`.nvmrc`: 22). Команды из корня проекта:
 - Смотреть страницу Борис и я можем, только когда сервер запущен на самом Mac. Для этого в корне есть `dev.command`: двойной клик в Finder запускает `npm run dev` в Терминале и открывает сайт. Если сервер уже работает (Терминал открыт), новый не запускай: Vite сам подхватывает правки в `src/`.
 - Браузерная проверка — во встроенном браузере Claude по `http://127.0.0.1:4173/` и `/Sportsbook/`. По умолчанию ширина около 800px: это не десктоп, учитывай при оценке раскладки.
 - Удаление файлов в папке по умолчанию запрещено в каждой новой сессии, и без него падают `vite` (чистка кэша `node_modules/.vite`), `vite build` (чистка `dist/`) и git (lock-файлы). Борис разрешает удаление в этой папке, так что в начале сессии сразу запроси его (`device_request_delete_permission`). Путь папки бери из `get_device_info.connectedFolders`.
-- Git: user.name и user.email в репозитории не заданы, коммить через `git -c user.name=Boris -c user.email=…`. Коммиты делаю по просьбе, push — только по прямой просьбе. Remote: приватный `github.com/delt1330/altenar-site`, ветка `main`. Авторизация GitHub есть только на самом Mac, поэтому push делает Борис двойным кликом по `push-to-github.command` (файл в корне, исключён из git через `.git/info/exclude`).
+- Git: user.name и user.email в репозитории не заданы, коммить через `git -c user.name=Boris -c user.email=…`. Коммиты делаю по просьбе, push — только по прямой просьбе. Remote: приватный `github.com/delt1330/altenar-site`, ветка `main`. Push делаю сам, без участия Бориса, через облачный контейнер Claude (там есть доступ к репозиторию):
+  1. В начале сессии: `add_repo` (delt1330/altenar-site, access push) и `git clone --depth 1` в `/home/claude/altenar-site`.
+  2. На Mac: `git bundle create .git/claude-relay/out.bundle origin/main..main`, затем `device_stage_files` этого файла.
+  3. В контейнере: `git fetch origin main`, `git fetch <bundle> main:relay`, `git push origin relay:main`.
+  4. На Mac: `git update-ref refs/remotes/origin/main <новый sha>` и удалить `.git/claude-relay/`.
+  Если с контейнера не выходит, запасной путь — `push-to-github.command` в корне (исключён из git), Борис запускает его двойным кликом.
 
 ## Как работать
 
