@@ -1,3 +1,4 @@
+import {softenBorders} from './shared/border-opacity';
 import {turnkeyProductUrl} from './shared/routes';
 import {setupPremiumStatement} from './premium/statement';
 import {mountSplitButtons} from './shared/split-button';
@@ -49,3 +50,5 @@ function App(){
   return <Design/>;
 }
 createRoot(document.getElementById('root')!).render(<App/>);
+
+softenBorders();

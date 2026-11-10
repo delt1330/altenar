@@ -1,0 +1,33 @@
+/* Keep each number on the first-line baseline of its title in both states. */
+html[data-turnkey-product] .tp-platform .tp-disclosure h3 button[data-step] {
+  align-items: baseline !important;
+  padding-left: 0 !important;
+}
+html[data-turnkey-product] .tp-platform .tp-disclosure h3 button[data-step]::before {
+  position: static !important;
+  flex: 0 0 37px;
+  line-height: inherit;
+}
+html[data-turnkey-product] .tp-platform .tp-disclosure h3 button[data-step][aria-expanded="false"]::before {
+  opacity: .6;
+}
+html[data-turnkey-product] .tp-platform .tp-disclosure h3 button[data-step][aria-expanded="true"]::before {
+  opacity: 1;
+}
+
+html[data-turnkey-product] .tp-platform .tp-platform-illustrations {
+  display: grid;
+  place-items: center;
+  box-sizing: border-box;
+  padding-inline: 20px;
+}
+html[data-turnkey-product] .tp-platform .tp-platform-illustrations img {
+  display: block;
+  width: auto;
+  height: auto;
+  max-width: 100%;
+  max-height: 100%;
+}
+html[data-turnkey-product] .tp-platform .tp-platform-illustrations img[hidden] {
+  display: none;
+}

@@ -1,4 +1,5 @@
 import {createRetail,setupRetail} from './glow/retail';
+import {createWhiteLabel,setupWhiteLabel} from './glow/white-label';
 import prototype from './solutions-prototype.html?raw';
 import {$} from '../sections';
 import {createTurnkeyStack, setupTurnkeyStack} from './turnkey-stack';
@@ -11,7 +12,7 @@ export function replaceSolutions(){
   const title=section.querySelector('h1')!,heading=document.createElement('h2');heading.innerHTML=title.innerHTML;heading.className='premium-heading';heading.dataset.nodeId='4324:44808';title.replaceWith(heading);
   const gradient=heading.querySelector<HTMLElement>('.gradient')!;gradient.className='premium-gradient';gradient.dataset.gradientFilled='false';gradient.style.setProperty('--gradient-angle','87.7846deg');
   section.querySelectorAll<HTMLImageElement>('.solution-img').forEach(img=>{img.src='/premium-media/solutions/'+img.getAttribute('src')!.split('/').at(-1);img.removeAttribute('fetchpriority');img.decoding='async';});
-  section.querySelector('.solution-img[data-panel="0"]')!.replaceWith(createTurnkeyStack());section.querySelector('.solution-img[data-panel="1"]')!.replaceWith(createRetail());
+  section.querySelector('.solution-img[data-panel="0"]')!.replaceWith(createTurnkeyStack());section.querySelector('.solution-img[data-panel="1"]')!.replaceWith(createRetail());section.querySelector('.solution-img[data-panel="2"]')!.replaceWith(createWhiteLabel());
   section.querySelectorAll<HTMLElement>('.solution-panel').forEach((panel,index)=>{
     const h2=panel.querySelector('h2')!,description=panel.querySelector('p')!,detail=panel.querySelector('.solution-detail')!,copy=document.createElement('div');copy.className='solution-panel-copy';copy.append(h2,description,detail);panel.prepend(copy);
     const placeholder=panel.querySelector('[data-placeholder-link]')!,cta=template.cloneNode(true) as HTMLElement;
@@ -32,7 +33,7 @@ export function replaceSolutions(){
 // solution or seeks the independent Turnkey assembly timeline.
 export function setupSolutions(){
   const container=$('section-solutions')!,stage=container.querySelector<HTMLElement>('.solutions-sticky')!;
-  const disposeStack=setupTurnkeyStack(container,stage),disposeRetail=setupRetail(container);
+  const disposeStack=setupTurnkeyStack(container,stage),disposeRetail=setupRetail(container),disposeWhiteLabel=setupWhiteLabel(container);
   const nav=Array.from(container.querySelectorAll<HTMLElement>('.solution-nav-button')),art=Array.from(container.querySelectorAll<HTMLElement>('.solution-img')),panels=Array.from(container.querySelectorAll<HTMLElement>('.solution-panel')),indicator=container.querySelector<HTMLElement>('.solution-nav')!;
   let active=-1;
   function activate(index:number){
@@ -47,5 +48,5 @@ export function setupSolutions(){
   const gradient=container.querySelector<HTMLElement>('.premium-gradient')!;
   const observer=new IntersectionObserver(entries=>{if(!entries.some(e=>e.isIntersecting))return;gradient.dataset.gradientFilled='true';gradient.dispatchEvent(new Event('premium:gradient-state',{bubbles:true}));observer.disconnect();},{threshold:.12});observer.observe(stage);
   activate(0);
-  return()=>{disposeRetail();disposeStack();observer.disconnect();clicks.forEach(fn=>fn());};
+  return()=>{disposeWhiteLabel();disposeRetail();disposeStack();observer.disconnect();clicks.forEach(fn=>fn());};
 }

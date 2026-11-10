@@ -17,7 +17,7 @@ export function setupCenteredHero(glowLayer:HTMLElement){
   // under the whole page. No section can crop or resize the dynamic field.
   const underlay=document.createElement('div');underlay.className='glow-hero-underlay';
   underlay.setAttribute('aria-hidden','true');glowLayer.before(underlay);underlay.append(media);
-  media.innerHTML=`<div class="glow-hero-field"><img class="glow-hero-texture" src="/glow-media/hero-blue-texture.png" alt="" fetchpriority="high"><div class="glow-hero-bloom"></div><div class="glow-hero-traces">${[2.24865256,14.1346662,25.9075245,37.7876433,49.55829014,61.35135895,73.24764312,85.0533515,96.88377046].map((x,i)=>`<span style="--trace-x:${x}%;--trace-delay:${-i*2.7}s;--trace-duration:${10+i%4*2}s"></span>`).join('')}</div></div>`;
+  media.innerHTML='<img class="glow-hero-reference" src="/glow-media/hero-blue-gradient.png" alt="" fetchpriority="high">';
   const motion=matchMedia('(prefers-reduced-motion: reduce)');
   let frame=0;
   const update=()=>{
@@ -36,8 +36,9 @@ export function setupCenteredHero(glowLayer:HTMLElement){
   const observer=new IntersectionObserver(schedule,{threshold:0});observer.observe(hero);
   window.addEventListener('scroll',schedule,{passive:true});window.addEventListener('resize',schedule);
   document.addEventListener('visibilitychange',schedule);motion.addEventListener('change',schedule);update();
+  const layoutTimers = [window.setTimeout(schedule, 1600), window.setTimeout(schedule, 3200)];
   return()=>{
-    cancelAnimationFrame(frame);observer.disconnect();window.removeEventListener('scroll',schedule);window.removeEventListener('resize',schedule);
+    layoutTimers.forEach(clearTimeout);cancelAnimationFrame(frame);observer.disconnect();window.removeEventListener('scroll',schedule);window.removeEventListener('resize',schedule);
     document.removeEventListener('visibilitychange',schedule);motion.removeEventListener('change',schedule);
     media.replaceChildren();media.style.removeProperty('opacity');media.classList.remove('is-active');
     delete glowLayer.dataset.heroOverlay;stage.prepend(media);underlay.remove();

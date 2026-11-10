@@ -1,0 +1,28 @@
+html[data-turnkey-product] .tp-local-reference-card .tp-disclosure-list{width:min(100%,1120px);max-width:1120px;gap:24px;overflow:visible;border:0;border-radius:0;background:transparent;backdrop-filter:none;-webkit-backdrop-filter:none}
+html[data-turnkey-product] .tp-local-reference-card .tp-disclosure{box-sizing:border-box;min-height:520px;padding:64px 48px!important;border:1px solid rgba(255,255,255,.2)!important;border-radius:28px;background:rgba(2,6,8,.94);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px)}
+html[data-turnkey-product] .tp-local-reference-card .tp-disclosure+.tp-disclosure{border-left:1px solid rgba(255,255,255,.2)!important}
+html[data-turnkey-product] .tp-local-reference-card .tp-disclosure h3{margin:0 0 30px!important}
+html[data-turnkey-product] .tp-local-reference-card .tp-disclosure h3 button{font-family:Inter,sans-serif!important;font-size:clamp(24px,2vw,32px)!important;font-weight:400!important;line-height:1.15!important;color:#00b7ef!important;text-align:left}
+html[data-turnkey-product] .tp-local-reference-card .tp-disclosure h3 button span{color:#00b7ef!important}
+html[data-turnkey-product] .tp-local-reference-card .tp-disclosure-body p{font-size:18px!important;line-height:1.7!important;color:rgba(255,255,255,.72)!important}
+html[data-turnkey-product] .tp-local-reference-card .rd-local-list{font-size:17px;line-height:1.5;margin-top:30px}
+html[data-turnkey-product] .tp-local-reference-card .rd-local-list li{margin:14px 0;gap:18px}
+html[data-turnkey-product] .tp-local-reference-card .local-card-pending{opacity:0!important;transform:translateY(-32px)!important}
+html[data-turnkey-product] .tp-local-reference-card .local-card-reveal{transition:opacity .7s ease,transform .7s ease}
+@media(max-width:760px){html[data-turnkey-product] .tp-local-reference-card .tp-disclosure-list{grid-template-columns:1fr;gap:20px}html[data-turnkey-product] .tp-local-reference-card .tp-disclosure{min-height:0;padding:32px 28px!important}}
+@media(prefers-reduced-motion:reduce){html[data-turnkey-product] .tp-local-reference-card .local-card-reveal{transition:none}}
+html[data-turnkey-product] body .tp-main .tp-local-reference-card .tp-disclosure h3 button span{font-size:clamp(24px,2vw,32px)!important;line-height:1.15!important;font-weight:400!important;color:#00b7ef!important}
+html[data-turnkey-product] body .tp-main .tp-local-reference-card .tp-disclosure .tp-disclosure-body p{font-size:18px!important;line-height:1.7!important;color:rgba(255,255,255,.72)!important}
+html[data-turnkey-product] body .tp-main .tp-local-reference-card .tp-disclosure .rd-local-list li{font-size:17px!important;line-height:1.5!important}
+
+/* Keep the glass fill within each card, including the space between them. */
+html[data-turnkey-product] body .tp-main .tp-local-reference-card .tp-disclosure-list {
+  background: transparent !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+html[data-turnkey-product] body .tp-main .tp-local-reference-card .tp-disclosure-list > .tp-disclosure {
+  background: rgba(2, 6, 8, .94) !important;
+  backdrop-filter: blur(20px) !important;
+  -webkit-backdrop-filter: blur(20px) !important;
+}

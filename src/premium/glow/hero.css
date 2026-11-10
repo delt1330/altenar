@@ -25,3 +25,8 @@ html[data-altenar-glow] .glow-centered-hero-copy [data-name='hero__aside']>.spli
 
 html[data-premium][data-altenar-glow] .premium-page .glow-centered-hero-copy [data-premium-split] [data-name="button-split__label"] p{color:#1a2c42!important;-webkit-text-fill-color:#1a2c42!important}
 html[data-altenar-glow] .glow-centered-hero-copy [data-node-id="4001:111760"] .entrance-line::after{content:none!important}
+
+/* Requested static background for the homepage hero. */
+html[data-premium][data-altenar-glow] .glow-hero-underlay{z-index:0}
+html[data-premium][data-altenar-glow] .glow-hero-underlay .premium-hero-background{mask-image:linear-gradient(to bottom,#000 0%,#000 68%,transparent 100%);-webkit-mask-image:linear-gradient(to bottom,#000 0%,#000 68%,transparent 100%)}
+.glow-hero-reference{display:block;width:100%;height:100%;object-fit:cover;object-position:center bottom}

@@ -304,3 +304,109 @@ html[data-altenar-glow] .premium-page p.d87:not([data-name='navbar__link'] *),ht
 html[data-altenar-glow] .premium-solution-cta[href]{text-decoration:none;color:inherit}
 /* Regular weight for all values and descriptions in the three statistics. */
 html[data-premium][data-altenar-glow] [data-name='section-stats'] [data-name='Jim Collins, PhD'] :is(p,span,div) { font-weight:400!important; }
+
+/* Two independently selectable platforms in the lower-left group. */
+html[data-altenar-glow] .glow-retail-bottom-left-upper{left:0;bottom:13%;z-index:1;transform:translate(-70px,58px) scale(.94)}
+html[data-altenar-glow] .glow-retail.is-playing .glow-retail-bottom-left-upper{transform:none}
+html[data-altenar-glow] .glow-retail-hit-bottom-left-upper{left:4%;top:45%;width:31%;height:23%;z-index:6}
+html[data-altenar-glow] .glow-retail-hit-bottom-left{top:72%;height:23%}
+html[data-altenar-glow] .premium-solutions .glow-white-label{display:grid;place-items:center;overflow:visible}
+html[data-altenar-glow] .premium-solutions .glow-white-label.is-active{pointer-events:auto}
+.white-label-stack{position:relative;width:min(100%,560px);aspect-ratio:1;overflow:visible}
+.white-label-layer{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;pointer-events:none;user-select:none;opacity:.22;transform:translateY(calc(var(--i) * 10px));transition:transform .45s ease,opacity .35s ease,filter .35s ease;z-index:calc(4 - var(--i))}
+.white-label-layer[data-index="0"]{opacity:1}
+.glow-white-label.is-open .white-label-layer[data-index="0"]{opacity:0}
+.glow-white-label.is-open .white-label-layer:not([data-index="0"]){opacity:1;transform:translateY(calc((var(--i) - 2) * 70px))}
+.glow-white-label[data-selected="1"] .white-label-layer[data-index="1"],.glow-white-label[data-selected="2"] .white-label-layer[data-index="2"],.glow-white-label[data-selected="3"] .white-label-layer[data-index="3"]{filter:brightness(1.1);z-index:5}
+.white-label-hit{position:absolute;left:10%;width:80%;top:calc(43% + var(--i) * 14%);height:14%;z-index:8;border:0;background:transparent;cursor:pointer;pointer-events:none}
+.glow-white-label.is-open .white-label-hit{pointer-events:auto}
+.white-label-hit:focus-visible{outline:2px solid #08b4ff}
+.glow-white-label.is-assembling .white-label-layer{animation:white-label-assemble 1.6s ease-out both}
+@keyframes white-label-assemble{from{transform:translateY(calc((var(--i) - 1.5) * 115px));opacity:.2}}
+@media(prefers-reduced-motion:reduce){.white-label-layer{animation:none!important;transition:none!important}}
+/* Hide the content of the lower layers while retaining their visible rims. */
+.glow-white-label:not(.is-open):not(.is-assembling) .white-label-layer:not([data-index="0"]){opacity:.75;clip-path:inset(50% 0 0)}
+
+/* Figma: the three key figures sit in glass cards at the foot of the hero. */
+html[data-premium][data-altenar-glow] [data-name="section-stats"]{margin-top:0;padding:0 24px 210px;min-height:0;border-radius:0}
+.premium-stats-cards{display:grid;grid-template-columns:336fr 377.52fr 375.52fr;gap:20px;max-width:1129px;margin:0 auto}
+.premium-stats-card{min-width:0;height:220px;padding:40px 48px;border:1px solid rgba(255,255,255,.2);border-radius:24px;background:rgba(0,0,0,.2);backdrop-filter:blur(20px);box-sizing:border-box}
+.premium-stats-card p{margin:0!important;font-family:Inter,sans-serif!important;font-size:16px!important;line-height:1.4!important;letter-spacing:-.32px;font-weight:400!important}
+.premium-stats-card .premium-metric{font-size:48px!important;line-height:1.1!important;letter-spacing:-1.44px;background:linear-gradient(89deg,#018dff,#00cdf1 53%,#4eff83);background-clip:text;-webkit-background-clip:text;color:transparent!important;-webkit-text-fill-color:transparent!important}
+.premium-stats-card .premium-metric *{-webkit-text-fill-color:transparent!important}
+.premium-stats-value{display:flex;flex-direction:column;gap:5px}
+.premium-stats-card .premium-stats-description{margin-top:15px!important;opacity:.6}
+@media(max-width:800px){html[data-premium][data-altenar-glow] [data-name="section-stats"]{margin-top:0;padding:0 24px 110px}.premium-stats-cards{grid-template-columns:1fr;max-width:420px}.premium-stats-card{height:auto;min-height:190px;padding:32px}}
+html[data-premium][data-altenar-glow] [data-name="section-stats"]>.premium-stats-cards{max-width:1129px}
+.premium-stats-card .premium-metric .premium-digit-track>span,.premium-stats-card .premium-metric>span:not(.premium-digit){background:linear-gradient(89deg,#018dff,#00cdf1 53%,#4eff83);background-clip:text;-webkit-background-clip:text;-webkit-text-fill-color:transparent!important}
+
+/* One continuous colour field across each rolling metric. */
+.premium-stats-card .premium-metric .premium-digit-track>span,.premium-stats-card .premium-metric>span:not(.premium-digit){background-size:var(--metric-gradient-width) 100%;background-position-x:var(--metric-gradient-x);background-repeat:no-repeat}
+.glow-white-label.is-open[data-selected] .white-label-layer:not([data-index="0"]){opacity:.5;filter:brightness(.55) saturate(.65)}
+.glow-white-label.is-open[data-selected="1"] .white-label-layer[data-index="1"],.glow-white-label.is-open[data-selected="2"] .white-label-layer[data-index="2"],.glow-white-label.is-open[data-selected="3"] .white-label-layer[data-index="3"]{opacity:1;filter:brightness(1.08) saturate(1)}
+.premium-stats-card .premium-metric{position:relative}
+.premium-stats-card .premium-metric{width:max-content!important}
+/* The three metrics share one glass surface, with internal separators. */
+html[data-premium][data-altenar-glow] [data-name="section-stats"]>.premium-stats-cards{grid-template-columns:repeat(3,minmax(0,1fr));gap:0;border:1px solid rgba(255,255,255,.16);border-radius:24px;overflow:hidden;background:rgba(0,0,0,.2);backdrop-filter:blur(20px)}
+html[data-premium][data-altenar-glow] .premium-stats-cards .premium-stats-card{border:0;border-radius:0;background:transparent;backdrop-filter:none}
+html[data-premium][data-altenar-glow] .premium-stats-cards .premium-stats-card+.premium-stats-card{border-left:1px solid rgba(255,255,255,.16)}
+@media(max-width:800px){html[data-premium][data-altenar-glow] [data-name="section-stats"]>.premium-stats-cards{grid-template-columns:1fr}html[data-premium][data-altenar-glow] .premium-stats-cards .premium-stats-card+.premium-stats-card{border-left:0;border-top:1px solid rgba(255,255,255,.16)}}
+/* Retail modules are arranged vertically around the central platform. */
+html[data-altenar-glow] .glow-retail-canvas{width:min(100%,440px);max-width:440px;aspect-ratio:4/5}
+html[data-altenar-glow] .glow-retail-canvas .glow-retail-item{height:auto;aspect-ratio:1;bottom:auto;right:auto}
+html[data-altenar-glow] .glow-retail-canvas .glow-retail-bottom-left{left:27.5%;top:-2%;width:45%;z-index:6}
+html[data-altenar-glow] .glow-retail-canvas .glow-retail-bottom-left-upper{left:22.5%;top:13%;width:55%;z-index:5}
+html[data-altenar-glow] .glow-retail-canvas .glow-retail-top-left{left:15%;top:25%;width:70%;z-index:4}
+html[data-altenar-glow] .glow-retail-canvas .glow-retail-center{left:2.5%;top:39%;width:95%;z-index:3}
+html[data-altenar-glow] .glow-retail-canvas .glow-retail-top-right{left:15%;top:62%;width:70%;z-index:2}
+html[data-altenar-glow] .glow-retail-canvas .glow-retail-bottom-right{left:22.5%;top:78%;width:55%;z-index:1}
+html[data-altenar-glow] .glow-retail-canvas .glow-retail-wires{display:none}
+html[data-altenar-glow] .glow-retail-canvas .glow-retail-hotspot{clip-path:none;left:20%;width:60%;height:13%;z-index:8}
+html[data-altenar-glow] .glow-retail-canvas .glow-retail-hit-bottom-left{top:3%}
+html[data-altenar-glow] .glow-retail-canvas .glow-retail-hit-bottom-left-upper{top:18%}
+html[data-altenar-glow] .glow-retail-canvas .glow-retail-hit-top-left{top:31%}
+html[data-altenar-glow] .glow-retail-canvas .glow-retail-hit-center{top:46%;height:18%}
+html[data-altenar-glow] .glow-retail-canvas .glow-retail-hit-top-right{top:67%}
+html[data-altenar-glow] .glow-retail-canvas .glow-retail-hit-bottom-right{top:82%;height:14%}
+/* Target the exposed portions of each vertically stacked module. */
+html[data-altenar-glow] .glow-retail-canvas .glow-retail-hit-bottom-left{top:5%;height:15%}
+html[data-altenar-glow] .glow-retail-canvas .glow-retail-hit-bottom-left-upper{top:20%;height:17%}
+html[data-altenar-glow] .glow-retail-canvas .glow-retail-hit-top-left{top:37%;height:19%}
+html[data-altenar-glow] .glow-retail-canvas .glow-retail-hit-center{top:56%;height:19%}
+html[data-altenar-glow] .glow-retail-canvas .glow-retail-hit-top-right{top:75%;height:17%}
+html[data-altenar-glow] .glow-retail-canvas .glow-retail-hit-bottom-right{top:92%;height:18%}
+/* Compact resting stack; both halves approach the centre during assembly. */
+html[data-altenar-glow] .glow-retail-canvas .glow-retail-bottom-left{top:8%;--retail-shift:-2.5}
+html[data-altenar-glow] .glow-retail-canvas .glow-retail-bottom-left-upper{top:20%;--retail-shift:-1.5}
+html[data-altenar-glow] .glow-retail-canvas .glow-retail-top-left{top:32%;--retail-shift:-.5}
+html[data-altenar-glow] .glow-retail-canvas .glow-retail-center{top:44%;--retail-shift:.5}
+html[data-altenar-glow] .glow-retail-canvas .glow-retail-top-right{top:56%;--retail-shift:1.5}
+html[data-altenar-glow] .glow-retail-canvas .glow-retail-bottom-right{top:68%;--retail-shift:2.5}
+html[data-altenar-glow] .glow-retail-canvas .glow-retail-item{transform:translateY(calc(var(--retail-shift) * 72px));transition:opacity 1s ease,transform 1.5s cubic-bezier(.22,1,.36,1)}
+html[data-altenar-glow] .glow-retail.is-playing .glow-retail-canvas .glow-retail-item{transform:translateY(0)}
+html[data-altenar-glow] .glow-retail.is-playing.is-expanded .glow-retail-canvas .glow-retail-item{transform:translateY(calc(var(--retail-shift) * 28px));transition:transform .4s ease,opacity .4s ease}
+html[data-altenar-glow] .glow-retail-canvas .glow-retail-hotspot{height:12%;transition:transform .4s ease}
+html[data-altenar-glow] .glow-retail-canvas .glow-retail-hit-bottom-left{top:15%;--retail-shift:-2.5}
+html[data-altenar-glow] .glow-retail-canvas .glow-retail-hit-bottom-left-upper{top:27%;--retail-shift:-1.5}
+html[data-altenar-glow] .glow-retail-canvas .glow-retail-hit-top-left{top:39%;--retail-shift:-.5}
+html[data-altenar-glow] .glow-retail-canvas .glow-retail-hit-center{top:51%;height:12%;--retail-shift:.5}
+html[data-altenar-glow] .glow-retail-canvas .glow-retail-hit-top-right{top:63%;height:12%;--retail-shift:1.5}
+html[data-altenar-glow] .glow-retail-canvas .glow-retail-hit-bottom-right{top:75%;height:12%;--retail-shift:2.5}
+html[data-altenar-glow] .glow-retail.is-expanded .glow-retail-hotspot{transform:translateY(calc(var(--retail-shift) * 28px))}
+@media(prefers-reduced-motion:reduce){html[data-altenar-glow] .glow-retail .glow-retail-item,html[data-altenar-glow] .glow-retail .glow-retail-hotspot{transition:none!important}}
+/* Compensate for the different image sizes so the two lower rims remain visible. */
+html[data-altenar-glow] .glow-retail-canvas .glow-retail-top-right{top:61%}
+html[data-altenar-glow] .glow-retail-canvas .glow-retail-bottom-right{top:77%}
+html[data-altenar-glow] .glow-retail-canvas .glow-retail-hit-center{top:60%;height:13%}
+html[data-altenar-glow] .glow-retail-canvas .glow-retail-hit-top-right{top:76%;height:13%}
+html[data-altenar-glow] .glow-retail-canvas .glow-retail-hit-bottom-right{top:90%;height:13%}
+/* Align the Retail canvas and its largest layer to the Turnkey stack width. */
+html[data-altenar-glow] .glow-retail{container-type:size}
+html[data-altenar-glow] .glow-retail-canvas{width:min(100%,560px,92cqh);max-width:560px;aspect-ratio:1}
+html[data-altenar-glow] .glow-retail-canvas .glow-retail-item{bottom:auto;right:auto;transition:opacity .3s ease,filter .3s ease,transform 1.5s cubic-bezier(.22,1,.36,1)}
+html[data-altenar-glow] .glow-retail.is-playing.is-expanded .glow-retail-canvas .glow-retail-item{transform:translateY(calc(var(--retail-shift)*38px));transition:transform .4s ease,opacity .3s ease,filter .3s ease}
+html[data-altenar-glow] .glow-retail-canvas .glow-retail-hotspot{pointer-events:none}
+html[data-altenar-glow] .glow-retail.has-active-layer .glow-retail-item{opacity:.5;filter:brightness(.55) saturate(.65)}
+html[data-altenar-glow] .glow-retail.has-active-layer .glow-retail-item.is-highlighted{opacity:1;filter:brightness(1.08);z-index:10}
+
+html[data-altenar-glow] .glow-retail-canvas .glow-retail-item { max-width: none !important; }

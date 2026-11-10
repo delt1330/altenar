@@ -18,3 +18,32 @@ html[data-altenar-glow] .premium-footer-underlay>.premium-footer{position:relati
 
 html[data-altenar-glow] [data-shared-footer]{background:transparent!important}
 html[data-altenar-glow] [data-shared-footer] [data-name='footer__bottom']{border-top:.7px solid rgba(255,255,255,.2)!important}
+/* Shared footer layout: brand and legal copy, navigation, and regulators. */
+html[data-premium] [data-shared-footer]{display:grid!important;grid-template-columns:minmax(260px,445px) minmax(360px,496px) minmax(130px,155px);grid-template-areas:'brand nav logos' 'legal nav logos' 'bottom nav logos';grid-template-rows:auto 1fr auto;justify-content:space-between;align-items:start;column-gap:clamp(36px,5vw,80px);row-gap:48px;padding:72px clamp(24px,5vw,72px)!important;background:transparent!important;overflow:hidden}
+html[data-premium] [data-shared-footer] .premium-footer-background{background:#03080e!important}
+html[data-premium] .premium-footer-transition{height:clamp(260px,38vw,520px);background:url('/shared/footer-background.png') center bottom/cover no-repeat;mix-blend-mode:screen;pointer-events:none}
+html[data-premium] [data-shared-footer] .premium-footer-brand{grid-area:brand;display:block;width:258px;max-width:100%;position:relative}
+html[data-premium] [data-shared-footer] .premium-footer-brand img{display:block;width:100%;height:auto}
+html[data-premium] [data-shared-footer] [data-name='footer__nav']{grid-area:nav;display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr));gap:48px 80px;width:100%;position:relative}
+html[data-premium] [data-shared-footer] [data-name='footer__column']{display:flex!important;flex-direction:column;gap:32px;min-width:0}
+html[data-premium] [data-shared-footer] [data-name='footer__column']>p{font:400 12px/1.2 'JetBrains Mono',monospace!important;color:#06b1ff!important;letter-spacing:.24px;text-transform:uppercase}
+html[data-premium] [data-shared-footer] [data-name='footer__links']{display:flex!important;flex-direction:column;gap:20px}
+html[data-premium] [data-shared-footer] [data-name='footer__links'] :is(p,a,button){font:500 14px/20px Inter,sans-serif!important;letter-spacing:0;text-transform:none!important;color:#fff!important}
+html[data-premium] [data-shared-footer] [data-name='footer__compliance']{display:contents!important}
+html[data-premium] [data-shared-footer] [data-name='footer__compliance']>p{grid-area:legal;width:min(100%,400px);font:400 12px/20px Inter,sans-serif!important;color:rgba(255,255,255,.55)!important;position:relative}
+html[data-premium] [data-shared-footer] [data-name='footer__logos-row']{grid-area:logos;display:flex!important;flex-direction:column;align-items:flex-start;gap:32px;width:auto;position:relative}
+html[data-premium] [data-shared-footer] [data-name='footer__bottom']{grid-area:bottom;display:flex!important;flex-direction:column-reverse;align-items:flex-start;gap:29px;padding:0;border:0!important;position:relative}
+html[data-premium] [data-shared-footer] [data-name='footer__bottom']>p{font:400 16px/1.4 Inter,sans-serif!important;color:#08b4ff!important}
+@media(max-width:950px){html[data-premium] [data-shared-footer]{grid-template-columns:1fr 1fr;grid-template-areas:'brand logos' 'legal nav' 'bottom nav';gap:40px}}
+@media(max-width:620px){html[data-premium] [data-shared-footer]{grid-template-columns:1fr;grid-template-areas:'brand' 'nav' 'legal' 'logos' 'bottom';gap:36px}html[data-premium] [data-shared-footer] [data-name='footer__nav']{gap:32px}html[data-premium] [data-shared-footer] [data-name='footer__logos-row']{flex-direction:row;flex-wrap:wrap;gap:24px}}
+html[data-premium] [data-shared-footer] [data-name='footer__column']>p{-webkit-text-fill-color:#06b1ff!important}
+html[data-premium] [data-shared-footer] [data-name='footer__bottom']>p{-webkit-text-fill-color:#08b4ff!important}
+
+/* The supplied backdrop belongs behind the contact form, ending at the footer. */
+html[data-premium] .premium-footer-underlay{position:relative;overflow:visible}
+html[data-premium] .premium-footer-transition{position:absolute;bottom:100%;left:0;right:0;height:clamp(620px,65vw,900px);background-position:center bottom;z-index:0;pointer-events:none}
+html[data-premium] [data-shared-footer] [data-name='footer__compliance']>p{white-space:pre-line!important}
+html[data-premium] [data-shared-footer] [data-name='footer__bottom']{min-width:0;width:100%;max-width:100%;overflow:visible}
+html[data-premium] [data-shared-footer] [data-name='footer__bottom']>p{white-space:normal!important;overflow-wrap:break-word;max-width:100%;min-width:0;width:auto!important}
+/* Blend the top of the contact backdrop into the existing page background. */
+html[data-premium] .premium-footer-transition{mask-image:linear-gradient(to bottom,transparent 0%,#000 24%);-webkit-mask-image:linear-gradient(to bottom,transparent 0%,#000 24%)}
