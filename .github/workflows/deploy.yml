@@ -41,3 +41,6 @@ jobs:
     steps:
       - id: deployment
         uses: actions/deploy-pages@v4
+        with:
+          # ~300 МБ медиа: синхронизация файлов на Pages дольше стандартных 10 минут
+          timeout: 1800000
