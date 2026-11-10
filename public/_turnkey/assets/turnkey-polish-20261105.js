@@ -4,7 +4,7 @@ function init(){
  if(!main||!hero||pairs.length<2){requestAnimationFrame(init);return}
  if(main.dataset.redesigned)return;main.dataset.redesigned='true';
  const h=hero.querySelector('h1');h.innerHTML='<span class="rd-hero-line">The turnkey sportsbook</span><span class="rd-hero-line premium-gradient" data-gradient-filled="true">built for market leaders</span>';
- const art=hero.querySelector('.tp-hero-art');art.innerHTML='<img src="/_turnkey/premium-media/turnkey/hero-figma.png" alt="Turnkey Sportsbook platform">';
+ const art=hero.querySelector('.tp-hero-art');art.innerHTML='<img src="/_turnkey/premium-media/turnkey/platform-user.png" alt="Turnkey Sportsbook platform">';
  const layer=main.querySelector('.tp-layer-story');if(layer)layer.style.display='none';
  const heroMotion=()=>{let r=hero.getBoundingClientRect(),shift=Math.max(0,Math.min(180,-r.top*.22));art.style.transform=`translateY(${-shift}px)`};window.addEventListener('scroll',heroMotion,{passive:true});heroMotion();const proof=main.querySelector('.tp-proof');if(proof)hero.append(proof);
  const platform=main.querySelector('.tp-platform');let rows=platform.querySelector('.tp-component-rows');platform.querySelector('h2').innerHTML='Technology that moves with<br><span class="premium-gradient" data-gradient-filled="true">your strategy</span>';

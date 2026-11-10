@@ -47,7 +47,7 @@ export function adaptDesign(){
   root.prepend(foreground);foreground.append(...sections);
   mountFooter(footer);
   replaceSolutions();
-  const globe=$('markets__map-world')!;globe.classList.add('premium-globe');globe.dataset.uiGlobe='';const globeImage=document.createElement('img');globeImage.src='/premium-media/globe-gradient.png';globeImage.width=2048;globeImage.height=1946;globeImage.alt='Global presence';globe.replaceChildren(globeImage);
+  const globe=$('markets__map-world')!;globe.classList.add('premium-globe');globe.dataset.uiGlobe='';globe.replaceChildren();
   adaptMarkets();prepareStats();
   document.querySelectorAll<HTMLElement>('[data-name="button-split__label"]').forEach(label=>label.parentElement!.dataset.premiumSplit='true');
   node('I4011:36550;4001:112219')?.remove();
