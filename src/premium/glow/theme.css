@@ -106,6 +106,10 @@ html[data-altenar-glow] .glow-news-outline{position:absolute;inset:0;width:100%;
 html[data-altenar-glow] [data-name='section-statement'] .premium-heading{word-break:normal;overflow-wrap:normal}
 html[data-altenar-glow] [data-name='section-statement'] .statement-word{display:inline-block;white-space:nowrap}
 html[data-altenar-glow] [data-name='section-statement'] .premium-statement-accent{white-space:normal;background-image:var(--gradient-field)!important;background-size:100% 100%!important;-webkit-box-decoration-break:clone;box-decoration-break:clone}
+/* Safari does not paint background-clip:text through inline-block descendants, so
+   SplitText's word/char boxes inside the accent turned the words transparent there.
+   The accent is fully revealed in Glow, so its pieces can stay plain inline text. */
+html[data-altenar-glow] [data-name='section-statement'] .premium-statement-accent :is(.statement-word,.statement-character){display:inline!important;position:static!important}
 
 /* Use the same vertical shading on both pieces of the split label. */
 html[data-altenar-glow] [data-premium-split] [data-name='button__plate']{background:linear-gradient(to bottom,color-mix(in srgb,var(--button-label) 86%,white) 0%,var(--button-label) 45%,color-mix(in srgb,var(--button-label) 88%,#003d4b) 100%)!important;box-shadow:none!important}
