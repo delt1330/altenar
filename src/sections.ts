@@ -84,7 +84,7 @@ export function setupPartners(){
   const range=document.createElement('div');range.className='partner-scroll-range';range.style.height=(names.length*70)+'px';inner.append(range);
   let wheelUntil=0,cycled=false;
   const rows=names.map((name,i)=>{const row=document.createElement('div');row.className='partner-row';row.setAttribute('role','option');row.dataset.partner=name;const p=document.createElement('span');p.textContent=name;row.append(p);drum.append(row);row.addEventListener('click',()=>viewport.scrollTo({top:i*70,behavior:reduced()?'instant':'smooth'}));row.addEventListener('pointerenter',()=>{if(performance.now()<wheelUntil||i===active)return;wheelUntil=performance.now()+450;cycled=true;viewport.scrollTo({top:i*70,behavior:reduced()?'instant':'smooth'});});return row;});
-  const sizes=[40,30,26,22,17,13,9],alphas=[1,.94,.88,.82,.76,.7,.64],offsets=[0,68.7,132.7,187.65,229.8,260.75,285.25],heights=[69.9,67.5,60.5,49.4,34.9,27,22];
+  const sizes=[40,30,26,22,17,13,9],alphas=[1,.94,.88,.82,.76,.7,.64],fades=[1,.6,.42,.28,.16,.07,0],offsets=[0,68.7,132.7,187.65,229.8,260.75,285.25],heights=[69.9,67.5,60.5,49.4,34.9,27,22];
   const sample=(a:number[],distance:number)=>{const d=Math.min(a.length-1,Math.abs(distance)),lo=Math.floor(d),hi=Math.min(a.length-1,lo+1);return a[lo]+(a[hi]-a[lo])*(d-lo);};
   let active=-1,transition:gsap.core.Timeline|undefined;
   function activate(index:number){
@@ -98,7 +98,7 @@ export function setupPartners(){
   }
   const paint=()=>{
     const progress=viewport.scrollTop/70,center=(viewport.clientHeight||548.5)/2,index=((Math.round(progress)%names.length)+names.length)%names.length;
-    rows.forEach((row,i)=>{const raw=i-progress,d=cycled?((raw+names.length/2+names.length)%names.length)-names.length/2:raw,h=sample(heights,d);row.style.top=(center+Math.sign(d)*sample(offsets,d)-h/2)+'px';row.style.height=h+'px';row.style.fontSize=sample(sizes,d)+'px';row.style.color=`rgba(20,26,34,${sample(alphas,d)})`;row.style.visibility=Math.abs(d)>6?'hidden':'visible';});
+    rows.forEach((row,i)=>{const raw=i-progress,d=cycled?((raw+names.length/2+names.length)%names.length)-names.length/2:raw,h=sample(heights,d);row.style.top=(center+Math.sign(d)*sample(offsets,d)-h/2)+'px';row.style.height=h+'px';row.style.fontSize=sample(sizes,d)+'px';row.style.color=`rgba(20,26,34,${sample(alphas,d)})`;row.style.opacity=String(sample(fades,d));row.style.visibility=Math.abs(d)>6?'hidden':'visible';});
     activate(index);
   };
   gsap.set(details,{autoAlpha:0});viewport.addEventListener('scroll',paint,{passive:true});viewport.scrollTop=4*70;paint();

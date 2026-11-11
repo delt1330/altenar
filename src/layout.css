@@ -39,11 +39,12 @@
 [data-name='section-clients__intro']{position:relative;inset:auto;width:100%;height:556px;grid-column:1;grid-row:1}
 [data-name='section-clients__intro']>p:nth-child(2)>span{font-size:var(--h2)}
 [data-name='section-clients__intro']>p:last-of-type{max-width:100%;min-width:0;width:100%}
-[data-name='partners / scroll viewport']{position:relative;inset:auto;grid-column:2;grid-row:1;width:85.7143%;margin-left:14.2857%;height:548.5px}
+/* Drum spans the whole middle column so its axis is the page centre; names are centred on it. */
+[data-name='partners / scroll viewport']{position:relative;inset:auto;grid-column:2;grid-row:1;width:100%;margin-left:0;height:548.5px}
 .partner-scroll{overflow-x:hidden!important;overflow-y:auto!important;scrollbar-width:none;overscroll-behavior-y:auto;outline-offset:6px}
 .partner-scroll::-webkit-scrollbar{display:none}.partner-scroll-inner{position:relative}
 .partner-drum{position:sticky;top:0;height:548.5px;width:100%;overflow:hidden}
-.partner-row{position:absolute;left:0;width:100%;padding-left:40px;display:flex;align-items:center;white-space:nowrap;font-weight:500;line-height:1.2;cursor:pointer;user-select:none}
+.partner-row{position:absolute;left:0;width:100%;display:flex;align-items:center;justify-content:center;text-align:center;white-space:nowrap;font-weight:500;line-height:1.2;cursor:pointer;user-select:none}
 .partner-scroll-range{width:1px;pointer-events:none}
 .partner-details{grid-column:3;grid-row:1;display:grid;align-items:center;width:100%;height:556px;min-width:0}
 .partner-details>[data-name^='partner detail']{position:relative;inset:auto;width:100%;height:auto;grid-area:1/1;transition:opacity 60ms linear;min-width:0}
