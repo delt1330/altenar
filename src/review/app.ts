@@ -329,29 +329,42 @@ export function startReview(){
     if(c.resolved){openThread(c.id);return;}
     openThread(c.id);
   }
+  // The sign-in form is built once and re-attached on every panel render, so
+  // live updates never wipe what is being typed. Errors stay visible in the form.
+  const AUTH_ERRORS:Record<string,string>={
+    'Invalid login credentials':'Wrong email or password.',
+    'Email not confirmed':'This user is not confirmed. In Supabase → Authentication → Users, confirm it or recreate it with Auto Confirm.',
+  };
+  let signinForm:HTMLFormElement|null=null,justSignedIn=false;const signinError=h('p','signin__error');
+  function signinUi(){
+    if(signinForm)return signinForm;
+    const form=h('form','signin');
+    const mail=h('input','field');mail.type='email';mail.placeholder='Email';mail.autocomplete='username';mail.required=true;
+    const pass=h('input','field');pass.type='password';pass.placeholder='Password';pass.autocomplete='current-password';pass.required=true;
+    const go=h('button','button','Sign in');go.type='submit';
+    const cancel=h('button','link','Cancel');cancel.type='button';cancel.addEventListener('click',()=>{signingIn=false;signinError.textContent='';renderPanel();});
+    [mail,pass].forEach(f=>f.addEventListener('input',()=>{signinError.textContent='';}));
+    form.addEventListener('submit',async e=>{
+      e.preventDefault();go.disabled=true;go.textContent='Signing in…';signinError.textContent='';
+      const {error}=await sb.auth.signInWithPassword({email:mail.value.trim(),password:pass.value});
+      go.disabled=false;go.textContent='Sign in';
+      if(error){signinError.textContent=AUTH_ERRORS[error.message]??error.message;return;}
+      pass.value='';signingIn=false;justSignedIn=true;
+    });
+    const row=h('div','signin__row');row.append(go,cancel);form.append(mail,pass,signinError,row);
+    signinForm=form;queueMicrotask(()=>mail.focus());return form;
+  }
   function renderAccount(){
     const foot=h('div','account');
-    if(admin){
-      foot.append(h('span','account__who',`Signed in as admin${email?` · ${email}`:''}`));
+    if(admin||email){
+      foot.append(h('span',admin?'account__who':'account__who account__who--warn',admin?`Signed in as admin${email?` · ${email}`:''}`:`Signed in as ${email}, but this account is not an admin. Run the review_admins insert in Supabase.`));
       const out=h('button','link','Sign out');out.type='button';out.addEventListener('click',async()=>{await sb.auth.signOut();});foot.append(out);
       return foot;
     }
     if(!signingIn){
       const b=h('button','link','Sign in to resolve');b.type='button';b.addEventListener('click',()=>{signingIn=true;renderPanel();});foot.append(b);return foot;
     }
-    const form=h('form','signin');
-    const mail=h('input','field');mail.type='email';mail.placeholder='Email';mail.autocomplete='username';mail.required=true;
-    const pass=h('input','field');pass.type='password';pass.placeholder='Password';pass.autocomplete='current-password';pass.required=true;
-    const go=h('button','button','Sign in');go.type='submit';
-    const cancel=h('button','link','Cancel');cancel.type='button';cancel.addEventListener('click',()=>{signingIn=false;renderPanel();});
-    form.addEventListener('submit',async e=>{
-      e.preventDefault();go.disabled=true;
-      const {error}=await sb.auth.signInWithPassword({email:mail.value.trim(),password:pass.value});
-      go.disabled=false;if(error){flash(error.message);return;}
-      signingIn=false;
-    });
-    const row=h('div','signin__row');row.append(go,cancel);form.append(mail,pass,row);foot.append(form);
-    queueMicrotask(()=>mail.focus());return foot;
+    foot.append(signinUi());return foot;
   }
 
   // ---------- frame sync: pins, outline and cards follow the page ----------
@@ -403,7 +416,7 @@ export function startReview(){
     const {data:{session}}=await sb.auth.getSession();email=session?.user.email??null;
     if(!session){admin=false;render();return;}
     const {data}=await sb.from('review_admins').select('user_id').eq('user_id',session.user.id).maybeSingle();
-    admin=!!data;if(!admin)flash('Signed in, but this account is not an admin');render();
+    admin=!!data;if(justSignedIn){justSignedIn=false;panelOpen=true;if(admin)flash('Signed in as admin');}render();
   }
   sb.auth.onAuthStateChange(()=>{setTimeout(refreshAdmin,0);});
   const channel:RealtimeChannel=sb.channel(`review:${page}`)

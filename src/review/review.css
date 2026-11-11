@@ -100,6 +100,9 @@ p{margin:0}
 .signin .field{border:1px solid var(--line);border-radius:10px;padding:9px 12px}
 .signin .field:focus{border-color:var(--blue)}
 .signin__row{display:flex;align-items:center;gap:12px}
+.signin__error{margin:0;color:#d93025;font-size:13px;line-height:1.4}
+.signin__error:empty{display:none}
+.account__who--warn{color:#b3261e;white-space:normal}
 .button{padding:8px 16px;border-radius:10px;background:var(--blue);color:#fff;font-weight:600}
 .button:disabled{opacity:.6}
 
