@@ -1,6 +1,8 @@
 import {gsap} from 'gsap';
 import {CustomEase} from 'gsap/CustomEase';
 import {reducedMotion as reduced} from './dom';
+import geometry from '../control-geometry.json';
+import {interpolator} from './path-morph';
 gsap.registerPlugin(CustomEase);
 CustomEase.create('arrow-rollover','0.22,1,0.36,1');
 
@@ -11,7 +13,24 @@ export function mountArrow(el: HTMLElement, direction: 'prev'|'next', shape: str
   el.style.setProperty('--nav-shape',`url("${shape}")`);
   const image=el.querySelector<HTMLImageElement>(':scope > img');
   if(image)image.style.visibility='hidden';
+  mountArrowMorph(el,direction);
   return ()=>{el.dataset.disabled=String(el.getAttribute('aria-disabled')==='true');};
+}
+
+// Same hover as the split-button arrow panel: the slant flips to the other
+// side. The prev arrow is the mirrored shape, so it flips the same way.
+const NS='http://www.w3.org/2000/svg';
+function mountArrowMorph(el:HTMLElement,direction:'prev'|'next'){
+  if(el.querySelector(':scope > .nav-arrow-shape'))return;
+  const svg=document.createElementNS(NS,'svg'),path=document.createElementNS(NS,'path');
+  svg.setAttribute('viewBox','0 0 51 44');svg.setAttribute('preserveAspectRatio','none');svg.setAttribute('aria-hidden','true');svg.classList.add('nav-arrow-shape');
+  if(direction==='prev')svg.style.transform='scaleX(-1)';
+  const mix=interpolator(...geometry.arrow as [string,string]),state={p:0};
+  const paint=()=>path.setAttribute('d',mix(state.p));paint();svg.append(path);el.prepend(svg);el.dataset.morph='true';
+  const to=(p:number)=>{if(reduced()){state.p=p;paint();return;}gsap.to(state,{p,duration:.28,ease:'power2.inOut',overwrite:true,onUpdate:paint});};
+  const disabled=()=>el.getAttribute('aria-disabled')==='true'||(el instanceof HTMLButtonElement&&el.disabled);
+  el.addEventListener('pointerenter',()=>{if(!disabled())to(1);});el.addEventListener('pointerleave',()=>to(0));
+  el.addEventListener('focusin',()=>{if(!disabled()&&el.matches(':focus-visible'))to(1);});el.addEventListener('focusout',()=>to(0));
 }
 
 export function mountArrowRollover(host:HTMLElement,trigger:HTMLElement,direction:'prev'|'next',icon:HTMLElement,wide=true){

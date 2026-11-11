@@ -1,5 +1,7 @@
 import {turnkeyProductUrl} from './routes';
+import {mountTextRoll} from './text-roll';
 export function mountNavigation(){
+  mountTextRoll();
   const nav=document.querySelector<HTMLElement>('[data-name="navbar--sketch-a"]');
   const trigger=Array.from(nav?.querySelectorAll<HTMLElement>('[data-name="navbar__link"]')||[]).find(el=>/^solutions$/i.test((el.textContent||'').trim()));
   if(!nav||!trigger)return()=>{};

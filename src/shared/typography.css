@@ -33,6 +33,7 @@
   --ui-type-next: 400 16px/normal var(--ui-mono);
   --ui-type-footer-link: 400 14px/1.4 var(--ui-sans);
   --ui-type-menu: 300 14px/20px var(--ui-sans);
+  --ui-type-nav: 400 14px/20px var(--ui-mono);
 }
 html[data-premium][data-altenar-glow] .premium-page:is(.premium-page,.ui-specificity) :is(.tp-hero h1, [data-node-id="4001:111760"],[data-ui-type="hero"]) {
   font: var(--ui-type-hero) !important;
@@ -138,6 +139,12 @@ html[data-premium][data-altenar-glow] .premium-page:is(.premium-page,.ui-specifi
   font: var(--ui-type-menu) !important;
   letter-spacing: 0 !important;
   text-transform: none !important;
+}
+/* Top-level menu items and Contact us: mono from the site typeface. */
+html[data-premium][data-altenar-glow] .premium-page:is(.premium-page,.ui-specificity) [data-name="navbar--sketch-a"] :is([data-name="navbar__link"],[data-name="navbar__cta"]) p,
+html[data-premium][data-altenar-glow] [data-shared-navigation] :is([data-name='navbar__link'],[data-name='navbar__cta']) p {
+  font: var(--ui-type-nav) !important;
+  letter-spacing: 0 !important;
 }
 
 /* Description copy: one muted tone on both pages, matched to the Turnkey feature tiles. */

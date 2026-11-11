@@ -42,3 +42,23 @@ html[data-altenar-glow] .faq-morph-toggle .control-morph path:first-child{stroke
 /* Primary split labels use the accent gradient; the slanted cap continues its end colour. Case cards keep their glass label. */
 html[data-premium][data-altenar-glow] [data-shared-split]:not([data-name='case__bottom'] *) [data-name='button__plate']{background:var(--ui-accent-gradient) 0 0/var(--ui-split-gradient-size,100%) 100% no-repeat!important}
 html[data-premium][data-altenar-glow] [data-shared-split]:not([data-name='case__bottom'] *) .premium-label-panel>path{fill:var(--ui-split-cap-fill,var(--ui-accent-end))!important}
+
+/* Nav arrows morph like the split-button arrow panel (shape in arrows.ts). */
+.nav-arrow[data-morph]::before{display:none!important}
+.nav-arrow>.nav-arrow-shape{position:absolute;inset:0;visibility:visible;width:100%;height:100%;pointer-events:none;overflow:visible}
+.nav-arrow>.nav-arrow-shape path{fill:var(--nav-bg);transition:fill .22s ease}
+html[data-altenar-glow] .nav-arrow>.nav-arrow-shape path{fill:rgba(255,255,255,.1)}
+html[data-altenar-glow] .nav-arrow:not([aria-disabled='true']):is(:hover,:focus-visible)>.nav-arrow-shape path{fill:rgba(255,255,255,.16)}
+
+/* Pill hover: text rolls up, a black copy rolls in (text-roll.ts). */
+html[data-altenar-glow] :is([data-shared-contact] .choice-chip,[data-name='navbar__cta']){--roll-ink:#fff;transition:transform .16s cubic-bezier(0,0,.2,1)!important}
+html[data-altenar-glow] :is([data-shared-contact] .choice-chip,[data-name='navbar__cta']):hover{--roll-ink:#000;transform:scale(1.02)}
+html[data-altenar-glow] :is([data-shared-contact] .choice-chip,[data-name='navbar__cta'])>p[data-roll]{position:relative!important;z-index:1;overflow:hidden!important;height:auto!important;min-height:0!important;text-box:normal!important;color:transparent!important;-webkit-text-fill-color:transparent!important}
+html[data-altenar-glow] :is([data-shared-contact] .choice-chip,[data-name='navbar__cta'])>p[data-roll]::before,
+html[data-altenar-glow] :is([data-shared-contact] .choice-chip,[data-name='navbar__cta'])>p[data-roll]::after{content:attr(data-roll);position:absolute;inset:0;white-space:nowrap;color:var(--roll-ink);-webkit-text-fill-color:var(--roll-ink);transition:transform .3s cubic-bezier(.4,0,.2,1),color .3s ease,-webkit-text-fill-color .3s ease}
+html[data-altenar-glow] :is([data-shared-contact] .choice-chip,[data-name='navbar__cta'])>p[data-roll]::after{transform:translateY(100%)}
+html[data-altenar-glow] :is([data-shared-contact] .choice-chip,[data-name='navbar__cta']):hover>p[data-roll]::before{transform:translateY(-100%)}
+html[data-altenar-glow] :is([data-shared-contact] .choice-chip,[data-name='navbar__cta']):hover>p[data-roll]::after{transform:translateY(0)}
+html[data-altenar-glow] [data-shared-contact] .choice-chip::before{content:'';position:absolute;inset:0;border-radius:inherit;background:var(--ui-accent-gradient);opacity:0;transition:opacity .3s ease;pointer-events:none}
+html[data-altenar-glow] [data-shared-contact] .choice-chip:hover::before{opacity:1}
+@media (prefers-reduced-motion:reduce){html[data-altenar-glow] :is([data-shared-contact] .choice-chip,[data-name='navbar__cta'])>p[data-roll]::before{transition:color .3s ease,-webkit-text-fill-color .3s ease}html[data-altenar-glow] :is([data-shared-contact] .choice-chip,[data-name='navbar__cta']):hover>p[data-roll]::before{transform:none}html[data-altenar-glow] :is([data-shared-contact] .choice-chip,[data-name='navbar__cta']):hover{transform:none}}

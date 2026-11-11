@@ -409,3 +409,4 @@ html[data-altenar-glow] .glow-retail.has-active-layer .glow-retail-item{opacity:
 html[data-altenar-glow] .glow-retail.has-active-layer .glow-retail-item.is-highlighted{opacity:1;filter:brightness(1.08);z-index:10}
 
 html[data-altenar-glow] .glow-retail-canvas .glow-retail-item { max-width: none !important; }
+html[data-altenar-glow] [data-name='cases__controls'] .slant-button p{font:var(--ui-type-eyebrow)!important;letter-spacing:.91px!important;text-transform:uppercase!important}

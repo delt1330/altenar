@@ -43,7 +43,7 @@ export function mountSplitButtons(scope: ParentNode = document){
     if(disabledButton){hitarea.className='premium-split-hitarea';root.before(hitarea);hitarea.append(root);}
     let hover=false,focus=false;
     const tl=gsap.timeline({paused:true,defaults:{ease:'power2.inOut'}})
-      .to(root,{'--premium-label-paint':hero?'#08B4FF':'#FFFFFF','--premium-arrow-paint':defaultFill,'--premium-glyph-paint':hoverGlyph,duration:.28},0)
+      .to(root,{'--premium-label-paint':hero?'#08B4FF':'#FFFFFF',duration:.28},0)
       .to(root,{'--ui-button-ink':'#1A2C42',duration:.28},0)
       .to(value,{progress:1,scale:.92,duration:.28,onUpdate:paint},0)
       .to(front,{x:distance,duration:.4,ease:'power2.out'},0).to(back,{x:0,duration:.4,ease:'power2.out'},0);
