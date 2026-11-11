@@ -87,6 +87,12 @@ html[data-altenar-glow] .partner-description{color:rgba(255,255,255,.8)!importan
 html[data-altenar-glow] [data-name='benefit-card'] p:first-of-type{font-weight:400!important}
 html[data-altenar-glow] [data-name='benefit-card'] p:nth-of-type(2){font-size:20px!important;line-height:1.4!important;color:rgba(255,255,255,.6)!important;-webkit-text-fill-color:rgba(255,255,255,.6)!important}
 html[data-altenar-glow] [data-name='section-faq'] [data-name='faq__list'] p{font-size:20px!important}
+/* FAQ: one centred "FAQ" heading over a list as wide as the Contact form (contact.css). */
+html[data-altenar-glow] [data-name='section-faq']{flex-direction:column;align-items:center}
+html[data-altenar-glow] [data-name='section-faq']>[data-name='faq__aside']{width:100%!important;max-width:100%!important;align-items:center;text-align:center}
+html[data-altenar-glow] [data-name='section-faq']>[data-name='faq__list']{flex:none;width:min(100%,800px)}
+/* Eyebrow and lead stay in the DOM (typography targets the aside by child position) but are not shown. */
+html[data-altenar-glow] [data-name='faq__aside']>p:not(.premium-heading){display:none!important}
 /* Map: one perimeter and single shared dividers, with no bevel or shadows. */
 html[data-altenar-glow] [data-name='markets__body']{border:0!important;box-shadow:inset 0 0 0 .7px rgba(255,255,255,.2)!important;border-radius:24px;overflow:hidden}
 html[data-altenar-glow] [data-name='markets/country-card']{border-left:.7px solid rgba(255,255,255,.2)!important;box-shadow:none!important}

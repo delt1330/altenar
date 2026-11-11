@@ -34,7 +34,7 @@ export function adaptDesign(){
   heading('4001:111692',`Client ${gradient('cases',89.2538)}`);
   heading('I4011:36550;3933:59146',`Industry ${gradient('recognition',70.2479)}`);
   heading('I4011:36550;3933:59158',`Company ${gradient('news',89.3157)}`);
-  heading('I4011:36550;3933:59177',`Frequently<br>asked ${gradient('questions',88.9404)}`);
+  heading('I4011:36550;3933:59177','FAQ');
   // Figma wraps Contact over the full-background footer by 40px.
   const contact=node('4011:41478')!;
   const footer=$('footer--window')!;
