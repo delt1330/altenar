@@ -25,6 +25,7 @@ export function mountSplitButtons(scope: ParentNode = document){
     const distance=root.dataset.direction==='prev'?-51:51;gsap.set(back,{x:-distance});
     const value={progress:0,scale:1},capMix=interpolator(...geometry.cap as [string,string]),arrowMix=interpolator(...geometry.arrow as [string,string]);
     const rim=continuousRim(label,cap,`glow-whole-rim-${sequence}`);
+    const seam=accentSeam(root,label,labelArt,`ui-split-seam-${sequence}`);
     const paint=()=>{
       const p=value.progress,s=value.scale,d=arrowMix(p),cx=25.5,cy=22;
       labelPath.setAttribute('d',capMix(p));rim.draw(capMix(p));arrowPath.setAttribute('d',d);
@@ -49,7 +50,7 @@ export function mountSplitButtons(scope: ParentNode = document){
     const update=()=>{const on=hover||focus;root.dataset.splitHover=String(on);if(reduced())tl.progress(on?1:0).pause();else if(on)tl.play();else tl.reverse();};
     const enter=()=>{hover=true;update();},leave=()=>{hover=false;update();},focusIn=()=>{focus=true;update();},focusOut=(e:FocusEvent)=>{if(e.relatedTarget instanceof Node&&root.contains(e.relatedTarget))return;focus=false;update();};
     hitarea.addEventListener('pointerenter',enter);hitarea.addEventListener('pointerleave',leave);root.addEventListener('focusin',focusIn);root.addEventListener('focusout',focusOut);root.dataset.rollover=distance<0?'prev':'next';
-    disposers.push(()=>{rim.dispose();tl.kill();hitarea.removeEventListener('pointerenter',enter);hitarea.removeEventListener('pointerleave',leave);root.removeEventListener('focusin',focusIn);root.removeEventListener('focusout',focusOut);if(disabledButton&&hitarea.isConnected)hitarea.replaceWith(root);});
+    disposers.push(()=>{rim.dispose();seam.dispose();tl.kill();hitarea.removeEventListener('pointerenter',enter);hitarea.removeEventListener('pointerleave',leave);root.removeEventListener('focusin',focusIn);root.removeEventListener('focusout',focusOut);if(disabledButton&&hitarea.isConnected)hitarea.replaceWith(root);});
   });return()=>disposers.forEach(fn=>fn());
 }
 
@@ -78,3 +79,24 @@ function glassGradient(svg:SVGSVGElement,shape:SVGPathElement,token:string,id:st
       const observer=new ResizeObserver(()=>{if(last)draw(last)});observer.observe(label);
       return {draw,dispose:()=>{observer.disconnect();svg.remove();}};
     }
+
+// One accent gradient across the label plate and its slanted cap. The plate
+// paints "to bottom right" over the plate+cap box; the cap SVG repeats the
+// same gradient line in its own user space, so the seam stays invisible.
+function accentSeam(root:HTMLElement,label:HTMLElement,art:SVGSVGElement,id:string){
+  const gradient=document.createElementNS(NS,'linearGradient'),defs=document.createElementNS(NS,'defs');
+  gradient.id=id;gradient.setAttribute('gradientUnits','userSpaceOnUse');
+  ['--ui-accent-start','--ui-accent-end'].forEach((token,i)=>{const stop=document.createElementNS(NS,'stop');stop.setAttribute('offset',String(i));stop.style.stopColor=`var(${token})`;gradient.append(stop);});
+  defs.append(gradient);art.prepend(defs);root.style.setProperty('--ui-split-cap-fill',`url(#${id})`);
+  const fit=()=>{
+    const plate=label.querySelector<HTMLElement>('[data-name="button__plate"]');if(!plate)return;
+    const p=plate.getBoundingClientRect(),c=art.getBoundingClientRect();if(!p.width||!c.width)return;
+    const scale=c.width/20,offset=(c.left-p.left)/scale,width=offset+20,height=44,n=width*width+height*height;
+    const dx=width*height*height/n,dy=width*width*height/n;
+    gradient.setAttribute('x1',String(width/2-dx-offset));gradient.setAttribute('y1',String(height/2-dy));
+    gradient.setAttribute('x2',String(width/2+dx-offset));gradient.setAttribute('y2',String(height/2+dy));
+    root.style.setProperty('--ui-split-gradient-size',`${width}px`);
+  };
+  fit();const observer=new ResizeObserver(fit);observer.observe(label);
+  return {dispose:()=>{observer.disconnect();defs.remove();}};
+}
