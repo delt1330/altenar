@@ -48,7 +48,7 @@ html[data-premium][data-altenar-glow] [data-shared-split]:not([data-name='case__
 .nav-arrow>.nav-arrow-shape{position:absolute;inset:0;visibility:visible;width:100%;height:100%;pointer-events:none;overflow:visible}
 .nav-arrow>.nav-arrow-shape path{fill:var(--nav-bg);transition:fill .22s ease}
 html[data-altenar-glow] .nav-arrow>.nav-arrow-shape path{fill:rgba(255,255,255,.1)}
-html[data-altenar-glow] .nav-arrow:not([aria-disabled='true']):is(:hover,:focus-visible)>.nav-arrow-shape path{fill:rgba(255,255,255,.16)}
+html[data-altenar-glow] .nav-arrow:is(:hover,:focus-visible)>.nav-arrow-shape path{fill:rgba(255,255,255,.16)}
 
 /* Pill hover: text rolls up, a black copy rolls in (text-roll.ts). */
 html[data-altenar-glow] :is([data-shared-contact] .choice-chip,[data-name='navbar__cta']){--roll-ink:#fff;transition:transform .16s cubic-bezier(0,0,.2,1)!important}
@@ -62,3 +62,4 @@ html[data-altenar-glow] :is([data-shared-contact] .choice-chip,[data-name='navba
 html[data-altenar-glow] [data-shared-contact] .choice-chip::before{content:'';position:absolute;inset:0;border-radius:inherit;background:var(--ui-accent-gradient);opacity:0;transition:opacity .3s ease;pointer-events:none}
 html[data-altenar-glow] [data-shared-contact] .choice-chip:hover::before{opacity:1}
 @media (prefers-reduced-motion:reduce){html[data-altenar-glow] :is([data-shared-contact] .choice-chip,[data-name='navbar__cta'])>p[data-roll]::before{transition:color .3s ease,-webkit-text-fill-color .3s ease}html[data-altenar-glow] :is([data-shared-contact] .choice-chip,[data-name='navbar__cta']):hover>p[data-roll]::before{transform:none}html[data-altenar-glow] :is([data-shared-contact] .choice-chip,[data-name='navbar__cta']):hover{transform:none}}
+.nav-arrow[data-morph][aria-disabled='true']{pointer-events:auto!important;cursor:default}

@@ -144,7 +144,8 @@ html[data-premium][data-altenar-glow] .premium-page:is(.premium-page,.ui-specifi
 html[data-premium][data-altenar-glow] .premium-page:is(.premium-page,.ui-specificity) [data-name="navbar--sketch-a"] :is([data-name="navbar__link"],[data-name="navbar__cta"]) p,
 html[data-premium][data-altenar-glow] [data-shared-navigation] :is([data-name='navbar__link'],[data-name='navbar__cta']) p {
   font: var(--ui-type-nav) !important;
-  letter-spacing: 0 !important;
+  letter-spacing: -0.32px !important;
+  text-transform: uppercase !important;
 }
 
 /* Description copy: one muted tone on both pages, matched to the Turnkey feature tiles. */

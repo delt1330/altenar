@@ -28,9 +28,8 @@ function mountArrowMorph(el:HTMLElement,direction:'prev'|'next'){
   const mix=interpolator(...geometry.arrow as [string,string]),state={p:0};
   const paint=()=>path.setAttribute('d',mix(state.p));paint();svg.append(path);el.prepend(svg);el.dataset.morph='true';
   const to=(p:number)=>{if(reduced()){state.p=p;paint();return;}gsap.to(state,{p,duration:.28,ease:'power2.inOut',overwrite:true,onUpdate:paint});};
-  const disabled=()=>el.getAttribute('aria-disabled')==='true'||(el instanceof HTMLButtonElement&&el.disabled);
-  el.addEventListener('pointerenter',()=>{if(!disabled())to(1);});el.addEventListener('pointerleave',()=>to(0));
-  el.addEventListener('focusin',()=>{if(!disabled()&&el.matches(':focus-visible'))to(1);});el.addEventListener('focusout',()=>to(0));
+  el.addEventListener('pointerenter',()=>to(1));el.addEventListener('pointerleave',()=>to(0));
+  el.addEventListener('focusin',()=>{if(el.matches(':focus-visible'))to(1);});el.addEventListener('focusout',()=>to(0));
 }
 
 export function mountArrowRollover(host:HTMLElement,trigger:HTMLElement,direction:'prev'|'next',icon:HTMLElement,wide=true){
