@@ -36,7 +36,7 @@ html[data-premium][data-altenar-glow] [data-shared-split][data-split-variant='li
 
 /* Buttons carry no outline: fills only, on both pages. */
 html[data-altenar-glow] :is([data-shared-split],[data-premium-split],.split-button) :is(.glow-continuous-rim,.premium-arrow-panel,.control-morph)>path{stroke:none!important;stroke-width:0!important}
-html[data-altenar-glow] :is([data-shared-split],[data-premium-split],.split-button) .glow-continuous-rim{display:none!important}
+html[data-altenar-glow] :is([data-shared-split],[data-premium-split],.split-button):not([data-name='case__bottom'] *) .glow-continuous-rim{display:none!important}
 html[data-altenar-glow] .nav-arrow::after{content:none!important}
 html[data-altenar-glow] .nav-arrow::before{filter:none!important}
 html[data-altenar-glow] [data-name='navbar__cta']::after{content:none!important}
