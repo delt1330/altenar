@@ -1,5 +1,6 @@
 /* Shared text roles measured on Turnkey. Keep colour, wrapping and entrance effects in the page styles. */
 /* Inter 400 renders as Light (see base.css / turnkey-polish); headings keep true Regular via this alias. */
+@font-face{font-family:"JetBrains Mono";src:url('/fonts/jetbrains-mono-300.ttf') format('truetype');font-weight:100 300;font-display:swap}
 @font-face{font-family:"Inter Heading";src:url('/fonts/inter-400.ttf') format('truetype');font-weight:400;font-display:swap}
 :root {
   --ui-sans: Inter, Arial, sans-serif;

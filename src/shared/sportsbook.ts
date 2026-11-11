@@ -7,6 +7,8 @@ import './controls.css';
 import {mountNavigation} from './navigation';
 import './navigation.css';
 import './typography.css';
+import {mountMonoType} from './mono-type';
+mountMonoType();
 
 window.AltenarUI = {mountNavigation,mountSplitButtons,createFaqItem,createContactSection,mountFooter};
 
