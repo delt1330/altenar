@@ -26,6 +26,7 @@ document.head.append(turnkey);
 
 import './sportsbook-local-cards.css';
 import './sportsbook-platform.css';
+import './sportsbook-mobile.css';
 // The export mounts asynchronously; attach once the requested section exists.
 const mountLocalCards = () => {
   const list = document.querySelector<HTMLElement>('.tp-local-reference-card .tp-disclosure-list');

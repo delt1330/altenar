@@ -2,13 +2,15 @@ import {gsap} from 'gsap';
 
 // The seven layers contract symmetrically around Promotions & Bonuses.
 // Timeline progress follows section entry; no timer or automatic playback.
+const STACKED = '(max-width: 1023px)';
 export const assemblyTiming = {reveal: .8, pairStart: 1.5, pairStagger: .8, settle: .4};
 
 export function createAssemblyTimeline(buttons: HTMLElement[], complete: () => void, canvas?: HTMLElement) {
   const timeline = gsap.timeline({paused: true, onComplete: complete});
   const center = Math.floor(buttons.length / 2);
   const height = canvas?.offsetHeight || canvas?.getBoundingClientRect().height || 480;
-  const gap = height * .3;
+  // Below 1024px the stack is not pinned (mobile.css), so the layers start closer together.
+  const gap = height * (matchMedia(STACKED).matches ? .14 : .3);
   // Lower layers start below their slots; upper layers start above them.
   // The center is fixed, and the resting coordinates are never rewritten.
   gsap.set(buttons, {y: i => (i - center) * gap, scaleY: 1, opacity: 0});
@@ -146,7 +148,10 @@ export function setupTurnkeyStack(container: HTMLElement, stage: HTMLElement) {
     if (disposed || !loaded || state === 'ready') return;
     if (query.matches) {finish(); return;}
     const top = container.getBoundingClientRect().top;
-    const progress = Math.max(0, Math.min(1, (innerHeight * .65 - top) / (innerHeight * 2.25)));
+    // An unpinned stack scrolls past, so it assembles within one viewport of scrolling.
+    const progress = matchMedia(STACKED).matches
+      ? Math.max(0, Math.min(1, (innerHeight * .9 - top) / innerHeight))
+      : Math.max(0, Math.min(1, (innerHeight * .65 - top) / (innerHeight * 2.25)));
     if (restoreAnimation) return;
     if (!initialPositionApplied) {
       initialPositionApplied = true;

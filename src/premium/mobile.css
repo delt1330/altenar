@@ -1,0 +1,63 @@
+/* Home on tablets and phones. The desktop layout stays as it is; below 1024px
+   the Figma desktop grids re-flow into one column, below 768px type and
+   headers tighten for phones. */
+@media(max-width:1023px){
+ /* Partners: intro, drum and the active partner stack vertically. */
+ html[data-premium][data-altenar-glow] [data-name='section-partners']{grid-template-columns:minmax(0,1fr)!important;grid-auto-rows:auto;row-gap:40px;min-height:0!important;padding:100px 40px!important}
+ html[data-premium][data-altenar-glow] [data-name='section-clients__intro']{grid-column:1!important;grid-row:1!important;width:100%!important;max-width:none!important;height:auto!important}
+ html[data-premium][data-altenar-glow] [data-name='partners / scroll viewport']{grid-column:1!important;grid-row:2!important;height:320px!important}
+ html[data-premium][data-altenar-glow] .partner-drum{height:320px!important}
+ html[data-premium][data-altenar-glow] .partner-details{grid-column:1!important;grid-row:3!important;height:auto!important;min-height:180px}
+
+ /* Solutions: not pinned (turnkey-stack.ts assembles faster); tabs in one row
+    with a horizontal indicator, then the art, then the copy. */
+ html[data-premium][data-altenar-glow] .premium-solutions[data-name='section-solutions'],
+ html[data-premium][data-altenar-glow] .premium-solutions .solutions-sticky{height:auto!important}
+ html[data-premium][data-altenar-glow] .premium-solutions .solutions-inner{padding:100px 40px!important;gap:40px!important}
+ html[data-premium][data-altenar-glow] .premium-solutions .solutions-content{grid-template-columns:minmax(0,1fr)!important;row-gap:32px;max-height:none!important}
+ html[data-premium][data-altenar-glow] .premium-solutions .solution-nav{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px!important;padding-bottom:16px}
+ html[data-premium][data-altenar-glow] .premium-solutions .solution-nav-button{padding:0!important}
+ html[data-premium][data-altenar-glow] .premium-solutions .nav-name{font-size:20px!important;line-height:1.3!important;letter-spacing:-.4px!important}
+ html[data-premium][data-altenar-glow] .premium-solutions .nav-indicator{top:auto!important;bottom:0!important;left:0!important;right:0!important;width:auto!important;height:3px!important}
+ html[data-premium][data-altenar-glow] .premium-solutions .nav-indicator>span{width:33.333333%!important;height:100%!important;transform:translateX(calc(var(--active-index,0)*100%))!important}
+ html[data-premium][data-altenar-glow] .premium-solutions .solution-art{height:auto!important;aspect-ratio:1/1;max-height:none!important;max-width:480px;margin-bottom:32px;justify-self:center}
+
+ /* Markets: globe on top, then the country list (scrolls inside), then the selected country. */
+ html[data-premium][data-altenar-glow] [data-name='markets__body'],
+ html[data-premium][data-altenar-glow] [data-name='markets__body'][data-country-open='false']{grid-template-columns:minmax(0,1fr)!important;grid-template-rows:auto!important;height:auto!important}
+ html[data-premium][data-altenar-glow] [data-name='markets/map']{grid-area:1/1!important;position:relative;height:440px!important}
+ html[data-premium][data-altenar-glow] [data-name='markets__sidebar']{grid-area:2/1!important;height:auto!important;border-right:0!important;border-top:.7px solid rgba(255,255,255,.2)!important}
+ html[data-premium][data-altenar-glow] [data-name='markets/country-index']{flex:none!important;height:360px!important}
+ html[data-premium][data-altenar-glow] .premium-globe[data-ui-globe] .rd-interactive-globe{width:min(100%,100cqh)!important}
+ html[data-premium][data-altenar-glow] [data-name='markets/country-card']{grid-area:3/1!important;width:auto!important;height:auto!important;border-left:0!important;border-top:.7px solid rgba(255,255,255,.2)!important;padding:16px 24px 24px!important}
+
+ /* Awards: year and event on one line, the award title below at full width. */
+ html[data-premium][data-altenar-glow] [data-name='awards__row']{display:grid!important;grid-template-columns:auto minmax(0,1fr);align-items:baseline;gap:8px 16px!important;height:auto!important;padding:20px 0!important}
+ html[data-premium][data-altenar-glow] [data-name='awards__row']>p:nth-of-type(1){grid-area:1/1}
+ html[data-premium][data-altenar-glow] [data-name='awards__row']>p:nth-of-type(2){grid-area:2/1/3/3;width:auto!important;line-height:1.25!important}
+ html[data-premium][data-altenar-glow] [data-name='awards__row']>p:nth-of-type(3){grid-area:1/2;width:auto!important;text-align:right!important}
+}
+
+@media(max-width:767px){
+ /* Statement: the 64px desktop size left one word per line. */
+ html[data-premium][data-altenar-glow] [data-name='section-statement'] .premium-heading{font-size:40px!important;line-height:1.12!important;letter-spacing:-1.2px!important;max-width:none!important;width:100%!important}
+
+ html[data-premium][data-altenar-glow] [data-name='section-partners']{padding:80px 24px!important}
+ html[data-premium][data-altenar-glow] .premium-solutions .solutions-inner{padding:80px 24px!important}
+ html[data-premium][data-altenar-glow] .premium-solutions .nav-name{font-size:16px!important;letter-spacing:-.32px!important}
+ html[data-premium][data-altenar-glow] .premium-solutions .solution-art{max-width:400px}
+ html[data-premium][data-altenar-glow] .premium-solutions .solution-panel h2{font-size:24px!important}
+ html[data-premium][data-altenar-glow] [data-name='markets/map']{height:320px!important}
+ html[data-premium][data-altenar-glow] [data-name='awards__row']>p:nth-of-type(2){font-size:22px!important}
+
+ /* Benefits: the heading may wrap instead of running off the screen. */
+ html[data-premium][data-altenar-glow] [data-name='benefits__heading']{white-space:normal!important;width:100%!important;max-width:none!important}
+
+ /* Cases and News headers: controls move under the heading. */
+ html[data-premium][data-altenar-glow] :is([data-name='cases__header'],[data-name='section-news__header']){flex-wrap:wrap!important;height:auto!important;row-gap:24px!important;align-items:flex-end!important}
+ html[data-premium][data-altenar-glow] [data-name='cases__controls']{width:100%!important;justify-content:space-between!important}
+ html[data-premium][data-altenar-glow] [data-name='section-news__header']>[data-name='news__arrows']{margin-left:auto}
+
+ /* Case cards: the 80px media metric broke "+50%" over two lines. */
+ html[data-premium][data-altenar-glow] [data-name='case__metric--media']>p:first-child{font-size:56px!important;line-height:1!important;white-space:nowrap}
+}

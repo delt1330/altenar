@@ -1,0 +1,54 @@
+/* Turnkey on tablets and phones; the desktop layout is untouched.
+   Tablets and phones: Platform and Tools re-flow into one column; the export's
+   two-column versions squeezed the copy under the contact dock below 1024px. */
+@media(max-width:1023px){
+ /* Platform: illustration above the five steps. */
+ html[data-turnkey-product] .tp-platform .tp-component-rows{grid-template-columns:minmax(0,1fr)!important}
+ html[data-turnkey-product] .tp-platform .tp-intro-components{grid-template-columns:minmax(0,1fr)!important;gap:32px!important;padding:0!important;min-height:0!important}
+ html[data-turnkey-product] .tp-platform .tp-platform-illustrations{order:-1;height:400px!important;min-height:0!important;padding-inline:0!important}
+ html[data-turnkey-product] .tp-platform .tp-disclosure-list{width:100%!important}
+
+ /* Tools: the pinned stage fits one screen above the contact dock: 2x2 tabs
+    (the active one is the bright one), art, copy. */
+ html[data-turnkey-product] .rd-tools .rd-sticky{justify-content:flex-start!important;padding:120px 40px 110px!important;gap:32px}
+ html[data-turnkey-product] .rd-tools .rd-sticky>header{margin:0!important}
+ html[data-turnkey-product] .rd-tools .rd-sticky>header .tp-eyebrow{margin-bottom:16px!important}
+ html[data-turnkey-product] .rd-tools .rd-sticky>header h2{margin-top:0!important}
+ html[data-turnkey-product] .rd-tools .rd-grid{grid-template-columns:minmax(0,1fr)!important;gap:24px!important;height:auto!important}
+ html[data-turnkey-product] .rd-tools .rd-grid>nav{display:grid!important;grid-template-columns:1fr 1fr;gap:8px 24px!important;width:100%!important;border-right:0!important;padding-right:0!important}
+ html[data-turnkey-product] .rd-tools .rd-grid>nav::after{display:none!important}
+ html[data-turnkey-product] .rd-tools .rd-grid>nav button{height:auto!important;padding:6px 0!important;text-align:left}
+ html[data-turnkey-product] .rd-tools .rd-art{width:100%!important;height:280px!important;justify-self:center}
+ html[data-turnkey-product] .rd-tools .rd-copy{width:100%!important;height:auto!important;min-height:150px}
+}
+
+@media(max-width:767px){
+ /* Hero: the title lines may wrap; proof points become a list. */
+ html[data-turnkey-product] .tp-hero h1{font-size:36px!important;line-height:1.12!important;letter-spacing:-1.08px!important}
+ html[data-turnkey-product] .tp-hero .rd-hero-line{white-space:normal!important}
+ html[data-turnkey-product] .tp-hero .tp-body{width:100%!important;max-width:none!important}
+ html[data-turnkey-product] .tp-hero{height:auto!important;min-height:0!important;padding:140px 24px 64px!important}
+ html[data-turnkey-product] .tp-hero .tp-hero-art{margin-top:24px!important}
+ html[data-turnkey-product] .tp-hero .tp-proof{grid-template-columns:minmax(0,1fr)!important;grid-template-rows:none!important;grid-auto-rows:auto!important;width:100%!important;max-width:none!important;margin-top:-64px!important}
+ html[data-turnkey-product] .tp-hero .tp-proof>div{flex-direction:row!important;align-items:center!important;justify-content:flex-start!important;gap:16px!important;height:auto!important;min-height:0!important;padding:16px 20px!important;text-align:left!important}
+ html[data-turnkey-product] .tp-hero .tp-proof>div>svg{flex:none}
+ html[data-turnkey-product] .tp-hero .tp-proof>div>span{width:auto!important;max-width:none!important}
+
+ /* Platform and Tools: smaller art and tighter stage on phones. */
+ html[data-turnkey-product] .tp-platform .tp-platform-illustrations{height:260px!important}
+ html[data-turnkey-product] .rd-tools .rd-sticky{padding:88px 20px 90px!important;gap:20px}
+ html[data-turnkey-product] .rd-tools{--ui-type-tools:400 32px/1.1 var(--ui-sans-heading)}
+ html[data-turnkey-product] .rd-tools .rd-grid{gap:16px!important}
+ html[data-turnkey-product] .rd-tools .rd-grid>nav{gap:8px 16px!important}
+ html[data-turnkey-product] .rd-tools .rd-grid>nav button{font-size:15px!important;line-height:1.3!important}
+ html[data-turnkey-product] .rd-tools .rd-art{height:130px!important}
+ html[data-turnkey-product] .rd-tools .rd-copy h3{font-size:22px!important;line-height:1.25!important}
+
+ /* Features: tabs scroll sideways from the first one; cards in one column. */
+ html[data-turnkey-product] .tp-features .tp-feature-shell{padding:40px 16px!important}
+ html[data-turnkey-product] .tp-features .tp-feature-header{width:100%!important}
+ html[data-turnkey-product] .tp-features .tp-feature-tabs{justify-content:flex-start!important;overflow-x:auto!important;scrollbar-width:none;width:100%!important}
+ html[data-turnkey-product] .tp-features .tp-feature-tabs::-webkit-scrollbar{display:none}
+ html[data-turnkey-product] .tp-features .tp-feature-tabs button{flex:none!important}
+ html[data-turnkey-product] .tp-features .tp-apple-grid{grid-template-columns:minmax(0,1fr)!important;width:100%!important}
+}
