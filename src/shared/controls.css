@@ -7,7 +7,8 @@
 .nav-arrow::before{content:'';position:absolute;inset:0;background:var(--nav-bg);mask-image:var(--nav-shape);mask-size:100% 100%;transition:background-color .22s ease}
 .nav-arrow:hover,.nav-arrow:focus-visible{--nav-bg:#1a2c42;--arrow-glyph-color:#8fd6ff}
 .nav-arrow[aria-disabled=true]{opacity:.45}
-.nav-arrow>.arrow-rollover-window{visibility:visible}
+/* [data-arrow] raises specificity over interactions.css hide rule, which loads later in the production bundle. */
+.nav-arrow[data-arrow]>.arrow-rollover-window{visibility:visible}
 html[data-altenar-glow] .nav-arrow{--arrow-glyph-color:#fff!important;backdrop-filter:blur(6px)}
 html[data-altenar-glow] .nav-arrow::before{background:linear-gradient(135deg,rgba(1,141,255,.20),rgba(3,8,14,.6) 60%,rgba(0,205,241,.14))!important;filter:drop-shadow(0 0 1px rgba(255,255,255,.45))}
 html[data-altenar-glow] .nav-arrow:is(:hover,:focus-visible)::before{background:linear-gradient(135deg,rgba(1,141,255,.45),rgba(0,205,241,.22))!important}
@@ -45,7 +46,8 @@ html[data-premium][data-altenar-glow] [data-shared-split]:not([data-name='case__
 
 /* Nav arrows morph like the split-button arrow panel (shape in arrows.ts). */
 .nav-arrow[data-morph]::before{display:none!important}
-.nav-arrow>.nav-arrow-shape{position:absolute;inset:0;visibility:visible;width:100%;height:100%;pointer-events:none;overflow:visible}
+.nav-arrow>.nav-arrow-shape{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;overflow:visible}
+.nav-arrow[data-arrow]>.nav-arrow-shape{visibility:visible}
 .nav-arrow>.nav-arrow-shape path{fill:var(--nav-bg);transition:fill .22s ease}
 html[data-altenar-glow] .nav-arrow>.nav-arrow-shape path{fill:rgba(255,255,255,.1)}
 html[data-altenar-glow] .nav-arrow:is(:hover,:focus-visible)>.nav-arrow-shape path{fill:rgba(255,255,255,.16)}
