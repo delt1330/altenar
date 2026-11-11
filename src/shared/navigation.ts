@@ -13,52 +13,52 @@ export function mountNavigation(){
   logo?.addEventListener('click',goHome,true);
   logo?.addEventListener('keydown',logoKey,true);
   const menu=document.createElement('div');menu.className='glow-mega-menu';menu.id='glow-solutions-menu';menu.hidden=true;
-  menu.innerHTML=`<button type="button" class="glow-mega-back" aria-label="Back to menu"><span aria-hidden="true"></span>Solutions</button><div class="glow-mega-feature"><div class="glow-mega-label">Featured</div><img class="glow-mega-feature-art" src="/_turnkey/glow-media/mega-menu-featured.webp" alt=""><p>Find the right way to launch or scale your sportsbook. From API integration to</p></div><div class="glow-mega-sports"><div class="glow-mega-label">Sportsbook</div><a href="${turnkeyProductUrl}"><strong>Turnkey Sportsbook</strong><span>Find the right way to launch or scale</span></a><button type="button"><strong>Retail</strong><span>Find the right way to launch</span></button><button type="button"><strong>White label</strong><span>Find the way to launch or scale</span></button><button type="button"><strong>Omni channel</strong><span>Find the right way to launch or scale</span></button></div><div class="glow-mega-services"><div class="glow-mega-label">Managed services</div><button type="button">Integration</button><button type="button">Migration</button><button type="button">Implementation</button><button type="button">Business support</button><button type="button">Risk &amp; trading</button><button type="button">Client success</button></div>`;
+  const sports=`<div class="glow-mega-sports"><div class="glow-mega-label">Sportsbook</div><a href="${turnkeyProductUrl}"><strong>Turnkey Sportsbook</strong><span>Find the right way to launch or scale</span></a><button type="button"><strong>Retail</strong><span>Find the right way to launch</span></button><button type="button"><strong>White label</strong><span>Find the way to launch or scale</span></button><button type="button"><strong>Omni channel</strong><span>Find the right way to launch or scale</span></button></div>`;
+  const services=`<div class="glow-mega-services"><div class="glow-mega-label">Managed services</div><button type="button">Integration</button><button type="button">Migration</button><button type="button">Implementation</button><button type="button">Business support</button><button type="button">Risk &amp; trading</button><button type="button">Client success</button></div>`;
+  menu.innerHTML=`<div class="glow-mega-feature"><div class="glow-mega-label">Featured</div><img class="glow-mega-feature-art" src="/_turnkey/glow-media/mega-menu-featured.webp" alt=""><p>Find the right way to launch or scale your sportsbook. From API integration to</p></div>${sports}${services}`;
   document.body.append(menu);trigger.setAttribute('role','button');trigger.tabIndex=0;trigger.setAttribute('aria-controls',menu.id);trigger.setAttribute('aria-expanded','false');trigger.setAttribute('aria-haspopup','true');
-  const back=menu.querySelector<HTMLButtonElement>('.glow-mega-back')!;
-  // The compact mega menu sits under the island, so it needs the island's live box.
-  const position=()=>{const rect=nav.getBoundingClientRect();menu.style.top=`${rect.bottom}px`;menu.style.left=`${rect.left}px`;menu.style.width=`${rect.width}px`;menu.style.setProperty('--glow-nav-left',`${rect.left}px`);menu.style.setProperty('--glow-nav-width',`${rect.width}px`);menu.style.setProperty('--glow-nav-bottom',`${rect.bottom}px`);};
+  // In the burger, Solutions expands in place under its row (an accordion), with the same items as the mega menu.
+  const sub=document.createElement('div');sub.className='glow-nav-sub';sub.id='glow-solutions-sub';sub.inert=true;
+  sub.innerHTML=`<div class="glow-nav-sub-inner">${sports}${services}</div>`;trigger.after(sub);
+  const position=()=>{const rect=nav.getBoundingClientRect();menu.style.top=`${rect.bottom}px`;};
   const compactQuery=matchMedia(COMPACT),compact=()=>compactQuery.matches;
-  const burger=mountBurger(nav,menu);const hide=mountScrollHide(nav,()=>{setOpen(false);burger.close();});
+  const setSub=(open:boolean)=>{sub.classList.toggle('glow-nav-sub-open',open);sub.inert=!open;if(compact())trigger.setAttribute('aria-expanded',String(open));};
   trigger.dataset.navSubmenu='true';
+  const burger=mountBurger(nav,()=>setSub(false));const hide=mountScrollHide(nav,()=>{setOpen(false);burger.close();});
   let timer=0;const setOpen=(open:boolean)=>{clearTimeout(timer);if(open)position();menu.hidden=!open;trigger.setAttribute('aria-expanded',String(open));nav.classList.toggle('glow-menu-open',open);};
-  // Focus moves only for keyboard-initiated clicks (detail 0), so a tap leaves no focus highlight.
-  const byKeyboard=(e:Event)=>(e as MouseEvent).detail===0;
-  // In the burger, Solutions opens the mega menu as a second screen of the panel; Back returns to the links.
   const enter=()=>{if(!compact())setOpen(true);},leave=()=>{if(!compact())timer=window.setTimeout(()=>setOpen(false),180);};
-  const click=(e:Event)=>{e.preventDefault();e.stopPropagation();if(compact()&&burger.isOpen()){setOpen(menu.hidden);if(!menu.hidden&&byKeyboard(e))back.focus();return;}burger.close();setOpen(true);};
-  const key=(e:KeyboardEvent)=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();setOpen(menu.hidden);if(compact()&&!menu.hidden)back.focus();}else if(e.key==='Escape'){setOpen(false);trigger.focus();}};
-  // Escape inside the Solutions screen steps back one level; the burger's document listener must not also close the panel.
-  const menuKey=(e:KeyboardEvent)=>{if(e.key==='Escape'){e.preventDefault();e.stopPropagation();setOpen(false);trigger.focus();}};
+  const toggle=(e:Event)=>{e.preventDefault();e.stopPropagation();if(compact())setSub(!sub.classList.contains('glow-nav-sub-open'));else setOpen(menu.hidden);};
+  const click=(e:Event)=>{if(compact())return toggle(e);e.preventDefault();e.stopPropagation();setOpen(true);};
+  const key=(e:KeyboardEvent)=>{if(e.key==='Enter'||e.key===' ')toggle(e);else if(e.key==='Escape'&&!compact()){setOpen(false);trigger.focus();}};
+  const menuKey=(e:KeyboardEvent)=>{if(e.key==='Escape'){setOpen(false);trigger.focus();}};
   const outside=(e:PointerEvent)=>{if(!nav.contains(e.target as Node)&&!menu.contains(e.target as Node))setOpen(false);};
-  const menuClick=(e:Event)=>{const target=e.target as HTMLElement;
-    if(target.closest('.glow-mega-back')){setOpen(false);if(byKeyboard(e))trigger.focus();return;}
+  // A pick from either list closes everything; non-link items lead to the Solutions section.
+  const pickSolution=(e:Event)=>{const target=e.target as HTMLElement;
     if(target.closest('a[href]')){setOpen(false);burger.close();return;}
-    if(!target.closest('button'))return;const fromBurger=burger.isOpen();setOpen(false);burger.close();if(fromBurger&&byKeyboard(e))burger.focus();
+    if(!target.closest('button'))return;const fromBurger=burger.isOpen();setOpen(false);burger.close();if(fromBurger&&(e as MouseEvent).detail===0)burger.focus();
     document.querySelector<HTMLElement>('[data-name="section-solutions"]')?.scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'instant':'smooth',block:'start'});};
-  const syncMode=()=>{setOpen(false);menu.classList.toggle('glow-mega-compact',compact());};
-  trigger.addEventListener('pointerenter',enter);trigger.addEventListener('click',click);trigger.addEventListener('keydown',key);nav.addEventListener('pointerleave',leave);menu.addEventListener('pointerenter',enter);menu.addEventListener('pointerleave',leave);window.addEventListener('resize',position);window.addEventListener('scroll',position,{passive:true});menu.addEventListener('keydown',menuKey);menu.addEventListener('click',menuClick);document.addEventListener('pointerdown',outside);compactQuery.addEventListener('change',syncMode);syncMode();
-  return()=>{burger.dispose();hide();compactQuery.removeEventListener('change',syncMode);delete trigger.dataset.navSubmenu;logo?.removeEventListener('click',goHome,true);logo?.removeEventListener('keydown',logoKey,true);delete nav.dataset.sharedNavigation;clearTimeout(timer);trigger.removeEventListener('pointerenter',enter);trigger.removeEventListener('click',click);trigger.removeEventListener('keydown',key);nav.removeEventListener('pointerleave',leave);menu.removeEventListener('pointerenter',enter);menu.removeEventListener('pointerleave',leave);window.removeEventListener('resize',position);window.removeEventListener('scroll',position);menu.removeEventListener('keydown',menuKey);menu.removeEventListener('click',menuClick);document.removeEventListener('pointerdown',outside);menu.remove();nav.classList.remove('glow-menu-open');trigger.removeAttribute('aria-controls');trigger.removeAttribute('aria-expanded');trigger.removeAttribute('aria-haspopup');};
+  const syncMode=()=>{setOpen(false);setSub(false);trigger.setAttribute('aria-controls',compact()?sub.id:menu.id);trigger.setAttribute('aria-expanded','false');if(compact())trigger.removeAttribute('aria-haspopup');else trigger.setAttribute('aria-haspopup','true');};
+  trigger.addEventListener('pointerenter',enter);trigger.addEventListener('click',click);trigger.addEventListener('keydown',key);nav.addEventListener('pointerleave',leave);menu.addEventListener('pointerenter',enter);menu.addEventListener('pointerleave',leave);window.addEventListener('resize',position);window.addEventListener('scroll',position,{passive:true});menu.addEventListener('keydown',menuKey);menu.addEventListener('click',pickSolution);sub.addEventListener('click',pickSolution);document.addEventListener('pointerdown',outside);compactQuery.addEventListener('change',syncMode);syncMode();
+  return()=>{burger.dispose();hide();compactQuery.removeEventListener('change',syncMode);delete trigger.dataset.navSubmenu;logo?.removeEventListener('click',goHome,true);logo?.removeEventListener('keydown',logoKey,true);delete nav.dataset.sharedNavigation;clearTimeout(timer);trigger.removeEventListener('pointerenter',enter);trigger.removeEventListener('click',click);trigger.removeEventListener('keydown',key);nav.removeEventListener('pointerleave',leave);menu.removeEventListener('pointerenter',enter);menu.removeEventListener('pointerleave',leave);window.removeEventListener('resize',position);window.removeEventListener('scroll',position);menu.removeEventListener('keydown',menuKey);menu.removeEventListener('click',pickSolution);sub.removeEventListener('click',pickSolution);document.removeEventListener('pointerdown',outside);menu.remove();sub.remove();nav.classList.remove('glow-menu-open');trigger.removeAttribute('aria-controls');trigger.removeAttribute('aria-expanded');trigger.removeAttribute('aria-haspopup');};
 }
 
 // Below this width the links collapse behind a burger: logo, language,
 // Contact us and the burger stay in the bar (see navigation.css).
 const COMPACT='(max-width: 1080px)';
 
-function mountBurger(nav:HTMLElement,submenu:HTMLElement){
+function mountBurger(nav:HTMLElement,onClose:()=>void){
   const links=nav.querySelector<HTMLElement>('[data-name="navbar/nav"]'),actions=nav.querySelector<HTMLElement>('[data-name="navbar-actions__pair"]');
   if(!links||!actions)return{close:()=>{},isOpen:()=>false,focus:()=>{},dispose:()=>{}};
   links.id||=`glow-nav-links`;
   const button=document.createElement('button');button.type='button';button.className='glow-nav-burger';
   button.setAttribute('aria-label','Menu');button.setAttribute('aria-controls',links.id);button.setAttribute('aria-expanded','false');
   button.innerHTML='<span></span><span></span>';actions.append(button);
-  const set=(open:boolean)=>{nav.classList.toggle('glow-burger-open',open);button.setAttribute('aria-expanded',String(open));};
+  const set=(open:boolean)=>{nav.classList.toggle('glow-burger-open',open);button.setAttribute('aria-expanded',String(open));if(!open)onClose();};
   const toggle=()=>set(!nav.classList.contains('glow-burger-open'));
   const close=()=>set(false);
   const isOpen=()=>nav.classList.contains('glow-burger-open');
-  // The Solutions screen lives in the body-level mega menu; taps there still belong to the burger.
-  const outside=(e:PointerEvent)=>{if(!nav.contains(e.target as Node)&&!submenu.contains(e.target as Node))close();};
-  const key=(e:KeyboardEvent)=>{if(e.key==='Escape'&&isOpen()&&submenu.hidden){close();button.focus();}};
+  const outside=(e:PointerEvent)=>{if(!nav.contains(e.target as Node))close();};
+  const key=(e:KeyboardEvent)=>{if(e.key==='Escape'&&isOpen()){close();button.focus();}};
   // Keyboard users get focus back on the burger instead of losing it inside the hidden panel.
   const pick=(e:Event)=>{if((e.target as HTMLElement).closest('[data-name="navbar__link"]:not([data-nav-submenu])')){close();if((e as MouseEvent).detail===0)button.focus({preventScroll:true});}};
   const resize=()=>{if(!matchMedia(COMPACT).matches)close();};

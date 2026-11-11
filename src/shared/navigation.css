@@ -97,31 +97,31 @@ html[data-premium][data-altenar-glow] .premium-page>[data-shared-navigation].glo
   -webkit-backdrop-filter:blur(20px)!important;backdrop-filter:blur(20px)!important;box-shadow:0 24px 45px rgba(0,0,0,.2)!important;
  }
  html[data-premium][data-altenar-glow] [data-shared-navigation].glow-burger-open [data-name='navbar__link']{min-height:48px;padding:12px 16px;justify-content:flex-start}
- /* Solutions opens a second screen: the links panel steps aside while the mega menu is open. */
- html [data-shared-navigation].glow-burger-open.glow-menu-open [data-name='navbar/nav']{display:none!important}
- html[data-premium][data-altenar-glow] [data-shared-navigation].glow-burger-open [data-nav-submenu]{justify-content:space-between}
+ /* The panel scrolls on its own when Solutions is expanded on a short screen. */
+ html [data-shared-navigation].glow-burger-open [data-name='navbar/nav']{max-height:calc(100dvh - 135px);overflow-y:auto!important;overscroll-behavior:contain}
+ html[data-premium][data-altenar-glow] [data-shared-navigation].glow-burger-open [data-nav-submenu]{justify-content:space-between;flex:none}
  html [data-shared-navigation].glow-burger-open [data-nav-submenu]::after{
-  content:'';flex:none;width:7px;height:7px;margin-right:4px;border-top:1.5px solid #fff;border-right:1.5px solid #fff;transform:rotate(45deg);opacity:.7;
+  content:'';flex:none;width:7px;height:7px;margin:-4px 4px 0 0;border-right:1.5px solid #fff;border-bottom:1.5px solid #fff;transform:rotate(45deg);opacity:.7;transition:transform .3s ease,margin .3s ease;
  }
- html[data-premium][data-altenar-glow] .glow-mega-menu.glow-mega-compact{
-  left:var(--glow-nav-left)!important;width:var(--glow-nav-width)!important;transform:none;
-  grid-template-columns:1fr 1fr;max-height:calc(100dvh - var(--glow-nav-bottom, 98px) - 24px);
- }
- html[data-premium][data-altenar-glow] .glow-mega-menu.glow-mega-compact .glow-mega-feature{grid-column:1/-1}
- html[data-premium][data-altenar-glow] .glow-mega-menu.glow-mega-compact .glow-mega-feature-art{max-width:320px}
- html[data-premium][data-altenar-glow] .glow-mega-menu.glow-mega-compact :is(.glow-mega-feature,.glow-mega-sports,.glow-mega-services){padding:20px 28px}
- html[data-altenar-glow] .glow-mega-menu.glow-mega-compact .glow-mega-back{
-  grid-column:1/-1;display:flex;align-items:center;gap:12px;width:auto;min-height:48px;margin:12px 12px 0;padding:12px 16px;border-radius:12px;color:#fff;
- }
- html[data-altenar-glow] .glow-mega-menu.glow-mega-compact .glow-mega-back span{
-  width:7px;height:7px;border-left:1.5px solid #fff;border-bottom:1.5px solid #fff;transform:rotate(45deg);opacity:.7;
- }
+ html [data-shared-navigation].glow-burger-open [data-nav-submenu][aria-expanded='true']::after{transform:rotate(-135deg);margin-top:4px}
+ html [data-shared-navigation].glow-burger-open [data-nav-submenu][aria-expanded='true']:not(:hover,:focus-visible){background:transparent!important}
+ /* Solutions accordion: expands in place under its row (navigation.ts). */
+ html [data-shared-navigation].glow-burger-open .glow-nav-sub{display:grid;grid-template-rows:0fr;flex:none;transition:grid-template-rows .3s cubic-bezier(.16,1,.3,1)}
+ html [data-shared-navigation].glow-burger-open .glow-nav-sub.glow-nav-sub-open{grid-template-rows:1fr}
+ html[data-altenar-glow] [data-shared-navigation] .glow-nav-sub-inner{min-height:0;overflow:hidden;display:grid;grid-template-columns:1fr 1fr;gap:4px 16px;padding:0 16px}
+ html[data-altenar-glow] [data-shared-navigation] .glow-nav-sub-open .glow-nav-sub-inner{padding-bottom:12px}
+ html[data-altenar-glow] [data-shared-navigation] .glow-nav-sub :is(.glow-mega-sports,.glow-mega-services){display:flex;flex-direction:column;gap:2px;padding-top:8px}
+ html[data-altenar-glow] [data-shared-navigation] .glow-nav-sub .glow-mega-label{margin:0 0 8px;font:400 12px/1.2 'JetBrains Mono',monospace;text-transform:uppercase;letter-spacing:.24px;color:#06b1ff;-webkit-text-fill-color:#06b1ff}
+ html[data-altenar-glow] [data-shared-navigation] .glow-nav-sub :is(button,a){display:flex;align-items:center;min-height:40px;margin:0 -10px!important;padding:8px 10px;border:0;border-radius:8px;background:transparent;color:#fff;text-align:left;text-decoration:none;cursor:pointer;font:300 14px/20px Inter,Arial,sans-serif;transition:background-color .2s ease}
+ html[data-altenar-glow] [data-shared-navigation] .glow-nav-sub :is(button,a):is(:hover,:focus-visible){background:#ffffff14;outline:none}
+ html[data-altenar-glow] [data-shared-navigation] .glow-nav-sub strong{display:inline;font:inherit;text-transform:none;letter-spacing:0}
+ html[data-altenar-glow] [data-shared-navigation] .glow-nav-sub :is(a,button) span{display:none}
+ @media(prefers-reduced-motion:reduce){html [data-shared-navigation].glow-burger-open .glow-nav-sub,html [data-shared-navigation].glow-burger-open [data-nav-submenu]::after{transition:none}}
 }
-/* The back button exists only for the burger's Solutions screen. (0,3,1) beats the menu's button{display:block} rules. */
-html[data-altenar-glow] .glow-mega-menu:not(.glow-mega-compact) .glow-mega-back{display:none}
+/* Outside the burger the accordion does not exist. */
+.glow-nav-sub{display:none}
 @media(max-width:600px){
- html[data-premium][data-altenar-glow] .glow-mega-menu.glow-mega-compact{grid-template-columns:1fr}
- html[data-premium][data-altenar-glow] .glow-mega-menu.glow-mega-compact .glow-mega-feature{display:none}
+ html[data-altenar-glow] [data-shared-navigation] .glow-nav-sub-inner{grid-template-columns:1fr}
 }
 @media(max-width:480px){
  html[data-premium][data-altenar-glow] .premium-page>[data-shared-navigation]{left:12px!important;width:calc(100% - 24px)!important}
