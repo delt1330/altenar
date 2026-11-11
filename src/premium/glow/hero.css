@@ -23,7 +23,6 @@ html[data-altenar-glow] .glow-centered-hero-copy [data-name='hero__aside']>div:f
 html[data-altenar-glow] .glow-centered-hero-copy [data-name='hero__aside']>.split-button{align-self:center;width:max-content}
 @media(prefers-reduced-motion:reduce){.glow-hero-bloom,.glow-hero-traces>span::after{animation:none!important}.glow-hero-traces>span::after{display:none}}
 
-html[data-premium][data-altenar-glow] .premium-page .glow-centered-hero-copy [data-premium-split] [data-name="button-split__label"] p{color:#1a2c42!important;-webkit-text-fill-color:#1a2c42!important}
 html[data-altenar-glow] .glow-centered-hero-copy [data-node-id="4001:111760"] .entrance-line::after{content:none!important}
 
 /* Requested static background for the homepage hero. */

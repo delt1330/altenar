@@ -13,7 +13,6 @@ html[data-altenar-glow] .premium-nav-on-light [data-name='navbar__link']:is(:hov
 /* Transparency must not expose the fixed footer through earlier sections. */
 html[data-altenar-glow] .premium-footer-underlay{clip-path:inset(0)}
 html[data-altenar-glow] [data-name='section-hero']{position:relative}
-html[data-altenar-glow] [data-name='section-hero'] [data-name='button-split__label'] .glow-light-copy{color:#1a2c42!important}
 /* Header state changes and statement reveals must retain contrast on dark. */
 html[data-altenar-glow] .premium-heading{color:#f4fbff!important}
 html[data-altenar-glow] [data-name='navbar__link'] p{color:#f4fbff!important}

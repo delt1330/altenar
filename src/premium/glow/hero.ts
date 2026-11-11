@@ -7,7 +7,6 @@ export function setupCenteredHero(glowLayer:HTMLElement){
   const media=stage.querySelector<HTMLElement>('.premium-hero-background')!;
   const main=stage.querySelector<HTMLElement>('[data-name="hero__main"]')!;
   const aside=stage.querySelector<HTMLElement>('[data-name="hero__aside"]')!;
-  aside.querySelector<HTMLElement>('[data-premium-split]')?.setAttribute('data-split-variant','light');
   const heading=main.querySelector<HTMLElement>('[data-node-id="4001:111760"]')!;
   const originalTitle=heading.innerHTML;
   heading.innerHTML='Stability meets<br>flexibility';

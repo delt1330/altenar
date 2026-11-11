@@ -30,9 +30,6 @@ html[data-premium][data-altenar-glow] [data-shared-split] [data-name='button-spl
   color:var(--ui-button-ink,white)!important;
   -webkit-text-fill-color:var(--ui-button-ink,white)!important;
 }
-html[data-premium][data-altenar-glow] [data-shared-split][data-split-variant='light'] {
-  --ui-button-ink:#1a2c42;
-}
 
 /* Buttons carry no outline: fills only, on both pages. */
 html[data-altenar-glow] :is([data-shared-split],[data-premium-split],.split-button) :is(.glow-continuous-rim,.premium-arrow-panel,.control-morph)>path{stroke:none!important;stroke-width:0!important}
