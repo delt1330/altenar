@@ -96,7 +96,7 @@ html[data-altenar-glow] [data-name='markets__body'] :is(input,[data-name='countr
 /* News card layers keep their shaped silhouette. */
 html[data-altenar-glow] [data-name='news-card-slant'] :is([data-name='shape__top'],[data-name='shape__bottom']){background:rgba(0,0,0,.2)!important}
 html[data-altenar-glow] [data-name='news-card-slant'] [data-name='shape__notch'] img{filter:brightness(0);opacity:.2}
-html[data-altenar-glow] [data-name='news-card-slant'] [data-name='news-card__arrow']::before{background:linear-gradient(135deg,#98ffb5,#48fb8c 52%,#15bfb0)!important;filter:drop-shadow(0 0 1px rgba(255,255,255,.4))}
+html[data-altenar-glow] [data-name='news-card-slant'] [data-name='news-card__arrow']::before{background:#fff!important;filter:drop-shadow(0 0 1px rgba(255,255,255,.4))}
 html[data-altenar-glow] .premium-page .partner-detail p.partner-description:not(.premium-gradient):not(.premium-gradient *){color:rgba(255,255,255,.8)!important;-webkit-text-fill-color:rgba(255,255,255,.8)!important}
 html[data-altenar-glow] .premium-page [data-name='benefit-card'] p:nth-of-type(2):not(.premium-gradient):not(.premium-gradient *){color:rgba(255,255,255,.6)!important;-webkit-text-fill-color:rgba(255,255,255,.6)!important}
 html[data-altenar-glow] [data-name='markets__body']{border:.7px solid rgba(255,255,255,.2)!important;box-sizing:border-box;box-shadow:none!important}

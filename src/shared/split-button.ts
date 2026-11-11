@@ -11,7 +11,7 @@ export function mountSplitButtons(scope: ParentNode = document){
   scope.querySelectorAll<HTMLElement>('[data-premium-split]:not([data-shared-split])').forEach(root=>{
     const label=$('button-split__label',root)!,arrow=$('button-split__arrow',root)!,cap=$('button__cap',label)?.firstElementChild as HTMLElement,icon=$('button__icon',arrow),image=icon?.querySelector('img');if(!image||!cap)return;root.dataset.sharedSplit='true';
     const hero=root.dataset.splitVariant==='light',defaultFill=hero?'#FFFFFF':'#019CFC',defaultText=hero?'#1A2C42':'#FFFFFF',hoverGlyph=hero?'#1A2C42':'#FFFFFF';
-    root.style.setProperty('--premium-label-paint',defaultFill);root.style.setProperty('--premium-arrow-paint',hero?'#08B4FF':'#48FB8C');root.style.setProperty('--premium-glyph-paint','#1A2C42');
+    root.style.setProperty('--premium-label-paint',defaultFill);root.style.setProperty('--premium-arrow-paint',hero?'#08B4FF':'#FFFFFF');root.style.setProperty('--premium-glyph-paint','#1A2C42');
     root.style.setProperty('--button-label','var(--premium-label-paint)');root.style.setProperty('--button-arrow','var(--premium-arrow-paint)');root.style.setProperty('--arrow-glyph-color','var(--premium-glyph-paint)');root.style.setProperty('--ui-button-ink',defaultText);
     // Retain the original label plate, 20px cap and 51px arrow layout slot.
     // Both endpoints come from the approved component, including its curves.
@@ -42,7 +42,7 @@ export function mountSplitButtons(scope: ParentNode = document){
     if(disabledButton){hitarea.className='premium-split-hitarea';root.before(hitarea);hitarea.append(root);}
     let hover=false,focus=false;
     const tl=gsap.timeline({paused:true,defaults:{ease:'power2.inOut'}})
-      .to(root,{'--premium-label-paint':hero?'#08B4FF':'#48FB8C','--premium-arrow-paint':defaultFill,'--premium-glyph-paint':hoverGlyph,duration:.28},0)
+      .to(root,{'--premium-label-paint':hero?'#08B4FF':'#FFFFFF','--premium-arrow-paint':defaultFill,'--premium-glyph-paint':hoverGlyph,duration:.28},0)
       .to(root,{'--ui-button-ink':'#1A2C42',duration:.28},0)
       .to(value,{progress:1,scale:.92,duration:.28,onUpdate:paint},0)
       .to(front,{x:distance,duration:.4,ease:'power2.out'},0).to(back,{x:0,duration:.4,ease:'power2.out'},0);

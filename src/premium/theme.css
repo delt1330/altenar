@@ -54,7 +54,7 @@ html[data-premium] [data-name='benefits__track']{gap:12px}
 /* Source body/media proportions and animated section contours are retained. */
 html[data-premium] [data-name='section-faq']>div:first-child{width:35.294118%;max-width:480px}
 /* One palette owner for the split component; its controller animates these fills. */
-html[data-premium] [data-premium-split]{--premium-label-paint:#019cfc;--premium-arrow-paint:#48fb8c;--premium-glyph-paint:#1a2c42;--button-label:var(--premium-label-paint);--button-arrow:var(--premium-arrow-paint);--arrow-glyph-color:var(--premium-glyph-paint)}
+html[data-premium] [data-premium-split]{--premium-label-paint:#019cfc;--premium-arrow-paint:#fff;--premium-glyph-paint:#1a2c42;--button-label:var(--premium-label-paint);--button-arrow:var(--premium-arrow-paint);--arrow-glyph-color:var(--premium-glyph-paint)}
 html[data-premium] [data-premium-split] [data-name='button-split__label'] p{color:#fff}
 html[data-premium] [data-name='section-hero'] [data-premium-split]{--premium-label-paint:#fff}
 html[data-premium] [data-name='section-hero'] [data-premium-split] [data-name='button-split__label'] p{color:#1a2c42}

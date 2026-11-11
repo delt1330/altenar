@@ -7,7 +7,7 @@
   /* Accent gradient for highlighted words, digits, icons, primary buttons and selected states. */
   --ui-accent-start: #018DFF;
   --ui-accent-end: #0BDAFF;
-  --ui-accent-gradient: linear-gradient(90deg, var(--ui-accent-start) 0%, var(--ui-accent-end) 100%);
+  --ui-accent-gradient: linear-gradient(to bottom right, var(--ui-accent-start) 0%, var(--ui-accent-end) 100%);
   --icon-start: #018DFF;
   --icon-mid: #06B6FF;
   --icon-end: #0BDAFF;
