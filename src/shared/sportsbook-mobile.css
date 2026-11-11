@@ -24,7 +24,8 @@
 
 @media(max-width:767px){
  /* Hero: the title lines may wrap; proof points become a list. */
- html[data-turnkey-product] .tp-hero h1{font-size:36px!important;line-height:1.12!important;letter-spacing:-1.08px!important}
+ /* The shared typography sets the title with `font: var(--ui-type-hero) !important`. */
+ html[data-turnkey-product] .tp-hero{--ui-type-hero:400 36px/1.12 var(--ui-sans-heading)}
  html[data-turnkey-product] .tp-hero .rd-hero-line{white-space:normal!important}
  html[data-turnkey-product] .tp-hero .tp-body{width:100%!important;max-width:none!important}
  html[data-turnkey-product] .tp-hero{height:auto!important;min-height:0!important;padding:140px 24px 64px!important}
