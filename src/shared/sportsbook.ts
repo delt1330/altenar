@@ -8,7 +8,11 @@ import {mountNavigation} from './navigation';
 import './navigation.css';
 import './typography.css';
 import {mountMonoType} from './mono-type';
-mountMonoType();
+import {mountCornerSmoothing} from './corner-smoothing';
+import {mountContactDock} from './contact-dock';
+mountMonoType();mountCornerSmoothing();
+// The nav, Contact and Footer are mounted by the Turnkey bundle; the dock waits for them.
+if(!mountContactDock()){const dockWait=new MutationObserver(()=>{if(mountContactDock())dockWait.disconnect();});dockWait.observe(document.body,{childList:true,subtree:true});}
 
 window.AltenarUI = {mountNavigation,mountSplitButtons,createFaqItem,createContactSection,mountFooter};
 

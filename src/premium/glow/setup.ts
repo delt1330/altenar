@@ -73,7 +73,7 @@ export function setupGlow(){
   }),{threshold:.12});
   document.querySelectorAll<HTMLElement>('[data-name="statement__plate"]>p:first-child,.premium-solutions .eyebrow,[data-name="contact__lead"]>p:first-child').forEach(el=>labelObserver.observe(el));
   const glow=new window.AltenarGlow(background,{
-    colors:['#018DFF','#00CDF1','#4EFF83'],background:'#03080E',
+    colors:['#018DFF','#1C5DE6','#0CD8FF'],background:'#03080E',
     scroll:true,smoothScroll:false,scrollEngine:window.lenis,motion:'auto',
   });
   window.altenarPrototypeGlow=glow;

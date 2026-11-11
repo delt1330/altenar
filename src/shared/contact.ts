@@ -58,6 +58,8 @@ export function createContactSection({createElement: h, useId}: {
       className: `${className ?? 'd44 d0 d1 d66 d67 d68 d69 d70 d6 d13 d71'} premium-contact`,
       'data-node-id': '4011:41478',
       'data-shared-contact': '',
+      // Background glow strength over Contact (altenar-glow.js), same as the hero.
+      'data-glow-weights': '0.15,0.34',
     }, h('div', part('d72 d68 d6 d13 d73', 'contact__panel', 111617),
       h('div', part('d9 d20 d0 d1 d66 d83 d67 d84 d68 d85 d86', 'contact__lead', 111620),
         h('p', part('d7 d8 d87 d61 d88 d6 d13 d89 d90 d91 d17 d73', undefined, 111621), 'Contact sales'),

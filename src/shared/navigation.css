@@ -73,7 +73,7 @@ html[data-premium][data-altenar-glow] [data-shared-navigation] [data-name='langu
 }
 
 /* Hide on scroll down, show on scroll up (navigation.ts). `translate` leaves the island's transform:none intact. */
-html[data-premium][data-altenar-glow] .premium-page>[data-shared-navigation]{transition:translate .45s cubic-bezier(.22,1,.36,1),opacity .3s ease}
+html[data-premium][data-altenar-glow] .premium-page>[data-shared-navigation]{transition:translate .8s cubic-bezier(.16,1,.3,1),opacity .6s ease}
 html[data-premium][data-altenar-glow] .premium-page>[data-shared-navigation].glow-nav-hidden{translate:0 calc(-100% - 24px);opacity:0;pointer-events:none}
 @media(prefers-reduced-motion:reduce){html[data-premium][data-altenar-glow] .premium-page>[data-shared-navigation]{transition:none}}
 
