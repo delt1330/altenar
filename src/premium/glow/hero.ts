@@ -16,7 +16,7 @@ export function setupCenteredHero(glowLayer:HTMLElement){
   // under the whole page. No section can crop or resize the dynamic field.
   const underlay=document.createElement('div');underlay.className='glow-hero-underlay';
   underlay.setAttribute('aria-hidden','true');glowLayer.before(underlay);underlay.append(media);
-  media.innerHTML='<img class="glow-hero-reference" src="/glow-media/hero-blue-gradient.png" alt="" fetchpriority="high">';
+  media.innerHTML='<img class="glow-hero-reference" src="/glow-media/hero-blue-gradient.webp" alt="" fetchpriority="high">';
   const motion=matchMedia('(prefers-reduced-motion: reduce)');
   let frame=0;
   const update=()=>{

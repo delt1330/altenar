@@ -23,7 +23,7 @@ html[data-premium] [data-shared-footer]{display:grid!important;grid-template-col
 html[data-premium] [data-shared-footer] .premium-footer-background{background:#03080e!important}
 html[data-premium] .premium-footer-transition{height:clamp(260px,38vw,520px);background:center bottom/cover no-repeat;mix-blend-mode:screen;pointer-events:none}
 /* The 2.4 MB artwork is requested only once the footer is near (footer.ts sets data-bg-ready). */
-html[data-premium] .premium-footer-transition[data-bg-ready]{background-image:url('/shared/footer-background.png')}
+html[data-premium] .premium-footer-transition[data-bg-ready]{background-image:url('/shared/footer-background.webp')}
 html[data-premium] [data-shared-footer] .premium-footer-brand{grid-area:brand;display:block;width:258px;max-width:100%;position:relative}
 html[data-premium] [data-shared-footer] .premium-footer-brand img{display:block;width:100%;height:auto}
 html[data-premium] [data-shared-footer] [data-name='footer__nav']{grid-area:nav;display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr));gap:48px 80px;width:100%;position:relative}
