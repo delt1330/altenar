@@ -8,5 +8,6 @@ import '../shared/navigation.css';
 import '../shared/controls.css';
 import {mountMonoType} from '../shared/mono-type';
 import {mountCornerSmoothing} from '../shared/corner-smoothing';
+import {mountReview} from '../review';
 
-mountMonoType();mountCornerSmoothing();
+mountMonoType();mountCornerSmoothing();mountReview();

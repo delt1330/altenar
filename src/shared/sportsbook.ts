@@ -9,8 +9,9 @@ import './navigation.css';
 import './typography.css';
 import {mountMonoType} from './mono-type';
 import {mountCornerSmoothing} from './corner-smoothing';
+import {mountReview} from '../review';
 import {mountContactDock} from './contact-dock';
-mountMonoType();mountCornerSmoothing();
+mountMonoType();mountCornerSmoothing();mountReview();
 // The nav, Contact and Footer are mounted by the Turnkey bundle; the dock waits for them.
 if(!mountContactDock()){const dockWait=new MutationObserver(()=>{if(mountContactDock())dockWait.disconnect();});dockWait.observe(document.body,{childList:true,subtree:true});}
 
