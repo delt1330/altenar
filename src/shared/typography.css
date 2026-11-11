@@ -1,13 +1,16 @@
 /* Shared text roles measured on Turnkey. Keep colour, wrapping and entrance effects in the page styles. */
+/* Inter 400 renders as Light (see base.css / turnkey-polish); headings keep true Regular via this alias. */
+@font-face{font-family:"Inter Heading";src:url('/fonts/inter-400.ttf') format('truetype');font-weight:400;font-display:swap}
 :root {
   --ui-sans: Inter, Arial, sans-serif;
+  --ui-sans-heading: "Inter Heading", Inter, Arial, sans-serif;
   --ui-mono: "JetBrains Mono", monospace;
-  --ui-type-hero: 400 clamp(45px,5.55vw,80px)/1.1 var(--ui-sans);
-  --ui-type-section: 400 clamp(40px,4.1vw,64px)/1.12 var(--ui-sans);
-  --ui-type-tools: 400 clamp(40px,4.1vw,64px)/1.1 var(--ui-sans);
-  --ui-type-library: 400 clamp(40px,3.75vw,60px)/1.12 var(--ui-sans);
-  --ui-type-editorial: 400 64px/1.1 var(--ui-sans);
-  --ui-type-contact: 400 64px/1.05 var(--ui-sans);
+  --ui-type-hero: 400 clamp(45px,5.55vw,80px)/1.1 var(--ui-sans-heading);
+  --ui-type-section: 400 clamp(40px,4.1vw,64px)/1.12 var(--ui-sans-heading);
+  --ui-type-tools: 400 clamp(40px,4.1vw,64px)/1.1 var(--ui-sans-heading);
+  --ui-type-library: 400 clamp(40px,3.75vw,60px)/1.12 var(--ui-sans-heading);
+  --ui-type-editorial: 400 64px/1.1 var(--ui-sans-heading);
+  --ui-type-contact: 400 64px/1.05 var(--ui-sans-heading);
   --ui-type-body: 400 14px/1.65 var(--ui-sans);
   --ui-type-support: 400 14px/1.65 var(--ui-sans);
   --ui-type-eyebrow: 400 13px/1.5 var(--ui-mono);
