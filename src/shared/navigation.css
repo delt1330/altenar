@@ -55,6 +55,7 @@ html[data-premium][data-altenar-glow] .glow-mega-menu .glow-mega-feature{backgro
 html[data-premium][data-altenar-glow] .glow-mega-menu :is(.glow-mega-feature,.glow-mega-sports,.glow-mega-services){padding:28px}
 html[data-premium][data-altenar-glow] .glow-mega-menu :is(button,a,strong){font-family:Inter,Arial,sans-serif!important;font-size:14px!important;line-height:1.4!important;text-transform:none!important;letter-spacing:0!important}
 html[data-premium][data-altenar-glow] .glow-mega-menu strong{font-weight:300!important}
+html[data-premium][data-altenar-glow] .glow-mega-menu .glow-mega-label{font:400 14px/1.2 'JetBrains Mono',monospace!important;text-transform:uppercase!important;letter-spacing:.24px!important;color:#06b1ff!important;-webkit-text-fill-color:#06b1ff!important}
 @media(max-width:1180px){
  html [data-shared-navigation] [data-name='navbar__bar']{grid-template-columns:124px minmax(0,1fr) auto;gap:10px;padding-left:22px;padding-right:16px}
  html [data-shared-navigation] [data-name='logo_main']{width:124px!important;min-width:124px;height:25px!important}

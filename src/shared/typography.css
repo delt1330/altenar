@@ -24,7 +24,7 @@
   --ui-type-form-note: 400 16px/1.4 var(--ui-sans);
   --ui-type-button: 400 14px/normal var(--ui-mono);
   --ui-type-next: 400 16px/normal var(--ui-mono);
-  --ui-type-footer-link: 400 16px/1.4 var(--ui-sans);
+  --ui-type-footer-link: 400 14px/1.4 var(--ui-sans);
   --ui-type-menu: 300 14px/20px var(--ui-sans);
 }
 html[data-premium][data-altenar-glow] .premium-page:is(.premium-page,.ui-specificity) :is(.tp-hero h1, [data-node-id="4001:111760"],[data-ui-type="hero"]) {
