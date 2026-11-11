@@ -132,3 +132,8 @@ html[data-premium][data-altenar-glow] .premium-page:is(.premium-page,.ui-specifi
   letter-spacing: 0 !important;
   text-transform: none !important;
 }
+
+/* Description copy: one muted tone on both pages, matched to the Turnkey feature tiles. */
+html[data-premium][data-altenar-glow] .premium-page:is(.premium-page,.ui-specificity) :is(.tp-body,.tp-proof span,.tp-disclosure-body p,.tp-feature-description,.tp-growth-highlights span,[data-name="hero__aside"]>div:first-child p,.premium-stats-description,.partner-description,.premium-solutions .solution-panel-copy p,.solution-detail,[data-name="benefit-card"] p:nth-of-type(2),[data-name="section-markets"] p.d203,[data-name="faq__aside"]>p:last-child,.glow-faq-answer p,[data-name="contact__lead"]>p:last-child) {
+  color: rgba(255,255,255,.56) !important;
+}

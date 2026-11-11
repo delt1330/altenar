@@ -4,12 +4,12 @@ html[data-altenar-glow] .glow-mega-feature,html[data-altenar-glow] .glow-mega-sp
 html[data-altenar-glow] .glow-mega-feature{background:rgba(255,255,255,.045)}
 html[data-altenar-glow] .glow-mega-label{font:400 12px/1.4 Inter,sans-serif;color:rgba(255,255,255,.55);margin-bottom:20px}
 html[data-altenar-glow] .glow-mega-feature-art{display:block;width:100%;height:auto;aspect-ratio:335/178;object-fit:cover;border-radius:10px}
-html[data-altenar-glow] .glow-mega-feature p{font:400 14px/1.35 Inter,sans-serif;color:#fff;margin:22px 0 0;max-width:335px}
+html[data-altenar-glow] .glow-mega-feature p{font:400 14px/1.35 Inter,sans-serif;color:rgba(255,255,255,.56);margin:22px 0 0;max-width:335px}
 html[data-altenar-glow] .glow-mega-menu :is(button,a){text-decoration:none;display:block;width:100%;border:0;background:transparent;color:#fff;text-align:left;cursor:pointer;border-radius:6px;padding:6px 8px;margin-left:-8px;transition:background .2s ease}
 html[data-altenar-glow] .glow-mega-menu :is(button,a):is(:hover,:focus-visible){background:rgba(255,255,255,.1);outline:none}
 html[data-altenar-glow] .glow-mega-sports :is(button,a)+:is(button,a){margin-top:8px}
 html[data-altenar-glow] .glow-mega-sports strong{display:block;font:400 16px/1.3 'JetBrains Mono',monospace;text-transform:uppercase}
-html[data-altenar-glow] .glow-mega-sports span{display:block;font:400 12px/1.4 Inter,sans-serif;color:rgba(255,255,255,.6);margin-top:4px}
+html[data-altenar-glow] .glow-mega-sports span{display:block;font:400 12px/1.4 Inter,sans-serif;color:rgba(255,255,255,.56);margin-top:4px}
 html[data-altenar-glow] .glow-mega-services button{font:400 14px/1.35 Inter,sans-serif}
 @media(max-width:750px){html[data-altenar-glow] .glow-mega-menu{grid-template-columns:1fr 1fr}html[data-altenar-glow] .glow-mega-feature{grid-column:1/-1}html[data-altenar-glow] .glow-mega-feature-art{max-width:335px}html[data-altenar-glow] .glow-mega-feature,html[data-altenar-glow] .glow-mega-sports,html[data-altenar-glow] .glow-mega-services{padding:20px}}
 /* Figma navigation: inset glass island, Inter 14, and an attached glass menu. */
