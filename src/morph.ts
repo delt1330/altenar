@@ -3,6 +3,7 @@ import {$,all,node,reduced} from './sections';
 import {gsap} from 'gsap';
 import {connectVideo} from './video';
 import {revealText} from './text-motion';
+import {whenNear} from './shared/when-near';
 import cases from './cases.json';
 import {registerCaseMorph} from './case-motion';
 
@@ -65,7 +66,9 @@ export function setupMorphSections(){
         const item=cases[Number(stage.dataset.caseIndex)||0];
         if(item.photo){
           const [width,height]=item.photoSize,boxWidth=458.833,boxHeight=614.498,scale=Math.max(boxWidth/width,boxHeight/height);
-          art.querySelectorAll('image').forEach(image=>{image.setAttribute('width',String(width));image.setAttribute('height',String(height));image.setAttributeNS('http://www.w3.org/1999/xlink','xlink:href',item.photo!);});
+          // Photos are fetched once the cases section nears; slides off to the side are clipped by the carousel, so the section is observed, not the stage.
+          const images=art.querySelectorAll('image');images.forEach(image=>{image.setAttribute('width',String(width));image.setAttribute('height',String(height));image.removeAttribute('href');image.removeAttributeNS('http://www.w3.org/1999/xlink','href');});
+          whenNear(node('4011:41475')??stage,()=>images.forEach(image=>image.setAttributeNS('http://www.w3.org/1999/xlink','xlink:href',item.photo!)));
           art.querySelectorAll('pattern use').forEach(use=>use.setAttribute('transform',`matrix(${scale/boxWidth} 0 0 ${scale/boxHeight} ${(1-width*scale/boxWidth)/2} ${(1-height*scale/boxHeight)/2})`));
         }
       }

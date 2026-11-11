@@ -57,7 +57,7 @@ const applyTurnkeyChanges = () => {
   const hero = document.querySelector<HTMLImageElement>('.tp-hero-art img');
   const faq = document.querySelector<HTMLElement>('[data-name="section-faq"]');
   if (!hero || !faq) return false;
-  hero.src = '/_turnkey/premium-media/turnkey/platform-user.png';
+  hero.src = '/_turnkey/premium-media/turnkey/platform-user.webp';
   faq.remove();
   return true;
 };

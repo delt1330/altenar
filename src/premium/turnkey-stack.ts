@@ -60,7 +60,7 @@ export function createTurnkeyStack() {
   root.dataset.panel = '0';
   root.setAttribute('aria-label', 'Explore the seven components of Turnkey Sportsbook');
   root.innerHTML = `<div class="turnkey-stack-canvas">${layers.map(([file, title, , top], i) =>
-    `<button type="button" aria-label="${title}" aria-describedby="turnkey-layer-tip" class="turnkey-layer" data-layer="${i}" style="--layer:${layers.length - 1 - i};--offset:${i - 3};left:${layerLeft / 998 * 100}%;top:${top / 994 * 100}%;width:${layerWidth / 998 * 100}%;aspect-ratio:1"><img src="/premium-media/turnkey/${file}.png" alt="" width="4096" height="4096" decoding="async" draggable="false"></button>`).join('')}
+    `<button type="button" aria-label="${title}" aria-describedby="turnkey-layer-tip" class="turnkey-layer" data-layer="${i}" style="--layer:${layers.length - 1 - i};--offset:${i - 3};left:${layerLeft / 998 * 100}%;top:${top / 994 * 100}%;width:${layerWidth / 998 * 100}%;aspect-ratio:1"><img loading="lazy" src="/premium-media/turnkey/${file}.webp" alt="" width="1280" height="1280" decoding="async" draggable="false"></button>`).join('')}
     <div class="turnkey-tooltip" id="turnkey-layer-tip" role="tooltip"><strong></strong><span></span></div></div>`;
   return root;
 }

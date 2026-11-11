@@ -1,5 +1,6 @@
 import {byName as $} from './dom';
 import './footer.css';
+import {whenNear} from './when-near';
 
 // Navigation and compliance content come from the page's footer slot.
 export function mountFooter(footer: HTMLElement, assetRoot='/premium-media/footer-logos/'){
@@ -8,6 +9,7 @@ export function mountFooter(footer: HTMLElement, assetRoot='/premium-media/foote
   footer.classList.add('premium-footer');
   const slot=document.createElement('div');slot.className='premium-footer-underlay';footer.before(slot);slot.append(footer);
   const transition=document.createElement('div'); transition.className='premium-footer-transition'; transition.setAttribute('aria-hidden','true'); slot.prepend(transition);
+  whenNear(transition,()=>transition.setAttribute('data-bg-ready',''));
   const logoNames=['IBIA','AGCO','Malta Gaming Authority','ISO 27001','Gambling Commission','ONJN','Hellenic Gaming Commission','Spelinspektionen','Spillemyndigheden','Western Cape Gambling and Racing Board','Peru Ministerio de Comercio Exterior y Turismo'];
   const logoFiles=['logo.png','logo-1.png','Mask Container.png','logo-2.png','Mask Container-1.png','logo-3.png','logo-4.png','logo-5.png','logo-6.png','logo-7.png','logo-8.png'];
   const dimensions=[[141,60],[311,60],[305,60],[60,60],[225,60],[63,60],[121,60],[85,60],[60,60],[229,60],[283,60]];

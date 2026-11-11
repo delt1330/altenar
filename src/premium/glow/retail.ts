@@ -15,7 +15,7 @@ export function createRetail(){
   ['back-office-v2','Retail Back Office','bottom-left','Manage terminal configurations, monitor device health and oversee retail operations.'],
   ['content-v2','Content Management','bottom-left-upper','Manage sportsbook content, themes and on-screen messages across terminals.']
  ];
- items.forEach(([file,name,position])=>{const img=document.createElement('img');img.className=`glow-retail-item glow-retail-${position}`;img.src=`${media}${file}.png`;img.alt=name;img.decoding='async';img.draggable=false;canvas.append(img);});
+ items.forEach(([file,name,position])=>{const img=document.createElement('img');img.className=`glow-retail-item glow-retail-${position}`;img.loading='lazy';img.src=`${media}${file}.webp`;img.alt=name;img.decoding='async';img.draggable=false;canvas.append(img);});
  canvas.append(svg);
  items.forEach(([,name,position,description])=>{const button=document.createElement('button');button.type='button';button.className=`glow-retail-hotspot glow-retail-hit-${position}`;button.setAttribute('aria-label',name);button.setAttribute('aria-describedby','retail-layer-tip');button.dataset.tipTitle=name;button.dataset.tipDescription=description;button.dataset.position=position;canvas.append(button);});
  const tooltip=document.createElement('div');tooltip.className='turnkey-tooltip glow-retail-tooltip';tooltip.id='retail-layer-tip';tooltip.setAttribute('role','tooltip');tooltip.innerHTML='<strong></strong><span></span>';canvas.append(tooltip);

@@ -3,7 +3,7 @@ export function createWhiteLabel() {
   const root = document.createElement('div');
   root.className = 'solution-img glow-white-label'; root.dataset.panel = '2';
   root.setAttribute('aria-label', 'White Label colour variants');
-  root.innerHTML = `<div class="white-label-stack">${colors.map((color, i) => `<img class="white-label-layer" data-index="${i}" src="/glow-media/white-label/${color}.png" alt="${color} White Label" draggable="false" style="--i:${i}">`).join('')}${colors.slice(1).map((color, i) => `<button type="button" class="white-label-hit" aria-label="${color} White Label" style="--i:${i}"></button>`).join('')}</div>`;
+  root.innerHTML = `<div class="white-label-stack">${colors.map((color, i) => `<img class="white-label-layer" data-index="${i}" loading="lazy" decoding="async" src="/glow-media/white-label/${color}.webp" alt="${color} White Label" draggable="false" style="--i:${i}">`).join('')}${colors.slice(1).map((color, i) => `<button type="button" class="white-label-hit" aria-label="${color} White Label" style="--i:${i}"></button>`).join('')}</div>`;
   return root;
 }
 export function setupWhiteLabel(container: HTMLElement) {

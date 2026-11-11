@@ -1,3 +1,4 @@
+import {whenNear} from './shared/when-near';
 import {mountArrow} from './shared/arrows';
 import {gsap} from 'gsap';
 import assets from '../assets-map.json';
@@ -153,7 +154,7 @@ export function setupCases(){
   const track=document.createElement('div');track.className='cases-track';viewport.append(track);track.append(slide);
   for(let i=1;i<cases.length;i++){const copy=slide.cloneNode(true) as HTMLElement;copy.removeAttribute('data-node-id');copy.querySelectorAll('[data-node-id],[id]').forEach(n=>{n.removeAttribute('data-node-id');n.removeAttribute('id');});track.append(copy);}
   const slides=Array.from(track.children) as HTMLElement[];
-  slides.forEach((card,i)=>{const item=cases[i];card.dataset.caseSlug=item.slug;card.dataset.caseIndex=String(i);const photoWrap=document.createElement('div');photoWrap.className='glow-case-photo';photoWrap.setAttribute('aria-hidden','true');const caseImage=document.createElement('img');caseImage.src=item.photo;caseImage.alt='';photoWrap.append(caseImage);card.append(photoWrap);
+  slides.forEach((card,i)=>{const item=cases[i];card.dataset.caseSlug=item.slug;card.dataset.caseIndex=String(i);const photoWrap=document.createElement('div');photoWrap.className='glow-case-photo';photoWrap.setAttribute('aria-hidden','true');const caseImage=document.createElement('img');caseImage.decoding='async';whenNear(section,()=>{caseImage.src=item.photo;});caseImage.alt='';photoWrap.append(caseImage);card.append(photoWrap);
     const logoBox=$('case__logo',card)!;if(item.logo){const logo=logoBox.querySelector('img')!;logo.src=item.logo;logo.alt=item.name;}else{logoBox.replaceChildren();logoBox.textContent=item.name;logoBox.classList.add('case-wordmark-pending');card.dataset.missingLogo='true';}
     $('case__top',card)!.querySelector('p')!.textContent=item.heading;
     $('case__tag',card)!.querySelector('p')!.textContent=item.label;

@@ -4,6 +4,7 @@ import prototype from './solutions-prototype.html?raw';
 import {$} from '../sections';
 import {createTurnkeyStack, setupTurnkeyStack} from './turnkey-stack';
 import './turnkey-stack.css';
+import {eagerAfterFirstScreen} from '../shared/when-near';
 
 export function replaceSolutions(){
   const previous=$('section-solutions')!,template=$('button-split__label',previous)!.parentElement!;
@@ -34,6 +35,8 @@ export function replaceSolutions(){
 export function setupSolutions(){
   const container=$('section-solutions')!,stage=container.querySelector<HTMLElement>('.solutions-sticky')!;
   const disposeStack=setupTurnkeyStack(container,stage),disposeRetail=setupRetail(container),disposeWhiteLabel=setupWhiteLabel(container);
+  // Illustrations are lazy so they skip the first screen; fetch them right after it (when-near.ts).
+  eagerAfterFirstScreen(container.querySelectorAll<HTMLImageElement>('img[loading="lazy"]'));
   const nav=Array.from(container.querySelectorAll<HTMLElement>('.solution-nav-button')),art=Array.from(container.querySelectorAll<HTMLElement>('.solution-img')),panels=Array.from(container.querySelectorAll<HTMLElement>('.solution-panel')),indicator=container.querySelector<HTMLElement>('.solution-nav')!;
   let active=-1;
   function activate(index:number){

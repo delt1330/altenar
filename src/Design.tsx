@@ -16,7 +16,6 @@ const imgDirectionNextStyleSecondaryStateDefault = "/assets/imgDirectionNextStyl
 const imgFocusCap = "/assets/imgFocusCap.svg";
 const imgButtonCap3 = "/assets/imgButtonCap3.svg";
 const imgButtonIcon2 = "/assets/imgButtonIcon2.svg";
-const imgCaseMedia = "/assets/imgCaseMedia.png";
 const imgCasePanel = "/assets/imgCasePanel.svg";
 const imgCaseLogo = "/assets/imgCaseLogo.png";
 const imgCl = "/assets/imgCl.svg";
@@ -50,10 +49,7 @@ const imgTabCap2 = "/assets/imgTabCap2.svg";
 const SectionContact = createContactSection(React);
 const imgSectionClientsPartnerSvg = "/assets/imgSectionClientsPartnerSvg.png";
 const imgSectionClientsPartnerLogo = "/assets/imgSectionClientsPartnerLogo.png";
-const imgPositioningMedia = "/assets/imgPositioningMedia.png";
 const imgContactAsideShape2 = "/assets/imgContactAsideShape2.svg";
-const imgVector = "/assets/imgVector.png";
-const imgFrame2147221950 = "/assets/imgFrame2147221950.png";
 const imgNewsCardCover = "/assets/imgNewsCardCover.png";
 const imgNewsCardCover1 = "/assets/imgNewsCardCover.png";
 const imgNewsCardCover2 = "/assets/imgNewsCardCover.png";
@@ -79,7 +75,6 @@ const imgLogo2 = "/assets/imgLogo2.png";
 const imgMask1 = "/assets/imgMask1.png";
 const imgLogo3 = "/assets/imgLogo3.png";
 const imgBackgroundImage = "/assets/imgBackgroundImage.png";
-const imgVector53 = "/assets/imgVector53.png";
 const imgVector1 = "/assets/imgVector1.svg";
 const imgVector2 = "/assets/imgVector2.svg";
 const imgVector3 = "/assets/imgVector3.svg";
@@ -158,7 +153,6 @@ const imgCountryRowFlag20 = "/assets/imgCz.svg";
 const imgCountryRowFlag21 = "/assets/imgHu.svg";
 const imgCountryRowFlag22 = "/assets/imgFr.svg";
 const imgCountryRowFlag23 = "/assets/imgCl.svg";
-const imgMarketsMapWorld = "/assets/imgMarketsMapWorld.png";
 const imgCountryCardFlag = "/assets/imgGb.svg";
 const imgCountryCardCloseIcon = "/assets/imgCountryCardCloseIcon.svg";
 const imgShapeNotch = "/assets/imgShapeNotch.svg";
@@ -349,7 +343,7 @@ function SectionCases({ className, property1 = "Default" }: SectionCasesProps) {
             <div className="d150 d78 d80">
               <div className="d147 d6 d153" data-name="case__media">
                 <div className="d20 d154">
-                  <img alt="" className="d21 d23 d24" height="614.498" src={imgCaseMedia} width="458.833"/>
+                  <img alt="" className="d21 d23 d24" height="614.498" width="458.833"/>
                 </div>
               </div>
             </div>
@@ -725,7 +719,7 @@ function SectionPositioning({ className, property1 = "Default" }: SectionPositio
       <div className="d283 d68 d6 d13 d73" data-node-id="4001:111742" data-name="positioning__panel">
         <div className="d20 d283 d284 d46 d285" data-node-id="4001:111743" data-name="positioning__media">
           <div className="d20 d286">
-            <img alt="" className="d21 d23 d24" height="577.786" src={imgPositioningMedia} width="530.202"/>
+            <img alt="" className="d21 d23 d24" height="577.786" width="530.202"/>
           </div>
         </div>
         <div className="d20 d0 d1 d66 d287 d67 d145 d84 d68 d85 d157" data-node-id="4001:111744" data-name="positioning__content">
@@ -751,7 +745,7 @@ function SectionHero({ className, property1 = "Default" }: SectionHeroProps) {
     return (<div className={className || "d44 d0 d1 d66 d289 d67 d290 d291 d69 d6 d71"} data-node-id="4011:38373">
       <div className="d0 d1 d116 d67 d145 d292 d293 d294 d295 d6 d73" data-node-id="4001:111755" data-name="hero__stage">
         <div className="d296 d297 d20 d298 d299 d300 d301" data-node-id="4001:111757" data-name="Vector">
-          <img alt="" className="d20 d21 d22 d23 d24" height="721.259" src={imgVector} width="1360.002"/><img alt="" data-hero-state="split" src="/_turnkey/assets/heroSplit.png"/><img alt="" data-hero-state="initial" src="/_turnkey/assets/heroInitial.png"/>
+          <img alt="" className="d20 d21 d22 d23 d24" height="721.259" width="1360.002"/><img alt="" data-hero-state="split"/><img alt="" data-hero-state="initial"/>
         </div>
         <div className="d9 d0 d1 d66 d302 d67 d145 d6 d13 d50 d303" data-node-id="4001:111758" data-name="hero__main">
           <p className="d7 d8 d87 d61 d88 d6 d13 d89 d91 d17 d73" data-node-id="4001:111759">
@@ -898,7 +892,7 @@ export default function MainPageDesktopPremium() {
             </div>
           </div>
           <div className="d72 d68 d6 d347 d13 d348" data-node-id="I4011:36550;3933:58759">
-            <img alt="" className="d20 d22 d23 d349 d350 d347 d24" src={imgFrame2147221950}/>
+            <img alt="" className="d20 d22 d23 d349 d350 d347 d24"/>
             <div className="d20 d351 d352 d353 d354 d119 d355 d356 d68 d357 d358 d359" data-node-id="I4011:36550;3933:58760">
               <div className="d20 d360" data-node-id="I4011:36550;3933:58761" data-name="Vector">
                 <img alt="" className="d20 d21 d22 d23 d24" src={imgVector1}/>
@@ -1859,7 +1853,7 @@ export default function MainPageDesktopPremium() {
           </div>
           <div className="d68 d6 d316 d13 d581" data-node-id="I4011:36550;3933:80302" data-name="markets/map">
             <div className="d20 d582 d583 d584 d585" data-node-id="I4011:36550;3933:80302;2281:6547" data-name="markets__map-world">
-              <img alt="" className="d20 d21 d22 d23 d24" src={imgMarketsMapWorld}/>
+              <img alt="" className="d20 d21 d22 d23 d24"/>
             </div>
             <div className="d20 d586 d0 d1 d66 d35 d67 d572 d68 d587 d588 d589 d183" data-node-id="I4011:36550;3933:80302;2279:39887" data-name="markets/country-card">
               <div aria-hidden className="d20 d590 d591 d22 d350 d588"/>
@@ -2573,7 +2567,7 @@ export default function MainPageDesktopPremium() {
           </div>
         </div>
         <div className="d781 d6 d13 d73" data-node-id="I4011:36550;4001:112219" data-name="Vector">
-          <img alt="" className="d20 d21 d22 d23 d24" height="209" src={imgVector53} width="1360"/>
+          <img alt="" className="d20 d21 d22 d23 d24" height="209" width="1360"/>
         </div>
       </div>
     </div>);
