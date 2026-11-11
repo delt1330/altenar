@@ -4,6 +4,13 @@
 :root {
   --ui-sans: Inter, Arial, sans-serif;
   --ui-sans-heading: "Inter Heading", Inter, Arial, sans-serif;
+  /* Accent gradient for highlighted words, digits, icons, primary buttons and selected states. */
+  --ui-accent-start: #018DFF;
+  --ui-accent-end: #0BDAFF;
+  --ui-accent-gradient: linear-gradient(90deg, var(--ui-accent-start) 0%, var(--ui-accent-end) 100%);
+  --icon-start: #018DFF;
+  --icon-mid: #06B6FF;
+  --icon-end: #0BDAFF;
   --ui-mono: "JetBrains Mono", monospace;
   --ui-type-hero: 400 clamp(45px,5.55vw,80px)/1.1 var(--ui-sans-heading);
   --ui-type-section: 400 clamp(40px,4.1vw,64px)/1.12 var(--ui-sans-heading);

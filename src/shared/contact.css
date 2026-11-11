@@ -15,7 +15,7 @@ html[data-altenar-glow] [data-name='contact__actions']{flex-wrap:wrap;justify-co
 /* Native radios stay accessible but never paint, even when a page's entrance reveal forces opacity. */
 [data-shared-contact] .choice-chip input{position:absolute!important;left:0;top:0;width:1px!important;height:1px!important;margin:0!important;padding:0!important;border:0!important;opacity:0!important;clip-path:inset(50%)!important;overflow:hidden;pointer-events:none;appearance:none}
 html[data-altenar-glow] [data-shared-contact] .choice-chip{background:rgba(255,255,255,.12)!important}
-html[data-altenar-glow] [data-shared-contact] .choice-chip:has(input:checked){background:#018bfe!important}
+html[data-altenar-glow] [data-shared-contact] .choice-chip:has(input:checked){background:var(--ui-accent-gradient)!important}
 html[data-altenar-glow] [data-shared-contact] .choice-chip:has(input:focus-visible){outline:2px solid #018dff;outline-offset:4px}
 html[data-premium][data-altenar-glow] .premium-page [data-shared-contact] [data-shared-split] [data-name='button-split__label'] p {
   color:var(--ui-button-ink)!important;

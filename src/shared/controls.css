@@ -41,3 +41,7 @@ html[data-altenar-glow] .nav-arrow::after{content:none!important}
 html[data-altenar-glow] .nav-arrow::before{filter:none!important}
 html[data-altenar-glow] [data-name='navbar__cta']::after{content:none!important}
 html[data-altenar-glow] .faq-morph-toggle .control-morph path:first-child{stroke:none!important}
+
+/* Primary split labels use the accent gradient; the slanted cap continues its end colour. Case cards keep their glass label. */
+html[data-premium][data-altenar-glow] [data-shared-split]:not([data-name='case__bottom'] *) [data-name='button__plate']{background:var(--ui-accent-gradient)!important}
+html[data-premium][data-altenar-glow] [data-shared-split]:not([data-name='case__bottom'] *) .premium-label-panel>path{fill:var(--ui-accent-end)!important}

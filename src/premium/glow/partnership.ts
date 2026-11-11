@@ -13,7 +13,7 @@ export function setupPartnershipCards(){
     const icon=document.createElementNS('http://www.w3.org/2000/svg','svg'),id=`partnership-icon-${index}`;
     icon.classList.add('glow-partnership-icon');icon.setAttribute('viewBox','0 0 256 256');
     icon.setAttribute('aria-hidden','true');icon.dataset.iconLibrary='phosphor-regular';icon.dataset.iconName=key;
-    icon.innerHTML=`<defs><linearGradient id="${id}" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#018DFF"/><stop offset=".53" stop-color="#00CDF1"/><stop offset="1" stop-color="#4EFF83"/></linearGradient></defs><rect x="4" y="4" width="248" height="248" rx="56" fill="white" fill-opacity=".045"/><g transform="translate(82.2857 82.2857) scale(.35714286)" fill="url(#${id})" stroke="none">${paths[key]}</g>`;
+    icon.innerHTML=`<defs><linearGradient id="${id}" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#018DFF"/><stop offset="1" stop-color="#0BDAFF"/></linearGradient></defs><rect x="4" y="4" width="248" height="248" rx="56" fill="white" fill-opacity=".045"/><g transform="translate(82.2857 82.2857) scale(.35714286)" fill="url(#${id})" stroke="none">${paths[key]}</g>`;
     card.prepend(icon);
     const copy=document.createElement('div');copy.className='glow-partnership-copy';
     card.querySelectorAll(':scope > p').forEach(p=>copy.append(p));

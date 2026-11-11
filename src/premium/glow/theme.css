@@ -111,7 +111,7 @@ html[data-altenar-glow] [data-name='section-statement'] .premium-statement-accen
 /* Use the same vertical shading on both pieces of the split label. */
 html[data-altenar-glow] [data-premium-split] [data-name='button__plate']{background:linear-gradient(to bottom,color-mix(in srgb,var(--button-label) 86%,white) 0%,var(--button-label) 45%,color-mix(in srgb,var(--button-label) 88%,#003d4b) 100%)!important;box-shadow:none!important}
 /* The full brand gradient must remain visible even when the global phase moves. */
-html[data-altenar-glow] [data-name='section-statement'] .premium-gradient{background-image:linear-gradient(90deg,#018dff 0%,#00cdf1 52%,#4eff83 100%)!important;background-size:100% 100%!important;background-position:0 0!important;-webkit-box-decoration-break:clone;box-decoration-break:clone}
+html[data-altenar-glow] [data-name='section-statement'] .premium-gradient{background-image:linear-gradient(90deg,#018dff 0%,#0bdaff 100%)!important;background-size:100% 100%!important;background-position:0 0!important;-webkit-box-decoration-break:clone;box-decoration-break:clone}
 /* Remove the old inset bevel layer as well as the visible panel shadows. */
 html[data-altenar-glow] [data-name='markets__body'] *{box-shadow:none!important}
 html[data-altenar-glow] [data-name='markets__sidebar']{border-right:.7px solid rgba(255,255,255,.2)!important}
@@ -332,13 +332,13 @@ html[data-premium][data-altenar-glow] [data-name="section-stats"]{margin-top:0;p
 .premium-stats-cards{display:grid;grid-template-columns:336fr 377.52fr 375.52fr;gap:20px;max-width:1129px;margin:0 auto}
 .premium-stats-card{min-width:0;height:220px;padding:40px 48px;border:1px solid rgba(255,255,255,.2);border-radius:24px;background:rgba(0,0,0,.2);backdrop-filter:blur(20px);box-sizing:border-box}
 .premium-stats-card p{margin:0!important;font-family:Inter,sans-serif!important;font-size:16px!important;line-height:1.4!important;letter-spacing:-.32px;font-weight:400!important}
-.premium-stats-card .premium-metric{font-size:48px!important;line-height:1.1!important;letter-spacing:-1.44px;background:linear-gradient(89deg,#018dff,#00cdf1 53%,#4eff83);background-clip:text;-webkit-background-clip:text;color:transparent!important;-webkit-text-fill-color:transparent!important}
+.premium-stats-card .premium-metric{font-size:48px!important;line-height:1.1!important;letter-spacing:-1.44px;background:linear-gradient(89deg,#018dff,#0bdaff);background-clip:text;-webkit-background-clip:text;color:transparent!important;-webkit-text-fill-color:transparent!important}
 .premium-stats-card .premium-metric *{-webkit-text-fill-color:transparent!important}
 .premium-stats-value{display:flex;flex-direction:column;gap:5px}
 .premium-stats-card .premium-stats-description{margin-top:15px!important}
 @media(max-width:800px){html[data-premium][data-altenar-glow] [data-name="section-stats"]{margin-top:0;padding:0 24px 110px}.premium-stats-cards{grid-template-columns:1fr;max-width:420px}.premium-stats-card{height:auto;min-height:190px;padding:32px}}
 html[data-premium][data-altenar-glow] [data-name="section-stats"]>.premium-stats-cards{max-width:1129px}
-.premium-stats-card .premium-metric .premium-digit-track>span,.premium-stats-card .premium-metric>span:not(.premium-digit){background:linear-gradient(89deg,#018dff,#00cdf1 53%,#4eff83);background-clip:text;-webkit-background-clip:text;-webkit-text-fill-color:transparent!important}
+.premium-stats-card .premium-metric .premium-digit-track>span,.premium-stats-card .premium-metric>span:not(.premium-digit){background:linear-gradient(89deg,#018dff,#0bdaff);background-clip:text;-webkit-background-clip:text;-webkit-text-fill-color:transparent!important}
 
 /* One continuous colour field across each rolling metric. */
 .premium-stats-card .premium-metric .premium-digit-track>span,.premium-stats-card .premium-metric>span:not(.premium-digit){background-size:var(--metric-gradient-width) 100%;background-position-x:var(--metric-gradient-x);background-repeat:no-repeat}
