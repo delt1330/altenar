@@ -26,3 +26,9 @@ html[data-turnkey-product] body .tp-main .tp-local-reference-card .tp-disclosure
   backdrop-filter: blur(20px) !important;
   -webkit-backdrop-filter: blur(20px) !important;
 }
+/* Card rhythm: 24px between title, description and bullets. */
+html[data-turnkey-product] body .tp-main .tp-local-reference-card .tp-disclosure h3{margin:0 0 24px!important}
+html[data-turnkey-product] body .tp-main .tp-local-reference-card .tp-disclosure h3 button{padding:0!important;min-height:0!important}
+html[data-turnkey-product] body .tp-main .tp-local-reference-card .tp-disclosure .tp-disclosure-body p{padding:0!important;margin:0!important}
+html[data-turnkey-product] body .tp-main .tp-local-reference-card .tp-disclosure .rd-local-list{margin:24px 0 0!important}
+html[data-turnkey-product] body .tp-main .tp-local-reference-card .tp-disclosure .rd-local-list li:first-child{margin-top:0!important}
