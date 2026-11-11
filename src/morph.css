@@ -29,7 +29,6 @@
 [data-name='contact__group']{gap:24px}
 [data-name='contact-group__options']{width:100%;gap:8px;display:flex;flex-wrap:wrap}
 .choice-chip{position:relative;cursor:pointer}
-.choice-chip input{position:absolute;width:1px;height:1px;opacity:0;left:0;top:0;margin:0}
 .choice-chip:has(input:focus-visible){outline:2px solid #0099ef;outline-offset:3px}
 [data-name='contact__actions']{gap:24px}
 [data-name='contact__actions'] button{padding:0;background:none;text-align:inherit;color:inherit}
