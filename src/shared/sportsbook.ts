@@ -7,6 +7,7 @@ import './controls.css';
 import {mountNavigation} from './navigation';
 import './navigation.css';
 import './typography.css';
+import './responsive.css';
 import {mountMonoType} from './mono-type';
 import {mountCornerSmoothing} from './corner-smoothing';
 import {mountReview} from '../review';

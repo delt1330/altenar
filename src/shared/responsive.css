@@ -1,0 +1,7 @@
+/* Shared responsive base for Home and Turnkey.
+   Up to the burger breakpoint the page never scrolls sideways: clip (not hidden)
+   keeps position:sticky working and stops wide sections from widening the layout
+   viewport, which pushed the fixed header off-screen on phones. */
+@media(max-width:1080px){
+ html[data-premium],html[data-premium] body{overflow-x:clip}
+}
