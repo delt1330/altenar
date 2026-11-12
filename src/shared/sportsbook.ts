@@ -25,6 +25,7 @@ turnkey.src = '/_turnkey/assets/turnkey-contained-art-20261104.js';
 document.head.append(turnkey);
 
 import './sportsbook-local-cards.css';
+import {risePanels} from './panel-rise';
 import './sportsbook-platform.css';
 import './sportsbook-mobile.css';
 // The export mounts asynchronously; attach once the requested section exists.
@@ -39,14 +40,7 @@ const mountLocalCards = () => {
     card.style.setProperty('backdrop-filter', 'blur(20px)', 'important');
     card.style.setProperty('-webkit-backdrop-filter', 'blur(20px)', 'important');
   });
-  if (matchMedia('(prefers-reduced-motion: reduce)').matches) return true;
-  cards.forEach(card => card.classList.add('local-card-reveal','local-card-pending'));
-  const observer = new IntersectionObserver(entries => {
-    if (!entries.some(entry => entry.isIntersecting)) return;
-    observer.disconnect();
-    cards.forEach((card, index) => window.setTimeout(() => card.classList.remove('local-card-pending'), index * 220));
-  }, {threshold:.12});
-  observer.observe(list);
+  risePanels(list, cards);
   return true;
 };
 if (!mountLocalCards()) {

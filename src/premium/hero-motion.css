@@ -1,0 +1,6 @@
+/* Home hero motion (hero-motion.ts): slogan lines move apart on scroll, so
+   they are blocks of their own; letters scale from their centre. The copy is
+   clipped sideways so parting lines never widen the page. */
+html[data-altenar-glow] .glow-centered-hero-copy{overflow-x:clip}
+html[data-altenar-glow] .glow-centered-hero-copy .hero-line{display:inline-block}
+html[data-altenar-glow] .glow-centered-hero-copy .hero-char{display:inline-block;transform-origin:50% 60%}

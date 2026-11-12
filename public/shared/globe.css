@@ -1,6 +1,6 @@
 html[data-turnkey-product] .tp-local-reference-card{position:relative;isolation:isolate}
 html[data-turnkey-product] .tp-local-reference-card.has-interactive-globe:before{display:none}
-.shared-globe-host .rd-interactive-globe{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:min(1040px,110%);aspect-ratio:1;z-index:0;cursor:grab;background:transparent;opacity:0;transition:opacity .6s ease}
+.shared-globe-host .rd-interactive-globe{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:min(880px,94%);aspect-ratio:1;z-index:0;cursor:grab;background:transparent;opacity:0;transition:opacity .6s ease}
 .shared-globe-host.has-interactive-globe .rd-interactive-globe{opacity:1}
 .shared-globe-host .rd-interactive-globe:active{cursor:grabbing}
 .shared-globe-host .rd-interactive-globe canvas{background:transparent;touch-action:pan-y;cursor:inherit}

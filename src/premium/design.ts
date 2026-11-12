@@ -2,6 +2,7 @@ import {mountFooter} from '../shared/footer';
 import {$,node} from '../sections';
 import benefits from './benefits.json';
 import {adaptMarkets} from './markets';
+import {marketMapVariant,mountMarketFan,prepareMarketLayout} from './markets-map';
 import {prepareStats} from './stats-motion';
 import {replaceSolutions} from './solutions';
 const gradient=(text:string,angle=89)=>`<span class="premium-gradient" data-gradient-filled="false" style="--gradient-angle:${angle}deg">${text}</span>`;
@@ -47,8 +48,10 @@ export function adaptDesign(){
   root.prepend(foreground);foreground.append(...sections);
   mountFooter(footer);
   replaceSolutions();
-  const globe=$('markets__map-world')!;globe.classList.add('premium-globe');globe.dataset.uiGlobe='';globe.replaceChildren();
-  adaptMarkets();prepareStats();
+  // Markets map: globe or fan, switched in markets-map.ts.
+  const mapVariant=marketMapVariant();
+  if(mapVariant==='globe'){const globe=$('markets__map-world')!;globe.classList.add('premium-globe');globe.dataset.uiGlobe='';globe.replaceChildren();}
+  adaptMarkets();prepareMarketLayout(mapVariant);if(mapVariant==='fan')mountMarketFan();prepareStats();
   document.querySelectorAll<HTMLElement>('[data-name="button-split__label"]').forEach(label=>label.parentElement!.dataset.premiumSplit='true');
   node('I4011:36550;4001:112219')?.remove();
   for(const scope of [partners,$('section-solutions')!,contact])scope.querySelectorAll<HTMLElement>('[data-name="button-split__label"]').forEach(label=>label.parentElement!.classList.add('premium-primary'));

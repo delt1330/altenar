@@ -5,7 +5,9 @@ gsap.registerPlugin(SplitText);
 const seen=new WeakSet<HTMLElement>();
 const pending=new Set<gsap.core.Tween>();
 const splits=new Set<ReturnType<typeof SplitText.create>>();
-const exclude='.glow-faq-answer,[data-name="news-card-slant"],[data-name="footer--window"],[data-name="section-solutions"],.premium-stats-title,.premium-metric,[data-name="button-split__label"],[data-name="button__icon"],.slant-button,.choice-chip,.partner-scroll,.partner-details,.solution-canvas,[data-name="country-index__row"],[data-name="markets/country-card"],[data-name="section-statement"]';
+// Blocks with their own entrance (premium/hero-motion.ts): no text or control reveal here.
+const owned='[data-name="section-hero"],[data-name="section-stats"]';
+const exclude=owned+',.glow-faq-answer,[data-name="news-card-slant"],[data-name="footer--window"],[data-name="section-solutions"],.premium-stats-title,.premium-metric,[data-name="button-split__label"],[data-name="button__icon"],.slant-button,.choice-chip,.partner-scroll,.partner-details,.solution-canvas,[data-name="country-index__row"],[data-name="markets/country-card"],[data-name="section-statement"]';
 function fontSize(el:HTMLElement){
   const css=getComputedStyle(el);let size=parseFloat(css.fontSize);
   if(css.fontSize.includes('--h'))return 64;
@@ -41,7 +43,7 @@ export function revealText(scope:HTMLElement,delay=0){
     if(label){el.classList.add('motion-eyebrow');el.parentElement?.classList.add('motion-label-container');}
     play(el,label?'label':size>=28?'heading':'body',delay+(caseContent?.08:0)+Math.min(order++*.035,.14));
   });
-  scope.querySelectorAll<HTMLElement>('.split-button,.choice-chip,[data-name="case__logo"]').forEach(el=>play(el,'control',delay+(caseContent?(el.matches('.split-button')?.18:0):.08)));
+  scope.querySelectorAll<HTMLElement>('.split-button,.choice-chip,[data-name="case__logo"]').forEach(el=>!el.closest(owned)&&play(el,'control',delay+(caseContent?(el.matches('.split-button')?.18:0):.08)));
   if(scope.matches('.split-button,.choice-chip,[data-name="case__logo"]'))play(scope,'control',delay);
 }
 export function setupGlobalText(){

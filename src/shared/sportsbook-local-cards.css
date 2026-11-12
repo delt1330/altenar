@@ -7,10 +7,7 @@ html[data-turnkey-product] .tp-local-reference-card .tp-disclosure h3 button spa
 html[data-turnkey-product] .tp-local-reference-card .tp-disclosure-body p{font-size:18px!important;line-height:1.7!important;color:rgba(255,255,255,.72)!important}
 html[data-turnkey-product] .tp-local-reference-card .rd-local-list{font-size:17px;line-height:1.5;margin-top:30px}
 html[data-turnkey-product] .tp-local-reference-card .rd-local-list li{margin:14px 0;gap:18px}
-html[data-turnkey-product] .tp-local-reference-card .local-card-pending{opacity:0!important;transform:translateY(-32px)!important}
-html[data-turnkey-product] .tp-local-reference-card .local-card-reveal{transition:opacity .7s ease,transform .7s ease}
 @media(max-width:760px){html[data-turnkey-product] .tp-local-reference-card .tp-disclosure-list{grid-template-columns:1fr;gap:20px}html[data-turnkey-product] .tp-local-reference-card .tp-disclosure{min-height:0;padding:32px 28px!important}}
-@media(prefers-reduced-motion:reduce){html[data-turnkey-product] .tp-local-reference-card .local-card-reveal{transition:none}}
 html[data-turnkey-product] body .tp-main .tp-local-reference-card .tp-disclosure h3 button span{font-size:clamp(24px,2vw,32px)!important;line-height:1.15!important;font-weight:400!important;color:#00b7ef!important}
 html[data-turnkey-product] body .tp-main .tp-local-reference-card .tp-disclosure .tp-disclosure-body p{font-size:18px!important;line-height:1.7!important;color:rgba(255,255,255,.72)!important}
 html[data-turnkey-product] body .tp-main .tp-local-reference-card .tp-disclosure .rd-local-list li{font-size:17px!important;line-height:1.5!important}
@@ -32,3 +29,14 @@ html[data-turnkey-product] body .tp-main .tp-local-reference-card .tp-disclosure
 html[data-turnkey-product] body .tp-main .tp-local-reference-card .tp-disclosure .tp-disclosure-body p{padding:0!important;margin:0!important}
 html[data-turnkey-product] body .tp-main .tp-local-reference-card .tp-disclosure .rd-local-list{margin:24px 0 0!important}
 html[data-turnkey-product] body .tp-main .tp-local-reference-card .tp-disclosure .rd-local-list li:first-child{margin-top:0!important}
+
+/* Cards sized and staggered like the Home markets panels: 360px wide, 20px
+   apart, the left one 68px lower. Entrance is risePanels (panel-rise.ts). */
+@media(min-width:1024px){
+  html[data-turnkey-product] body .tp-main .tp-local-reference-card .tp-disclosure-list{width:auto!important;grid-template-columns:repeat(2,360px)!important;gap:20px!important;justify-content:center;align-items:start}
+  html[data-turnkey-product] body .tp-main .tp-local-reference-card .tp-disclosure-list>.tp-disclosure{min-height:0!important;padding:56px 40px!important;border-radius:20px!important}
+  html[data-turnkey-product] body .tp-main .tp-local-reference-card .tp-disclosure-list>.tp-disclosure:first-child{margin-top:68px}
+  html[data-turnkey-product] body .tp-main .tp-local-reference-card .tp-disclosure h3 button,html[data-turnkey-product] body .tp-main .tp-local-reference-card .tp-disclosure h3 button span{font-size:24px!important;line-height:1.2!important}
+  html[data-turnkey-product] body .tp-main .tp-local-reference-card .tp-disclosure .tp-disclosure-body p{font-size:15px!important;line-height:1.65!important}
+  html[data-turnkey-product] body .tp-main .tp-local-reference-card .tp-disclosure .rd-local-list li{font-size:15px!important;line-height:1.5!important;gap:14px!important}
+}
