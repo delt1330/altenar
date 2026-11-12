@@ -95,3 +95,32 @@ if (!mountPlatformIllustrations()) {
   const observer = new MutationObserver(() => { if (mountPlatformIllustrations()) observer.disconnect(); });
   observer.observe(document.documentElement, {childList:true,subtree:true});
 }
+
+// Tools on tablets and phones (one column, see sportsbook-mobile.css): the
+// pinned stage must fit the screen. Shrink the art first (down to 120px), then
+// pin the stage by its bottom so only the title slides away.
+const fitToolsStage = () => {
+  const stage = document.querySelector<HTMLElement>('.rd-tools .rd-sticky');
+  const art = stage?.querySelector<HTMLElement>('.rd-art');
+  if (!stage || !art) return false;
+  const narrow = matchMedia('(max-width: 1023px)');
+  const fit = () => {
+    if (!narrow.matches) {stage.style.removeProperty('--rd-art-h'); stage.style.removeProperty('--rd-pin'); return;}
+    const max = innerWidth < 768 ? 200 : 280;
+    stage.style.setProperty('--rd-art-h', `${max}px`);
+    const rest = stage.offsetHeight - art.offsetHeight;
+    stage.style.setProperty('--rd-art-h', `${Math.max(120, Math.min(max, innerHeight - rest))}px`);
+    stage.style.setProperty('--rd-pin', `${Math.min(0, innerHeight - stage.offsetHeight)}px`);
+  };
+  let frame = 0;
+  const schedule = () => {cancelAnimationFrame(frame); frame = requestAnimationFrame(fit);};
+  addEventListener('resize', schedule);
+  narrow.addEventListener('change', schedule);
+  document.fonts?.ready.then(schedule);
+  fit();
+  return true;
+};
+if (!fitToolsStage()) {
+  const observer = new MutationObserver(() => { if (fitToolsStage()) observer.disconnect(); });
+  observer.observe(document.documentElement, {childList:true,subtree:true});
+}

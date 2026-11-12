@@ -250,7 +250,7 @@ html[data-altenar-glow] .glow-assembly-pulse{position:absolute;inset:0;width:100
 html[data-altenar-glow] [data-name='navbar--sketch-a'] :is([data-name='navbar__chevron'],[data-name='language-trigger__chevron']) img{filter:brightness(0) invert(1)!important;opacity:.8!important}
 
 /* News cards scroll beneath both screen edges, while the heading stays aligned. */
-html[data-altenar-glow] [data-name='section-news'] [data-name='news-grid'].carousel-viewport{width:calc(100% + 2 * var(--page-gutter))!important;max-width:none!important;margin-inline:calc(-1 * var(--page-gutter));padding-inline:var(--page-gutter);box-sizing:border-box}
+html[data-altenar-glow] [data-name='section-news'] [data-name='news-grid'].carousel-viewport{width:calc(100% + 2 * var(--page-gutter))!important;max-width:none!important;margin-inline:calc(-1 * var(--page-gutter));padding-inline:var(--page-gutter);scroll-padding-inline:var(--page-gutter)!important;box-sizing:border-box}
 
 /* Retail assembly: individual source illustrations and soft data pulses. */
 html[data-altenar-glow] .premium-solutions .glow-retail{display:grid;place-items:center;overflow:visible}

@@ -11,6 +11,10 @@
  /* Tools: the pinned stage fits one screen above the contact dock: 2x2 tabs
     (the active one is the bright one), art, copy. */
  html[data-turnkey-product] .rd-tools .rd-sticky{justify-content:flex-start!important;padding:120px 40px 110px!important;gap:32px}
+ /* When the stage is taller than the screen, sportsbook.ts shrinks the art
+    (--rd-art-h, 120-280px) and pins the stage by its bottom (--rd-pin), so the
+    tabs, the art and the copy stay in view above the contact dock. */
+ html[data-turnkey-product] .rd-tools .rd-sticky{height:auto!important;min-height:100vh;top:var(--rd-pin,0px)!important}
  html[data-turnkey-product] .rd-tools .rd-sticky>header{margin:0!important}
  html[data-turnkey-product] .rd-tools .rd-sticky>header .tp-eyebrow{margin-bottom:16px!important}
  html[data-turnkey-product] .rd-tools .rd-sticky>header h2{margin-top:0!important}
@@ -18,8 +22,13 @@
  html[data-turnkey-product] .rd-tools .rd-grid>nav{display:grid!important;grid-template-columns:1fr 1fr;gap:8px 24px!important;width:100%!important;border-right:0!important;padding-right:0!important}
  html[data-turnkey-product] .rd-tools .rd-grid>nav::after{display:none!important}
  html[data-turnkey-product] .rd-tools .rd-grid>nav button{height:auto!important;padding:6px 0!important;text-align:left}
- html[data-turnkey-product] .rd-tools .rd-art{width:100%!important;height:280px!important;justify-self:center}
- html[data-turnkey-product] .rd-tools .rd-copy{width:100%!important;height:auto!important;min-height:150px}
+ /* The stacked layers spread in proportion to the art and fade out at its
+    edges instead of running over the tabs and the title. */
+ html[data-turnkey-product] .rd-tools .rd-art{width:100%!important;height:var(--rd-art-h,280px)!important;max-height:none!important;aspect-ratio:auto!important;justify-self:center;-webkit-mask-image:linear-gradient(180deg,transparent,#000 18%,#000 82%,transparent);mask-image:linear-gradient(180deg,transparent,#000 18%,#000 82%,transparent)}
+ html[data-turnkey-product] .rd-tools .rd-art img{transform:translateY(calc((var(--index) - var(--step,0))*16%)) scale(1.06)}
+ /* Copy: the panels share one cell, so the block is as tall as the longest text. */
+ html[data-turnkey-product] .rd-tools .rd-copy{display:grid;width:100%!important;height:auto!important;min-height:0!important}
+ html[data-turnkey-product] .rd-tools .rd-copy>div{grid-area:1/1;position:relative!important;inset:auto!important}
 }
 
 @media(max-width:767px){
@@ -42,7 +51,6 @@
  html[data-turnkey-product] .rd-tools .rd-grid{gap:16px!important}
  html[data-turnkey-product] .rd-tools .rd-grid>nav{gap:8px 16px!important}
  html[data-turnkey-product] .rd-tools .rd-grid>nav button{font-size:15px!important;line-height:1.3!important}
- html[data-turnkey-product] .rd-tools .rd-art{height:130px!important}
  html[data-turnkey-product] .rd-tools .rd-copy h3{font-size:22px!important;line-height:1.25!important}
 
  /* Features: tabs scroll sideways from the first one; cards in one column. */

@@ -30,6 +30,12 @@ function smooth(el:HTMLElement){
 
 export function mountCornerSmoothing(){
   if(!CSS.supports('corner-shape','superellipse(2)'))return;
+  // Fills and glows drawn in ::before/::after take the box radius through
+  // `border-radius: inherit`; give them the same corner shape, or they stay
+  // circular and do not follow the smoothed outline.
+  const style=document.createElement('style');
+  style.textContent='[data-smooth="on"]::before,[data-smooth="on"]::after{corner-shape:inherit!important}';
+  document.head.append(style);
   const seen=new WeakSet<Element>();
   const ro=new ResizeObserver(entries=>entries.forEach(e=>smooth(e.target as HTMLElement)));
   const visit=(el:Element)=>{
