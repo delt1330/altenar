@@ -53,6 +53,14 @@ const layers = [
   ['operations-v2', '24/7 Operations', 'Round-the-clock feed monitoring, settlement and bet operations.', 290],
 ] as const;
 
+// Layers with a looping clip on hover: the clip frames the tray exactly like
+// the still, so it plays over it. Safari takes HEVC with alpha (.mov), the
+// others VP9 with alpha (.webm); the type keeps Chrome off the .mov.
+const motion = new Set<string>(['trading-v2']);
+const clip = (file: string) => motion.has(file)
+  ? `<video class="turnkey-layer-video" muted loop playsinline preload="none" disablepictureinpicture aria-hidden="true" tabindex="-1"><source src="/premium-media/turnkey/${file}.mov" type="video/quicktime; codecs=hvc1"><source src="/premium-media/turnkey/${file}.webm" type="video/webm"></video>`
+  : '';
+
 const layerWidth = 1120;
 const layerLeft = (998 - layerWidth) / 2;
 
@@ -62,7 +70,7 @@ export function createTurnkeyStack() {
   root.dataset.panel = '0';
   root.setAttribute('aria-label', 'Explore the seven components of Turnkey Sportsbook');
   root.innerHTML = `<div class="turnkey-stack-canvas">${layers.map(([file, title, , top], i) =>
-    `<button type="button" aria-label="${title}" aria-describedby="turnkey-layer-tip" class="turnkey-layer" data-layer="${i}" style="--layer:${layers.length - 1 - i};--offset:${i - 3};left:${layerLeft / 998 * 100}%;top:${top / 994 * 100}%;width:${layerWidth / 998 * 100}%;aspect-ratio:1"><img loading="lazy" src="/premium-media/turnkey/${file}.webp" alt="" width="1280" height="1280" decoding="async" draggable="false"></button>`).join('')}
+    `<button type="button" aria-label="${title}" aria-describedby="turnkey-layer-tip" class="turnkey-layer" data-layer="${i}" style="--layer:${layers.length - 1 - i};--offset:${i - 3};left:${layerLeft / 998 * 100}%;top:${top / 994 * 100}%;width:${layerWidth / 998 * 100}%;aspect-ratio:1"><img loading="lazy" src="/premium-media/turnkey/${file}.webp" alt="" width="1280" height="1280" decoding="async" draggable="false">${clip(file)}</button>`).join('')}
     <div class="turnkey-tooltip" id="turnkey-layer-tip" role="tooltip"><strong></strong><span></span></div></div>`;
   return root;
 }
@@ -88,6 +96,19 @@ export function setupTurnkeyStack(container: HTMLElement, stage: HTMLElement) {
   let restoreAnimation: gsap.core.Tween | undefined;
   let initialPositionApplied = false;
   const setExpanded = (expanded: boolean) => root.classList.toggle('is-expanded', expanded);
+  // The hovered layer's clip loops while it stays highlighted; any other
+  // clip fades out, stops and rewinds.
+  const clips = buttons.map(button => button.querySelector<HTMLVideoElement>('.turnkey-layer-video'));
+  const rewinds: number[] = [];
+  const playClip = (index: number) => clips.forEach((video, i) => {
+    if (!video) return;
+    const on = i === index && !query.matches;
+    window.clearTimeout(rewinds[i]);
+    buttons[i].classList.toggle('is-playing', on);
+    if (on) {video.play().catch(() => buttons[i].classList.remove('is-playing')); return;}
+    video.pause();
+    rewinds[i] = window.setTimeout(() => {if (!buttons[i].classList.contains('is-playing')) video.currentTime = 0;}, 400);
+  });
   const setActive = (index: number) => {
     if (state !== 'ready' || active === index) return;
     const switching = active >= 0 && index >= 0;
@@ -100,6 +121,7 @@ export function setupTurnkeyStack(container: HTMLElement, stage: HTMLElement) {
     buttons.forEach((button, i) => button.classList.toggle('is-highlighted', i === index));
     gsap.to(buttons, {opacity: i => index < 0 || i === index ? 1 : .5, duration: query.matches ? 0 : switching ? .225 : .3, ease: 'power2.out', overwrite: 'auto'});
     tooltip.classList.toggle('is-visible', index >= 0);
+    playClip(index);
     if (index < 0) return;
     tooltip.querySelector('strong')!.textContent = layers[index][1];
     const description = tooltip.querySelector<HTMLElement>('span')!;
@@ -127,6 +149,8 @@ export function setupTurnkeyStack(container: HTMLElement, stage: HTMLElement) {
     gsap.set(buttons, {clearProps: 'transform,opacity'});
     gsap.set(canvas, {clearProps: 'transform,transformOrigin'});
     buttons.forEach(button => {if (button.tagName === 'BUTTON') button.tabIndex = 0;});
+    // Fetch the clips once the stack is ready, so the first hover is instant.
+    if (!query.matches) clips.forEach(video => {if (video && video.preload !== 'auto') {video.preload = 'auto'; video.load();}});
   };
   buttons.forEach(button => {if (button.tagName === 'BUTTON') button.tabIndex = -1;});
   // Alpha masks make only the visible PNG surface interactive. Hit testing
@@ -226,6 +250,7 @@ export function setupTurnkeyStack(container: HTMLElement, stage: HTMLElement) {
   return () => {
     if (sectionStyle === null) container.removeAttribute('style'); else container.setAttribute('style', sectionStyle);
     if (stageStyle === null) stage.removeAttribute('style'); else stage.setAttribute('style', stageStyle);
+    playClip(-1); rewinds.forEach(id => window.clearTimeout(id));
     disposed = true; cancelAnimationFrame(frame); restoreAnimation?.kill(); assembly?.kill(); gsap.killTweensOf(buttons); selection.disconnect();
     window.removeEventListener('scroll', schedule); window.removeEventListener('resize', resize);
     window.removeEventListener('pointermove', move); document.removeEventListener('pointerleave', leave);
