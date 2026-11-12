@@ -31,8 +31,12 @@ export function setupRetail(container:HTMLElement){
  const masks:(ImageData|undefined)[]=Array(6), bottoms=Array(6).fill(.86), tops=Array(6).fill(.15);
  let selected=false,inView=false,started=false,timer=0,frame=0,active=-1,disposed=false;
  const sizes=[.82,.82,.82,1.122,.82,.82];
+ // Where each layer's lower edge sits (share of the canvas width). The three
+ // upper trays and the two lower ones each form a tight stack, like the
+ // Turnkey Sportsbook slabs; the trays next to the platform keep their places.
+ const targets=[.57,.68,.79,.945,1.1,1.21];
  const layout=()=>{const w=canvas.getBoundingClientRect().width;if(!w)return;
-  imgs.forEach((img,i)=>{const size=w*sizes[i];const target=w*(.48+i*.155);img.style.width=`${size}px`;img.style.height=`${size}px`;img.style.left=`${(w-size)/2}px`;img.style.top=`${target-size*bottoms[i]}px`;img.style.setProperty('--retail-shift',String(i-2.5));});
+  imgs.forEach((img,i)=>{const size=w*sizes[i];const target=w*targets[i];img.style.width=`${size}px`;img.style.height=`${size}px`;img.style.left=`${(w-size)/2}px`;img.style.top=`${target-size*bottoms[i]}px`;img.style.setProperty('--retail-shift',String(i-2.5));});
  };
  Promise.all(imgs.map(async(img,i)=>{try{await img.decode();const c=document.createElement('canvas');c.width=128;c.height=128;const ctx=c.getContext('2d',{willReadFrequently:true})!;ctx.drawImage(img,0,0,128,128);const data=ctx.getImageData(0,0,128,128);masks[i]=data;let min=128,max=0;for(let j=3;j<data.data.length;j+=4)if(data.data[j]>80){const y=Math.floor((j-3)/512);min=Math.min(min,y);max=Math.max(max,y);}tops[i]=min/128;bottoms[i]=(max+1)/128;}catch{} })).then(()=>{if(!disposed)layout();});
  const hide=()=>{active=-1;root.classList.remove('has-active-layer');imgs.forEach(img=>img.classList.remove('is-highlighted'));tooltip.classList.remove('is-visible');};
