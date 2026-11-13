@@ -31,3 +31,8 @@ html[data-turnkey-product] .tp-platform .tp-platform-illustrations img {
 html[data-turnkey-product] .tp-platform .tp-platform-illustrations img[hidden] {
   display: none;
 }
+/* Constant blue glow under the illustration: the Home Partnership card hover
+   gradient (glow/theme.css, first benefit card), always on. */
+html[data-turnkey-product] .tp-platform .tp-platform-illustrations {
+  background-image: radial-gradient(ellipse at 10% 100%, rgba(1, 141, 255, .25), transparent 72%) !important;
+}
