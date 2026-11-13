@@ -4,3 +4,11 @@
 html[data-altenar-glow] .glow-centered-hero-copy{overflow-x:clip}
 html[data-altenar-glow] .glow-centered-hero-copy .hero-line{display:inline-block}
 html[data-altenar-glow] .glow-centered-hero-copy .hero-char{display:inline-block;transform-origin:50% 60%}
+/* First-load cover under the menu bar (hero-motion.ts), the page colour. */
+.hero-load-cover{position:fixed;inset:0;z-index:999;background:#03080e;pointer-events:none}
+/* The bar during the first-load entrance: moved by translate, no CSS transitions. */
+html[data-premium][data-altenar-glow] .premium-page>[data-shared-navigation].hero-load-hold{transition:none!important;translate:0 var(--intro-y,0px)!important}
+html[data-premium][data-altenar-glow] .premium-page>[data-shared-navigation].hero-load-nav{clip-path:inset(-1px var(--intro-side,0px));background:transparent!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important}
+/* The island behind the bar's content: same frame, fill and blur (set inline). */
+.hero-load-island{position:absolute;z-index:-1;top:-1px;bottom:-1px;left:calc(var(--intro-side,0px) - 1px);right:calc(var(--intro-side,0px) - 1px);box-sizing:border-box;border:1px solid;border-radius:var(--intro-round,24px);pointer-events:none}
+html[data-premium][data-altenar-glow] .premium-page>[data-shared-navigation].hero-load-hold [data-name='logo_main']{translate:var(--intro-logo,0px) 0!important}
