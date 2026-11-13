@@ -52,9 +52,9 @@ html[data-premium][data-altenar-glow] [data-shared-split]:not([data-name='case__
 html[data-altenar-glow] .nav-arrow>.nav-arrow-shape path{fill:rgba(255,255,255,.1)}
 html[data-altenar-glow] .nav-arrow:is(:hover,:focus-visible)>.nav-arrow-shape path{fill:rgba(255,255,255,.16)}
 
-/* Pill hover: text rolls up, a black copy rolls in (text-roll.ts). */
+/* Pill hover: text rolls up, a white copy rolls in (text-roll.ts). */
 html[data-altenar-glow] :is([data-shared-contact] .choice-chip,[data-name='navbar__cta']){--roll-ink:#fff;transition:transform .16s cubic-bezier(0,0,.2,1)!important}
-html[data-altenar-glow] :is([data-shared-contact] .choice-chip,[data-name='navbar__cta']):hover{--roll-ink:#000;transform:scale(1.02)}
+html[data-altenar-glow] :is([data-shared-contact] .choice-chip,[data-name='navbar__cta']):hover{--roll-ink:#fff;transform:scale(1.02)}
 html[data-altenar-glow] :is([data-shared-contact] .choice-chip,[data-name='navbar__cta'])>p[data-roll]{position:relative!important;z-index:1;overflow:hidden!important;height:auto!important;min-height:0!important;text-box:normal!important;color:transparent!important;-webkit-text-fill-color:transparent!important}
 html[data-altenar-glow] :is([data-shared-contact] .choice-chip,[data-name='navbar__cta'])>p[data-roll]::before,
 html[data-altenar-glow] :is([data-shared-contact] .choice-chip,[data-name='navbar__cta'])>p[data-roll]::after{content:attr(data-roll);position:absolute;inset:0;white-space:nowrap;color:var(--roll-ink);-webkit-text-fill-color:var(--roll-ink);transition:transform .3s cubic-bezier(.4,0,.2,1),color .3s ease,-webkit-text-fill-color .3s ease}
@@ -64,4 +64,13 @@ html[data-altenar-glow] :is([data-shared-contact] .choice-chip,[data-name='navba
 html[data-altenar-glow] [data-shared-contact] .choice-chip::before{content:'';position:absolute;inset:0;border-radius:inherit;background:var(--ui-accent-gradient);opacity:0;transition:opacity .3s ease;pointer-events:none}
 html[data-altenar-glow] [data-shared-contact] .choice-chip:hover::before{opacity:1}
 @media (prefers-reduced-motion:reduce){html[data-altenar-glow] :is([data-shared-contact] .choice-chip,[data-name='navbar__cta'])>p[data-roll]::before{transition:color .3s ease,-webkit-text-fill-color .3s ease}html[data-altenar-glow] :is([data-shared-contact] .choice-chip,[data-name='navbar__cta']):hover>p[data-roll]::before{transform:none}html[data-altenar-glow] :is([data-shared-contact] .choice-chip,[data-name='navbar__cta']):hover{transform:none}}
+/* Split buttons: the same label roll, driven by data-split-hover (split-button.ts),
+   which also covers keyboard focus and the disabled Next step hit area. */
+html[data-altenar-glow] [data-premium-split] [data-name='button-split__label']>p[data-roll]{position:relative!important;z-index:1;overflow:hidden!important;height:auto!important;min-height:0!important;text-box:normal!important;color:transparent!important;-webkit-text-fill-color:transparent!important}
+html[data-altenar-glow] [data-premium-split] [data-name='button-split__label']>p[data-roll]::before,
+html[data-altenar-glow] [data-premium-split] [data-name='button-split__label']>p[data-roll]::after{content:attr(data-roll);position:absolute;inset:0;white-space:nowrap;color:var(--ui-button-ink,#fff);-webkit-text-fill-color:var(--ui-button-ink,#fff);transition:transform .3s cubic-bezier(.4,0,.2,1)}
+html[data-altenar-glow] [data-premium-split] [data-name='button-split__label']>p[data-roll]::after{transform:translateY(100%)}
+html[data-altenar-glow] [data-premium-split][data-split-hover='true'] [data-name='button-split__label']>p[data-roll]::before{transform:translateY(-100%)}
+html[data-altenar-glow] [data-premium-split][data-split-hover='true'] [data-name='button-split__label']>p[data-roll]::after{transform:translateY(0)}
+@media (prefers-reduced-motion:reduce){html[data-altenar-glow] [data-premium-split][data-split-hover='true'] [data-name='button-split__label']>p[data-roll]::before{transform:none}}
 .nav-arrow[data-morph][aria-disabled='true']{pointer-events:auto!important;cursor:default}

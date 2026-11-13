@@ -44,7 +44,7 @@ export function mountSplitButtons(scope: ParentNode = document){
     let hover=false,focus=false;
     const tl=gsap.timeline({paused:true,defaults:{ease:'power2.inOut'}})
       .to(root,{'--premium-label-paint':hero?'#08B4FF':'#FFFFFF',duration:.28},0)
-      .to(root,{'--ui-button-ink':'#1A2C42',duration:.28},0)
+      .to(root,{'--ui-button-ink':'#FFFFFF',duration:.28},0)
       .to(value,{progress:1,scale:.92,duration:.28,onUpdate:paint},0)
       .to(front,{x:distance,duration:.4,ease:'power2.out'},0).to(back,{x:0,duration:.4,ease:'power2.out'},0);
     const update=()=>{const on=hover||focus;root.dataset.splitHover=String(on);if(reduced())tl.progress(on?1:0).pause();else if(on)tl.play();else tl.reverse();};

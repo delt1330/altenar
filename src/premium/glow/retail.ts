@@ -33,8 +33,9 @@ export function setupRetail(container:HTMLElement){
  const sizes=[.82,.82,.82,1.122,.82,.82];
  // Where each layer's lower edge sits (share of the canvas width). The three
  // upper trays and the two lower ones each form a tight stack, like the
- // Turnkey Sportsbook slabs; the trays next to the platform keep their places.
- const targets=[.57,.68,.79,.945,1.1,1.21];
+ // Turnkey Sportsbook slabs. The upper stack rests on the platform, leaving its
+ // front edge with the cables open; the lower stack sits right under it.
+ const targets=[.575,.643,.731,.945,.995,1.085];
  const layout=()=>{const w=canvas.getBoundingClientRect().width;if(!w)return;
   imgs.forEach((img,i)=>{const size=w*sizes[i];const target=w*targets[i];img.style.width=`${size}px`;img.style.height=`${size}px`;img.style.left=`${(w-size)/2}px`;img.style.top=`${target-size*bottoms[i]}px`;img.style.setProperty('--retail-shift',String(i-2.5));});
  };
