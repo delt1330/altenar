@@ -45,6 +45,7 @@ export function setupHeroMotion(){
   // The island is its own layer with the bar's frame, fill and blur, so its
   // rounded ends stay whole while it opens (made at start, see dress()).
   const island=document.createElement('div');island.className='hero-load-island';
+  const glow=document.createElement('i');glow.className='hero-load-glow';island.append(glow);
   const sides=['top','right','bottom','left'].map(side=>`border-${side}-color`),frame:[string,string,string][]=[];
   // Taken at start, once the bar has its final (softened) frame: the island
   // copies it and the bar's own frame is hidden until the entrance ends.
@@ -64,7 +65,7 @@ export function setupHeroMotion(){
     .to(asideItems,{autoAlpha:1,y:0,duration:.8,stagger:.12,clearProps:'transform,opacity,visibility'},.15+chars.length*.04-.1);
   let started=false;
   let entrance:gsap.core.Timeline|undefined;
-  const settle=()=>{watch.disconnect();island.remove();frame.forEach(([prop,value,priority])=>value?nav.style.setProperty(prop,value,priority):nav.style.removeProperty(prop));nav.classList.remove('hero-load-nav','hero-load-hold');gsap.set(nav,{clearProps:'--intro-y,--intro-logo,--intro-side,--intro-round,opacity'});cover.remove();};
+  const settle=()=>{watch.disconnect();island.remove();frame.forEach(([prop,value,priority])=>value?nav.style.setProperty(prop,value,priority):nav.style.removeProperty(prop));nav.classList.remove('hero-load-nav','hero-load-hold');gsap.set(nav,{clearProps:'--intro-y,--intro-logo,--intro-side,--intro-round,--intro-halo,opacity'});cover.remove();};
   // Measures the bar in place, parks it centred on the screen as an island just
   // around the logo, and builds the entrance from that point in time (0 at
   // start, the current time again when the screen size changes mid-way).
@@ -82,7 +83,13 @@ export function setupHeroMotion(){
     // (hero-motion.css), so GSAP tweens plain numbers.
     entrance=gsap.timeline({defaults:{ease:'power3.inOut'},onComplete:settle})
       .fromTo(nav,{opacity:0,'--intro-y':`${lift}px`,'--intro-logo':`${slide}px`,'--intro-side':`${side}px`},{opacity:1,duration:.5,ease:'power1.out'})
-      .to(nav,{'--intro-logo':'0px','--intro-side':'0px',duration:1},'+=.25')
+      // One lap of light around the island's frame, then it opens.
+      .set(nav,{'--intro-halo':'16px'},0)
+      .fromTo(island,{'--glow-a':'0deg'},{'--glow-a':'360deg',duration:1.3,ease:'power1.inOut'},.2)
+      .fromTo(island,{'--glow-o':0},{'--glow-o':1,duration:.35,ease:'power1.out'},.2)
+      .to(island,{'--glow-o':0,duration:.4,ease:'power1.in'},1.1)
+      .set(nav,{'--intro-halo':'0px'},1.5)
+      .to(nav,{'--intro-logo':'0px','--intro-side':'0px',duration:1},1.4)
       .fromTo(navItems,{autoAlpha:0},{autoAlpha:1,duration:.5,stagger:.04,ease:'power1.out',clearProps:'opacity,visibility'},'<.35')
       .to(nav,{'--intro-y':'0px',duration:.9},'+=.1')
       .fromTo(cover,{autoAlpha:1},{autoAlpha:0,duration:.8,ease:'power1.out'},'-=.25')

@@ -8,7 +8,14 @@ html[data-altenar-glow] .glow-centered-hero-copy .hero-char{display:inline-block
 .hero-load-cover{position:fixed;inset:0;z-index:999;background:#03080e;pointer-events:none}
 /* The bar during the first-load entrance: moved by translate, no CSS transitions. */
 html[data-premium][data-altenar-glow] .premium-page>[data-shared-navigation].hero-load-hold{transition:none!important;translate:0 var(--intro-y,0px)!important}
-html[data-premium][data-altenar-glow] .premium-page>[data-shared-navigation].hero-load-nav{clip-path:inset(-1px var(--intro-side,0px));background:transparent!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important}
+html[data-premium][data-altenar-glow] .premium-page>[data-shared-navigation].hero-load-nav{clip-path:inset(calc(-1px - var(--intro-halo,0px)) calc(var(--intro-side,0px) - var(--intro-halo,0px)));background:transparent!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important}
 /* The island behind the bar's content: same frame, fill and blur (set inline). */
 .hero-load-island{position:absolute;z-index:-1;top:-1px;bottom:-1px;left:calc(var(--intro-side,0px) - 1px);right:calc(var(--intro-side,0px) - 1px);box-sizing:border-box;border:1px solid;border-radius:var(--intro-round,24px);pointer-events:none}
+/* Light running once around the island's frame before it opens: a crisp
+   comet on the frame plus a blurred copy as the halo. --glow-a turns it,
+   --glow-o fades it (hero-motion.ts); the bar's clip widens by --intro-halo
+   while it runs so the halo is not cut. */
+.hero-load-glow{position:absolute;inset:-1px;border-radius:inherit;corner-shape:inherit;filter:blur(6px);pointer-events:none}
+.hero-load-island::before,.hero-load-glow::before{content:'';position:absolute;inset:-1px;padding:1px;border-radius:inherit;corner-shape:inherit;opacity:var(--glow-o,0);background:conic-gradient(from var(--glow-a,0deg),transparent 0 45%,rgba(1,141,255,.55) 78%,#0bdaff 95%,#fff 99%,transparent 100%);-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask:linear-gradient(#000 0 0) content-box exclude,linear-gradient(#000 0 0)}
+.hero-load-glow::before{inset:-1px;padding:3px}
 html[data-premium][data-altenar-glow] .premium-page>[data-shared-navigation].hero-load-hold [data-name='logo_main']{translate:var(--intro-logo,0px) 0!important}
