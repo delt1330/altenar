@@ -49,9 +49,12 @@ html[data-premium][data-altenar-glow] [data-market-map] .premium-page .country-c
    towards the bottom; list and card side by side over its middle. No close
    button on the card: a country is always shown. */
 html[data-premium][data-altenar-glow] [data-market-map='globe'] [data-name='markets__body']{height:820px!important}
-html[data-premium][data-altenar-glow] [data-market-map='globe'] [data-name='markets__map-world'].premium-globe{inset:0 auto auto 50%!important;width:min(860px,100%)!important;height:auto!important;aspect-ratio:1;transform:translateX(-50%);-webkit-mask-image:linear-gradient(180deg,#000 38%,transparent 64%);mask-image:linear-gradient(180deg,#000 38%,transparent 64%)}
-/* Mappo draws the sphere at ~75% of its canvas: scale the canvas so the sphere itself is 860px. */
-html[data-premium][data-altenar-glow] [data-market-map='globe'] .premium-globe[data-ui-globe] .rd-interactive-globe{width:132.6%!important;max-height:none!important}
+html[data-premium][data-altenar-glow] [data-market-map='globe'] [data-name='markets__map-world'].premium-globe{inset:0 auto auto 50%!important;width:min(860px,100%)!important;height:auto!important;aspect-ratio:1;transform:translateX(-50%)}
+/* Mappo draws the sphere at ~75% of its canvas: scale the canvas so the sphere itself is 860px.
+   The bottom fade sits on the canvas, not on the square host: a mask clips to its
+   own box, and the host square cut the sphere at the sides and top. Same fade line
+   as before (38%-64% of the host) in canvas terms: (x + 16.3%) / 132.6%. */
+html[data-premium][data-altenar-glow] [data-market-map='globe'] .premium-globe[data-ui-globe] .rd-interactive-globe{width:132.6%!important;max-height:none!important;-webkit-mask-image:linear-gradient(180deg,#000 40.95%,transparent 60.6%);mask-image:linear-gradient(180deg,#000 40.95%,transparent 60.6%)}
 html[data-premium][data-altenar-glow] [data-market-map='globe'] [data-name='markets__sidebar']{left:calc(50% - 372px);top:140px;width:360px}
 html[data-premium][data-altenar-glow] [data-market-map='globe'] [data-name='markets/country-card']{left:calc(50% + 10px);top:72px}
 html[data-premium][data-altenar-glow] [data-market-map='globe'] [data-name='country-card__close']{display:none!important}
