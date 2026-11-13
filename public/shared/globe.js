@@ -8,9 +8,9 @@ class AltenarGlobeRenderer extends GlobeRenderer {
     if (this.brandSide !== this.side) {
       this.brandSide = this.side;
       this.brandGradient = this.ctx.createLinearGradient(this.side * .1, 0, this.side * .9, 0);
+      // Same blue-to-cyan as the buttons (navbar CTA), no green.
       this.brandGradient.addColorStop(0, '#018DFF');
-      this.brandGradient.addColorStop(.53, '#00CDF1');
-      this.brandGradient.addColorStop(1, '#4EFF83');
+      this.brandGradient.addColorStop(1, '#0BDAFF');
     }
     return this.brandGradient;
   }
